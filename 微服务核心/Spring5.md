@@ -3,16 +3,12 @@
 # 一、Spring概念
 
 1. Spring是轻量级的开源的JavaEE框架。
-
 2. Spring可以解决企业应用开发的复杂性。
-
-3.  Spring有两个核心部分，IOC和Aop:
+3. Spring有两个核心部分，IOC和Aop:
    - IOC:控制反转，把创建对象过程交给Spring进行管理。
-
    - Aop:面向切面编程，不修改源代码进行功能增强。
 
 4. **Spring特点**（使用Spring的好处）
-
    - **轻量**:Spring 是轻量的，基本的版本大约2MB
 
    - **控制反转**：Spring通过控制反转实现了松散耦合，对象们给出它们的依赖，而不是创建或查找依赖的对象们。方便解耦，简化开发。
@@ -26,7 +22,6 @@
    - **方便事务管理**：Spring 提供一个持续的事务管理接口，可以扩展到上至本地事务下至全局事务（JTA）
 
    - **异常处理**：Spring 提供方便的API把具体技术相关的异常（比如由JDBC，Hibernate or JDO抛出的）转化为一致的unchecked 异常。
-
 5. [入门案例](https://www.cnblogs.com/zwwhnly/p/10448434.html)
 
 # 二、IOC容器
