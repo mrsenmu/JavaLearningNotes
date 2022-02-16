@@ -84,13 +84,7 @@ HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\MySQL 服务删除
 
 ## 步骤5：删除环境变量配置
 
-找到path环境变量，将其中关于mysql的环境变量删除，**切记不要全部删除。**
-
-例如：删除 D:\develop_tools\mysql\MySQLServer8.0.26\bin; 这个部分
-
-![img](file:///C:\Users\senmu\AppData\Local\Temp\ksohtml\wps7910.tmp.png) 
-
- 
+找到path环境变量，将其中关于mysql的环境变量删除，**切记不要删到path的其他配置部分。**
 
 # 二、MySQL的下载、安装、配置
 
@@ -178,15 +172,15 @@ MySQL安装之后，需要对服务器进行配置。具体的配置步骤如下
 
 **步骤1**：在上一个小节的最后一步，单击“Next”（下一步）按钮，就可以进入产品配置窗口。
 
-![img](file:///C:\Users\senmu\AppData\Local\Temp\ksohtml\wps7960.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7960.tmp.png) 
 
 **步骤2**：单击“Next”（下一步）按钮，进入MySQL服务器类型配置窗口，如图所示。端口号一般选择默认端口号3306。
 
-![img](file:///C:\Users\senmu\AppData\Local\Temp\ksohtml\wps7961.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7961.tmp.png) 
 
 其中，“Config Type”选项用于设置服务器的类型。单击该选项右侧的下三角按钮，即可查看3个选项，如图所示。
 
-![img](file:///C:\Users\senmu\AppData\Local\Temp\ksohtml\wps7972.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7972.tmp.png) 
 
 - Development Machine（开发机器）：该选项代表典型个人用桌面工作站。此时机器上需要运行多个应用程序，那么MySQL服务器将占用最少的系统资源。
 - Server Machine（服务器)：该选项代表服务器，MySQL服务器可以同其他服务器应用程序一起运行，例如Web服务器等。MySQL服务器配置成适当比例的系统资源。
@@ -198,13 +192,13 @@ MySQL安装之后，需要对服务器进行配置。具体的配置步骤如下
 
 **步骤4**：单击“Next”（下一步）按钮，打开设置服务器root超级管理员的密码窗口，如图所示，需要输入两次同样的登录密码。也可以通过“Add User”添加其他用户，添加其他用户时，需要指定用户名、允许该用户名在哪台/哪些主机上登录，还可以指定用户角色等。此处暂不添加用户，用户管理在MySQL高级特性篇中讲解。
 
-![img](file:///C:\Users\senmu\AppData\Local\Temp\ksohtml\wps7975.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7975.tmp.png) 
 
 **步骤5**：单击“Next”（下一步）按钮，打开设置服务器名称窗口，如图所示。该服务名会出现在Windows服务列表中，也可以在命令行窗口中使用该服务名进行启动和停止服务。本书将服务名设置为“MySQL80”。如果希望开机自启动服务，也可以勾选“Start the MySQL Server at System Startup”选项（推荐）。
 
 下面是选择以什么方式运行服务？可以选择“Standard System Account”(标准系统用户)或者“Custom User”(自定义用户)中的一个。这里推荐前者。
 
-![img](file:///C:\Users\senmu\AppData\Local\Temp\ksohtml\wps7985.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7985.tmp.png) 
 
 **步骤6**：单击“Next”（下一步）按钮，打开确认设置服务器窗口，单击“Execute”（执行）按钮。
 
@@ -257,9 +251,7 @@ MySQL的安装和配置是一件非常简单的事，但是在操作过程中也
 
 解决方案：到这个地址 [**https://www.microsoft.com/en-us/download/details.aspx?id=42642**](https://www.microsoft.com/en-us/download/details.aspx?id=42642) 下载Microsoft .NET Framework 4.5并安装后，再去安装MySQL。
 
-另外，还要确保Windows Installer正常安装。windows上安装mysql8.0需要操作系统提前已安装好Microsoft Visual C++ 2015-2019。
-
-![img](C:\Users\senmu\AppData\Local\Temp\ksohtml\wps79AD.tmp.png)
+另外，还要确保Windows Installer正常安装。windows上安装mysql8.0需要操作系统提前已安装好**Microsoft Visual C++ 2015-2019**。
 
 [解决方案同样是，提前到微软官网下载相应的环境。](https://support.microsoft.com/en-us/topic/the-latest-supported-visual-c-downloads-2647da03-1eea-4433-9aff-95f26a218cc0)
 
