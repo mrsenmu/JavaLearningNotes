@@ -6,7 +6,7 @@
 
 在卸载之前，先停止MySQL8.0的服务。按键盘上的“Ctrl + Alt + Delete”组合键，打开“任务管理器”对话框（或直接ctrl+shift+Esc），可以在“服务”列表找到“MySQL8.0”的服务，如果现在“正在运行”状态，可以右键单击服务，选择“停止”选项停止MySQL8.0的服务，如图所示。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps78D8.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202161646127.png) 
 
 ## **步骤2：软件的卸载**
 
@@ -14,7 +14,7 @@
 
 卸载MySQL8.0的程序可以和其他桌面应用程序一样直接在“控制面板”选择“卸载程序”，并在程序列表中找到MySQL8.0服务器程序，直接双击卸载即可，如图所示。这种方式删除，数据目录下的数据不会跟着删除。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps78D9.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202161646819.png) 
 
 **方式2：通过360或电脑管家等软件卸载略**
 
