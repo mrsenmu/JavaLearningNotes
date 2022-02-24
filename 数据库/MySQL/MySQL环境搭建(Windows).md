@@ -6,7 +6,7 @@
 
 在卸载之前，先停止MySQL8.0的服务。按键盘上的“Ctrl + Alt + Delete”组合键，打开“任务管理器”对话框（或直接ctrl+shift+Esc），可以在“服务”列表找到“MySQL8.0”的服务，如果现在“正在运行”状态，可以右键单击服务，选择“停止”选项停止MySQL8.0的服务，如图所示。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202161646127.png) 
+![image-20220224113859038](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241139117.png)
 
 ## **步骤2：软件的卸载**
 
@@ -24,7 +24,7 @@
 
 ② 选择要卸载的MySQL服务器程序，单击“Remove”（移除），即可进行卸载。
 
-![img](C:\Users\senmu\AppData\Local\Temp\ksohtml\wps78E9.tmp.png) 
+![image-20220224113918213](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241139560.png)
 
 ③ 单击“Next”（下一步）按钮，确认卸载。
 
@@ -36,7 +36,7 @@
 
 ⑤ 执行卸载。单击“Execute”（执行）按钮进行卸载。
 
-![img](file:///C:\Users\senmu\AppData\Local\Temp\ksohtml\wps78FC.tmp.png) 
+![image-20220224113945753](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241139882.png)
 
 ⑥ 完成卸载。单击“Finish”（完成）按钮即可。如果想要同时卸载MySQL8.0的安装向导程序，勾选“Yes，
 
@@ -206,7 +206,7 @@ MySQL安装之后，需要对服务器进行配置。具体的配置步骤如下
 
 **步骤7**：完成配置，如图所示。单击“Finish”（完成）按钮，即可完成服务器的配置。
 
-![img](file:///C:\Users\senmu\AppData\Local\Temp\ksohtml\wps7987.tmp.png) 
+![image-20220224114105323](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241141615.png)
 
 **步骤8**：如果还有其他产品需要配置，可以选择其他产品，然后继续配置。如果没有，直接选择“Next”
 
