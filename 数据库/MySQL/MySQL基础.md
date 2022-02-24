@@ -492,10 +492,158 @@ SQL99 采用的这种嵌套结构非常清爽、层次性更强、可读性更�
   - **可以使用** **ON** **子句指定额外的连接条件**。
   - 这个连接条件是与其它条件分开的。
   - **ON 子句使语句具有更高的易读性**。
-  - 关键字 JOIN、INNER JOIN、CROSS JOIN 的含义是一样的，都表示内连接。
-- 满外连接：满外连接的结果 = 左右表匹配的数据 + 左表没有匹配到的数据 + 右表没有匹配到的数据。SQL99是支持满外连接的。使用FULL JOIN 或 FULL OUTER JOIN来实现。但是，**MySQL不支持FULL JOIN**，但是可以用 LEFT JOIN **UNION** RIGHT JOIN代替。
+  - 关键字 **JOIN、INNER JOIN、CROSS JOIN 的含义是一样的**，都表示内连接。
+- 满外连接：
+  - 左外连接=左表全部记录+相关联结果。
+  - 右外连接=右表全部记录+相关联结果。
+  - 全外连接=左表全部记录+右表全部记录+相关联结果=左外连接+右外连接-相关联结果（即去重复）。
+  - SQL99是支持满外连接的。使用(Oracle支持)FULL JOIN 或 FULL OUTER JOIN来实现。但是，**MySQL不支持FULL JOIN**。但可以使用**UNION**关键字来合并左连接查询和右连接查询结果（需要注意的是查询列需一一对应）。
+
+
+### Ⅳ UNION的使用
+
+**合并查询结果** MySQL UNION 操作符用于连接两个以上的 SELECT 语句的结果组合到一个结果集合中。多个 SELECT 语句会默认删除重复的数据。**两个表对应的列数和数据类型必须相同，并且相互对应**。语法各个SELECT语句之间使用UNION或UNION ALL关键字分隔。
+
+```mysql
+SELECT column,... FROM table1 [WHERE conditions]
+UNION [ALL] #ALL会返回包括重复数据的所有结果集
+SELECT column,... FROM table2 [WHERE conditions]
+```
+
+使用情况：
+
+- 可以把一张表抽象成多张表去做交、并集。例如对同一个表中同一条记录按不同字段输出多条。
+- **满外连接**，当需要把多张具有相似字段的表中的记录提取出来，两张表不需要字段上必然的联系。例如把学生表中大四学生，和老师表中的小于30岁的筛出来去打疫苗，SELECT的列就取id和name。
+
+### Ⅴ 7种SQL JOINS的实现
+
+![image-20220224154656023](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241556855.png)
+
+- 需要注意的是对于正下方的两种情况，MySQl中是不支持满外连接（FULL OUTER JOIN）的。
+- 在MySQL中可以通过UNION关键字合并左右连接表查询来实现，ALL决定是否去重。
+- 正下方左图
+
+```mysql
+#实现查询结果是A∪B 
+#用左外的A，union 右外的B 
+SELECT 字段列表
+FROM A表 LEFT JOIN B表 ON 关联条件 WHERE 等其他子句 
+UNION
+SELECT 字段列表
+FROM A表 RIGHT JOIN B表 ON 关联条件 WHERE 等其他子句;
+```
+
+- 正下方右图
+
+```mysql
+#实现A∪B - A∩B 或 (A - A∩B) ∪ （B - A∩B） 
+#使用左外的 (A - A∩B) union 右外的（B - A∩B） 
+SELECT 字段列表
+FROM A表 LEFT JOIN B表 ON 关联条件 WHERE 从表关联字段 IS NULL AND 等其他子句 
+UNION
+SELECT 字段列表
+FROM A表 RIGHT JOIN B表 ON 关联条件 WHERE 从表关联字段 IS NULL AND 等其他子句
+```
+
+### Ⅵ SQL99语法新特性
+
+(1) **自然连接**
+
+SQL99 在 SQL92 的基础上提供了一些特殊语法，比如 **NATURAL JOIN** 用来表示自然连接。我们可以把自然连接理解为 SQL92 中的等值连接。它会帮你自动查询两张连接表中 **所有相同的字段** ，然后进行 **等值** 连接 。 
+
+在SQL92标准中：
+
+```mysql
+SELECT employee_id,last_name,department_name 
+FROM employees e JOIN departments d 
+ON e.`department_id` = d.`department_id` 
+AND e.`manager_id` = d.`manager_id`;
+```
+
+在 SQL99 中你可以写成：
+
+```mysql
+SELECT employee_id,last_name,department_name 
+FROM employees e NATURAL JOIN departments d;
+```
+
+(2) **USING连接**
+
+当我们进行连接的时候，SQL99还支持使用 USING 指定数据表里的 **同名字段** 进行等值连接。但是只能配合JOIN一起使用。在 USING的括号 () 中填入要指定的同名字段。比如
+
+```mysql
+SELECT employee_id,last_name,department_name 
+FROM employees e JOIN departments d 
+USING (department_id);
+```
+
+### Ⅷ 总结
+
+表连接的约束条件可以有三种方式：WHERE, ON, USING。
+
+- WHERE：适用于所有关联查询。
+- ON ：只能和 JOIN 一起使用，只能写关联条件。虽然关联条件可以并到WHERE中和其他条件一起写，但分开写可读性更好。
+- USING：只能和 JOIN 一起使用，而且要求两个关联字段在关联表中名称一致，而且只能表示关联字段值相等。
+
+**注意**：
+
+我们要 **控制连接表的数量** 。多表连接就相当于嵌套 for 循环一样，非常消耗资源，会让 SQL 查询性能下降得很严重，因此不要连接不必要的表。在许多 DBMS 中，也都会有最大连接表的限制。
+
+```
+【强制】超过三个表禁止 join。需要 join 的字段，数据类型保持绝对一致；多表关联查询时， 保证被关联的字段需要有索引。
+
+说明：即使双表 join 也要注意表索引、SQL 性能。
+
+来源：阿里巴巴《Java开发手册》
+```
 
 ## 7、单行函数
+
+### Ⅰ 函数的理解
+
+(1) **什么是函数**
+
+函数在计算机语言的使用中贯穿始终，它可以把我们经常使用的代码封装起来，需要的时候直接调用即可。这样既 **提高了代码效率** ，又 **提高了可维护性** 。在 SQL 中我们也可以使用函数对检索出来的数据进行函数操作。使用这些函数，可以极大地 **提高用户对数据库的管理效率** 。
+
+![image-20220224165713701](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241657773.png)
+
+从函数定义的角度出发，将函数分成 **内置函数** 和 **自定义函数** 。在 SQL 语言中，同样也包括了内置函数和自定义函数。内置函数是系统内置的通用函数，而自定义函数是我们根据自己的需要编写的。
+
+(2) **不同DBMS函数的差异**
+
+我们在使用 SQL 语言的时候，不是直接和这门语言打交道，而是通过它使用不同的数据库软件，即DBMS。**DBMS** **之间的差异性很大，远大于同一个语言不同版本之间的差异。**实际上，只有很少的函数是被 DBMS 同时支持的。比如，大多数 DBMS 使用（||）或者（+）来做拼接符，而在 MySQL 中的字符串拼接函数为concat()。**大部分 DBMS 会有自己特定的函数**，这就意味着**采用** **SQL** **函数的代码可移植性是很差的**，因此在使用函数的时候需要特别注意。
+
+(3) **MySQL的内置函数及分类**
+
+MySQL提供了丰富的内置函数，这些函数使得数据的维护与管理更加方便，能够更好地提供数据的分析与统计功能，在一定程度上提高了开发人员进行数据分析与统计的效率。
+
+MySQL提供的内置函数从 实现的功能角度 可以分为数值函数、字符串函数、日期和时间函数、流程控制函数、加密与解密函数、获取MySQL信息函数、聚合函数等。这里，我将这些丰富的内置函数再分为两类： 单行函数 、 聚合函数（或分组函数） 。
+
+### Ⅱ 数值函数
+
+
+
+### Ⅲ 字符函数
+
+
+
+### Ⅳ 日期和时间函数
+
+
+
+### Ⅴ 流程控制函数
+
+
+
+### Ⅵ 加密与解密函数
+
+
+
+### Ⅶ MySQl信息函数
+
+
+
+### Ⅷ 其他函数
 
 
 
