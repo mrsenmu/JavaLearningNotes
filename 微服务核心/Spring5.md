@@ -942,9 +942,136 @@ public class TxConfig {
 
 ## 1、新的支持
 
-1. **整个 Spring5 框架的代码基于 Java8，运行时兼容 JDK9，许多不建议使用的类和方法在代码库中删除**
-2. **Spring 5.0 框架自带了通用的日志封装**
+1. 整个 Spring5 框架的代码基于 Java8，**运行时兼容 JDK9**，许多不建议使用的类和方法在代码库中删除
+2. Spring 5.0 框架自带了通用的**日志封装**
    - Spring5 已经移除 Log4jConfigListener，官方建议使用 **Log4j2**
    - Spring5 框架整合 Log4j2
 3. Spring5 框架核心容器支持**@Nullable** 注解
    - @Nullable 注解可以使用在方法上面，属性上面，参数上面，表示方法返回可以为空，属性值可以为空，参数值可以为空
+
+4. Spring5 核心容器支持**函数式风格** GenericApplicationContext
+
+   ```java
+   //函数式风格创建对象，交给 spring 进行管理
+   @Test
+   public void testGenericApplicationContext() {
+       //1 创建 GenericApplicationContext 对象
+       GenericApplicationContext context = new GenericApplicationContext();
+       //2 调用 context 的方法对象注册
+       context.refresh();
+       context.registerBean("user1",User.class,() -> new User());
+       //3 获取在 spring 注册的对象
+       // User user = (User)context.getBean("com.atguigu.spring5.test.User");
+       User user = (User)context.getBean("user1");
+       System.out.println(user);
+   }
+   ```
+
+5. Spring5 支持整合 **JUnit5**
+
+## 2、Webflux
+
+### Ⅰ 介绍
+
+1. 是 Spring5 添加新的模块，用于 web 开发的，功能和 SpringMVC 类似的，Webflux 使用当前一种比较流程响应式编程出现的框架。
+
+2. 使用传统 web 框架，比如 SpringMVC，这些基于 Servlet 容器，Webflux 是一种**异步非阻塞的框架**，异步非阻塞的框架在 Servlet3.1 以后才支持，核心是基于 Reactor 的相关 API 实现的。
+
+3. 关于异步非阻塞
+
+   - 异步和同步，非阻塞和阻塞，都是针对的对象不一样。
+
+   - **异步和同步针对调用者**，调用者发送请求，如果等着对方回应之后才去做其他事情就是同步，如果发送请求之后不等着对方回应就去做其他事情就是异步。
+
+   - **阻塞和非阻塞针对被调用者**，被调用者受到请求之后，做完请求任务之后才给出反馈就是阻
+
+     塞，受到请求之后马上给出反馈然后再去做事情就是非阻塞。
+
+4. **特点：**
+
+   - **非阻塞式：**在有限资源下，提高系统吞吐量和伸缩性，以 Reactor 为基础实现响应式编程。
+   - **函数式编程：**Spring5 框架基于 java8，Webflux 使用 Java8 函数式编程方式实现路由请求。
+
+5. 相较于SpringMVC
+
+   - 两个框架都可以使用注解方式，都运行在 Tomet 等容器中。
+   - SpringMVC 采用命令式编程，Webflux 采用异步响应式编程。
+
+### Ⅱ  响应式编程(Java实现)
+
+1. 概述
+
+   响应式编程是一种**面向数据流和变化传播的编程范式**。这意味着可以在编程语言中很方便
+
+   地表达静态或动态的数据流，而相关的计算模型会自动将变化的值通过数据流进行传播。
+
+   电子表格程序就是响应式编程的一个例子。单元格可以包含字面值或类似"=B1+C1"的公
+
+   式，而包含公式的单元格的值会依据其他单元格的值的变化而变化。
+
+2. 实现（Java8及之前版本）
+
+   ```java
+   //提供的观察者模式两个类 Observer 和 Observable
+   public class ObserverDemo extends Observable {
+       public static void main(String[] args) {
+           ObserverDemo observer = new ObserverDemo();
+           //添加观察者
+           observer.addObserver((o,arg)->{
+               System.out.println("发生变化");
+           });
+           observer.addObserver((o,arg)->{
+               System.out.println("手动被观察者通知，准备改变");
+           });
+           observer.setChanged(); //数据变化
+           observer.notifyObservers(); //通知
+       } 
+   }
+   ```
+
+### Ⅲ 响应式编程（Reactor实现）
+
+1. 响应式编程操作中，Reactor 是满足 Reactive 规范框架.
+
+2. Reactor 有两个核心类，Mono 和 Flux，这两个类实现接口 Publisher，提供丰富操作符。Flux 对象实现发布者，返回 N 个元素；Mono 实现发布者，返回 0 或者 1 个元素。
+
+3. Flux 和 Mono 都是数据流的发布者，使用 Flux 和 Mono 都可以发出三种数据信号：**元素值，错误信号，完成信号**，错误信号和完成信号都代表终止信号，终止信号用于告诉订阅者数据流结束了，错误信号终止数据流同时把错误信息传递给订阅者。
+
+4. 代码演示Flux和Mono
+
+   - 第一步：引入依赖
+
+     ```xml
+     <dependency>
+         <groupId>io.projectreactor</groupId>
+         <artifactId>reactor-core</artifactId>
+         <version>3.1.5.RELEASE</version>
+     </dependency>
+     ```
+
+   - 第二步：实现代码
+
+     ```java
+     public static void main(String[] args) {
+         //just 方法直接声明
+         Flux.just(1,2,3,4);
+         Mono.just(1);
+         //其他的方法
+         Integer[] array = {1,2,3,4};
+         Flux.fromArray(array);
+     
+         List<Integer> list = Arrays.asList(array);
+         Flux.fromIterable(list);
+         Stream<Integer> stream = list.stream();
+         Flux.fromStream(stream);
+     }
+     ```
+
+5. 三种信号的特点
+
+   - 错误信号和完成信号都是终止信号，不能共存的。
+   - 如果没有发送任何元素值，而是直接发送错误或者完成信号，表示是空数据流。
+   - 如果没有错误信号，没有完成信号，表示是无限数据流。
+
+6. 调用 just 或者其他方法只是声明数据流，数据流并没有发出，只有进行订阅之后才会触发数据流，不订阅（subscribe方法）什么都不会发生的。
+
