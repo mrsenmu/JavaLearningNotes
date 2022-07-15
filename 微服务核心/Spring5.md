@@ -51,14 +51,18 @@
 
 ### Ⅱ Bean管理操作有两个操作
 
-1. 基于xml配置文件方式实现。
-2. 基于注解方式实现。
+1. 基于**xml配置**文件方式实现。
+2. 基于**注解**方式实现。
 
 ### Ⅲ 基于xml
 
 1. **创建对象**
 
    - 在spring配置文件中，使用**bean标签**，标签里添加对应属性，就可以实现对象创建。
+
+     ```xml
+     <bean id="user" class "com.xxx.spring5.User"></bean>
+     ```
 
    - bean标签中的常用属性：
 
@@ -82,7 +86,7 @@
      - 内部bean：使用情况与外部bean注入相同，使用方法是直接在属性**<property>标签**中嵌套bean标签。不常用，因为通过引用的方式，写在外层的bean，可复用。
      - 级联赋值：就是bean标签中**调用**其他bean，且**对其属性赋值**。
      - 注入集合属性：由于有多项数据，不能直接value赋值。
-       - 对于**数组等**单列数据，可用<list>或<array>标签包裹多个<value>
+       - 对于**列表或数组等**单列数据，可用<list>或<array>标签包裹多个<value>
        - 对于**set**，<set><value>...</value>...</set>
        - 对于**map**等双列数据，<map><entry key=" " value=" "></entry>...</map>
        - 可以<util:list id="bookList"><value>...</util>等的方式配置一个全局集合，可重复引用。
@@ -91,7 +95,7 @@
      - 数据写进CDATA中：PCDATA 指的是**被解析的字符数据**。 CDATA 指的是**不应由 XML 解析器进行解析的文本数据**。CDATA 部分如 **<![CDATA[** 包含转义字符<>,不应被解析的文本数据 **]]>**。
 
 3. 工厂bean
-   - spring中有两种bean，一种是普通的，一种是工厂bean（FactoryBean）
+   - spring中有两种bean，一种是普通的，一种是工厂bean**（FactoryBean）**
    - 两种bean区别：
      - 普通bean：在xml配置文件中定义bean类型就是返回类型。
      - 工厂bean：定义类型和返回类型可以不一样。
@@ -108,42 +112,92 @@
      - request：放在请求域中。
      - session：放在会话域中。
 
-5. bean的**生命周期**
+5. bean的**生命周期**(正常5个步骤，有前置、后置处理时7个步骤)
 
-   - 加载配置文件：
+   1. 执行无参构造器创造实例。
 
-    ```java
-     ApplicationContext context
-     new ClassPathXmlApplicationContext bean4.xml;
-     ClassPathXmlApplicationContext context =
-     new ClassPathXmlApplicationContext ("bean4.xml");
-    ```
+   2. 设置bean的属性值和对其他bean的引用（调用setter）。
 
-   - 执行无参构造器创造实例。
+   3. 将bean实例传递给bean**前置处理器**的postProcessBeforeInitialization() 方法。（存在前置处理器时，在调用初始化步骤前后）
 
-   - 设置bean的属性值和其他bean的引用（调用setter）。
+   4. 自动调用bean的**初始化**方法（需要在bean标签中配置init-method="initMethod()"属性和在类中定义初始化initMethod()方法）
 
-   - **将bean实例传递给bean后置处理器的**postProcess**Before**Initialization() **方法。（加后置处理器时，在调用初始化步骤前后）**
+   5. 将bean实例传递给bean**后置处理器**的postProcessAfterInitialization() 方法。（存在后置处理器时）
 
-   - **自动调用**bean的**初始化方法**（需要在bean标签中配置**init-method="initMethod()"属性**和在类中定义初始化initMethod()方法）
+   6. 使用bean，通过调用 context.getBean() 方法时获取对象。
 
-   - **将bean实例传递给bean后置处理器的**postProcess**After**Initialization() **方法。（加后置处理器时）**
+   7. 当容器关闭时，((ClassPathxmlApplicationContext) context).close ()；手动调用bean的销毁的方法（需要在bean标签中配置destroy-method="destroyMethod()"属性和在类中定义destroyMethod()销毁方法).
 
-   - 使用bean，通过调用 context.getBean() 方法时获取对象。
+6. 生命周期演示
 
-   - 当容器关闭时，((ClassPathxmlApplicationContext) context).close ()；**手动调用**bean的销毁的方法（需要在bean标签中配置**destroy-method="destroyMethod()"属性**和在类中定义**destroyMethod()**销毁方法）.
+   ```xml
+   <!--配置Bean-->
+   <bean id="orders" class="com.atguigu.spring5.bean.Orders" init-method="initMethod" destroy-method="destroyMethod">
+        <property name="oname" value="手机"></property>
+   </bean>
+       
+   <!--配置后置处理器--> 
+   <bean id="myBeanPost" class="com.atguigu.spring5.bean.MyBeanPost"></bean>
+   ```
 
-6. 后置处理器
-
-   - 若存在，则在执行时期在生命周期中调用初始化方法的前后。
-   - 创建实现类实现BeanPostProcessor接口中的postProcess**Before**Initialization（Object bean，String beanName）和 postProcess**After**Initialization（Object bean，String beanName）方法。
-   - xml中配置：与配置普通的bean相同。
+   ```java
+   public class Orders {
+        //无参数构造
+        public Orders() {
+        	System.out.println("第一步 执行无参数构造创建 bean 实例");
+        }
+        private String oname;
+        public void setOname(String oname) {
+            this.oname = oname;
+            System.out.println("第二步 调用 set 方法设置属性值");
+        }
+        //创建执行的初始化的方法
+        public void initMethod() {
+        	System.out.println("第三步 执行初始化的方法");
+        }
+        //创建执行的销毁的方法
+        public void destroyMethod() {
+        	System.out.println("第五步 执行销毁的方法");
+        }
+   }
+   
+   //   创建类，实现接口 BeanPostProcessor，创建后置处理器
+   public class MyBeanPost implements BeanPostProcessor {
+    	@Override
+   	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+            System.out.println("在初始化之前执行的方法");
+            return bean;
+    	}
+   	@Override
+   	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+            System.out.println("在初始化之后执行的方法");
+            return bean;
+   	} 
+   }
+   
+   @Test
+   public void testBean() {
+   // 	ApplicationContext context =
+   // 			new ClassPathXmlApplicationContext("bean.xml");
+       ClassPathXmlApplicationContext context =
+           	new ClassPathXmlApplicationContext("bean.xml");
+       Orders orders = context.getBean("orders", Orders.class);
+       System.out.println("第四步 获取创建 bean 实例对象");
+       System.out.println(orders);
+       //手动让 bean 实例销毁
+       context.close();
+   }
+   ```
 
 7. xml的自动装配
 
    - 根据指定装配规则（属性名或属性类型），Spring自动将匹配的属性值进行注入。
    - 自动装配的过程：<bean>标签中属性autowire="..."。可设值：byName：根据名称自动装配。byType：根据属性类型自动注入。
    - 不常用，一般通过注解自动装配。
+   - ```xml
+     <!--根据属性名自动装配，还可以byType-->
+     <bean id="emp" class="com.atguigu.spring5.autowire.Emp" autowire="byName">
+     ```
 
 8. 外部属性文件（常用于配置连接池）
 
@@ -164,17 +218,52 @@
 2. @**Service** 服务（注入dao）用于标注服务层，主要用来进行业务的逻辑处理。
 3. @**Rrepository**（实现dao访问）用于标注数据访问层，也可以说用于标注数据访问组件，即DAO组件
 4. @**Component** （把普通pojo实例化到spring容器中，相当于配置文件中的)泛指各种组件，就是说当我们的类不属于各种归类的时候（不属于@Controller、@Services等的时候），我们就可以使用@Component来标注这个类。
-5. 前四个注解**都可以用来创建bean实例**。
+5. 上述四个注解**都可以用来创建bean实例**。
 
 ### Ⅲ 基于注解方式实现对象创建
 
-1. 第一步：引入依赖（spring-aop-5.2.9.RELEASE.jar）。
+1. 第一步：引入依赖（如spring-aop-5.2.9.RELEASE.jar）。
 2. 第二部：[开启组件扫描](https://blog.csdn.net/weixin_43883917/article/details/112747184)。先引入context命名空间。再配置扫描范围（<context:component-scan base-package="包名"> ... </context:component-scan>）。**默认的情况就是都扫描,可配置扫描的文件列表和不扫描的文件列表**。
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+   
+       <!--开启组件扫描
+       1、如果要扫描多个包，多个包用逗号隔开
+       2、直接写到上层目录
+   
+       所有类所有注解都扫描
+       -->
+       <context:component-scan base-package="com.xxx"></context:component-scan>
+   
+       <!--示例 1
+        use-default-filters="false" 表示现在不使用默认 filter，自己配置 filter
+        context:include-filter ，设置扫描哪些内容
+       -->
+        <context:component-scan base-package="com.atguigu" use-default-filters="false">
+           <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+       </context:component-scan>
+   </beans>
+   
+   ```
 3. 第三步：使用注解修饰代码结构。
+
+   ```java
+   @Component(value = "userService") //<bean id="userService" class=".."/>
+   public class UserService {
+   	public void add() {
+    		System.out.println("service add.......");
+   	}
+   }
+   ```
 
 ### Ⅳ 基于注解方法实现属性注入
 
-1. @**Autowired：**自动根据类型注入，自动装配常用注解。
+1. @**Autowired：**自动根据**类型**注入，自动装配常用注解。
 2. @**Qualifier(value="名称")**：指定自动注入的id名称，**与上个注解一起使用**，适用于接口有多个实现类时，指定具体实现类id。
 3. @Resource(“名称”)：默认无属性根据类型注入，加属性name="类id"，可根据名称注入。区别，非spring框架包中的，而是javax中的。
 4. @Value(value=...)：注入普通类型属性，注入实际值。使用：直接在类属性上修饰。使用后就不用在xml中配置注入了。
@@ -185,7 +274,7 @@
 
    ```java
    @Configuration//作为配置类，替代xml配置文件
-   @ComponentScan(basePackages com.atguigu }
+   @ComponentScan(basePackages = {"com.atguigu"})
    public class SpringConfig
    ```
 
@@ -199,16 +288,20 @@
 - 简介的说：**AOP允许不通过修改源代码方式，在主干功能里添加新功能。**
 - 举例（登录功能）：
   - 常规基本流程：输入用户名密码 -> 数据库查询 -> 验证 -- 成功 -->主页面（否则回到登陆页面）
-  - 若需要添加权限判断功能，原始方式需要修改源代码。而AOP可不通过修改源代码方式添加新的功能（添加秦安判断模块，配置进去）
+  - 若需要添加权限判断功能，原始方式需要修改源代码。而AOP可不通过修改源代码方式添加新的功能（添加权限判断模块，配置进去）
 
 ## 2、AOP的底层原理
 
 ### Ⅰ AOP底层使用动态代理
 
 1. 有两种情况的动态代理：
-   - **有接口**情况，使用JDK动态代理，创建被代理类共同接口实现类的代理类。
-   - **没有接口**情况，使用CGLIB动态代理：创建继承 被代理类 的父类的代理类。
-   - CGLIB（Code Genneration Library）是一个功能强大，高性能的代码生成包。它为没有实现接口的类提供代理，为JDK的动态代理提供了很好的补充。通常可以使用Java的动态代理创建代理，但当要代理的类没有实现接口或者为了更好的性能，CGLIB是一个好的选择。
+   - **有接口**情况，使用JDK动态代理，创建接口实现类代理对象，增强类的方法。
+   
+   - **没有接口**情况，使用CGLIB动态代理：创建子类的代理对象，增强类的方法。
+   
+     ![图4](D:\BaiduNetdiskDownload\Java全套教程_尚硅谷\微服务核心\Spring5\笔记\笔记\分析图\图4.png)
+   
+   - **CGLIB**（Code Genneration Library）是一个功能强大，高性能的代码生成包。它为没有实现接口的类提供代理，为JDK的动态代理提供了很好的补充。通常可以使用Java的动态代理创建代理，但当要代理的类没有实现接口或者为了更好的性能，CGLIB是一个好的选择。
 
 ## 3、JDK动态代理
 
@@ -216,27 +309,86 @@
 
    - 调用newProxyInstance方法
 
-   - | static object | newProxyInstance(ClassLoader loader,类<？>[]interfaces，InvocationHandler h) | 返回指定接口的代理实例，该接口将方法调用分派给指定的调用处理程序。 |
+     | static object | newProxyInstance(ClassLoader loader,类<？>[]interfaces，InvocationHandler h) | 返回指定接口的代理实例，该接口将方法调用分派给指定的调用处理程序。 |
      | ------------- | :----------------------------------------------------------- | ------------------------------------------------------------ |
-
-     
 
    - 参数一：类加载器
 
-   - 参数二：增强方法所爱类，这个类实现的接口，支持多个接口。
+   - 参数二：增强方法所在的类，这个类实现的接口，支持多个接口。
 
-   - 参数三： 实现这个接口Invocationhander，创建代理对象，写增强的方法。可用匿名实现类方式，也可单独写个实现类实现Invocationhandler接口。
+   - 参数三： 实现这个接口InvocationHander，创建代理对象，写增强的方法。可用匿名实现类方式，也可单独写个实现类实现InvocationHandler接口。
 
 2. [编写动态代理代码](https://www.jianshu.com/p/269afd0a52e6)。
 
-   - 属性：被代理类对象和返回被代理类的方法。
-   - 实现invoke方法：public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {}
+   1. 创建接口，定义方法
+   
+      ```java
+      public interface UserDao {
+          public int add(int a,int b);
+          public String update(String id);
+      }
+      ```
+   
+   2. 创建接口实现类，实现方法
+   
+      ```java
+      public class UserDaoImpl implements UserDao {
+          @Override
+          public int add(int a, int b) {
+              return a+b;
+          }
+          @Override
+          public String update(String id) {
+              return id;
+          }
+      }
+      ```
+   
+   3. 创建代理对象代码
+   
+      ```java
+      //创建代理对象代码
+      class UserDaoProxy implements InvocationHandler {
+          //把创建的是谁的代理对象，把谁传递过来
+          //有参数构造传递
+          private Object obj;
+          public UserDaoProxy(Object obj) {
+              this.obj = obj;
+          }
+          //增强的逻辑
+          @Override
+          public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+              //方法之前
+              System.out.println("方法之前执行...."+method.getName()+" :传递的参数..."+ Arrays.toString(args));
+              //被增强的方法执行
+              Object res = method.invoke(obj, args);
+              //方法之后
+              System.out.println("方法之后执行...."+obj);
+              return res;
+        	}
+      }
+      ```
+   
+   4. 使用Proxy类创建接口代理对象
+   
+      ```java
+      public class JDKProxy {
+          public static void main(String[] args) {
+              //创建接口实现类代理对象
+              Class[] interfaces = {UserDao.class};
+              UserDaoImpl userDao = new UserDaoImpl();
+              UserDao dao = (UserDao)Proxy.newProxyInstance(JDKProxy.class.getClassLoader(), interfaces, new UserDaoProxy(userDao));
+              int result = dao.add(1, 2);
+              System.out.println("result:"+result);
+          }
+      }
+      ```
 
 ## 4、AOP术语
 
-1. 连接点：类里面那些方法**可以被增强**，这些方法称为连接点。
-2. 切入点：**实际被真正增强**的方法，称为切入点。
-3. 通知（增强）：
+1. **连接点**：类里面那些方法**可以被增强**，这些方法称为连接点。
+2. **切入点**：**实际被真正增强**的方法，称为切入点。
+3. **通知（增强）**：
    - 实际增强的逻辑部分曾为通知（增强）。
    - 通知有多种类型：
      - 前置通知：被增强方法之前执行。
@@ -244,9 +396,9 @@
      - 环绕通知：前后都执行。
      - 异常通知：出现异常时执行。
      - 最终通知：类似finally，无论有无异常，都会执行。
-4. 切面：是动作过程，把通知应用到切入点的过程。
+4. **切面**：是动作过程，把通知应用到切入点的过程。
 
-## 5、 AOP操作（准备）
+## 5、 AOP操作（准备工作）
 
 ### Ⅰ什么是AspectJ
 
@@ -255,74 +407,544 @@
 
 ### Ⅱ 基于AspectJ实现AOP操作
 
-1. 基于**xml配置**文件实现：
+1. 基于xml**配置文件**实现
 
-   - 创建两个类，增强类和被增强类，创建方法。
+2. 基于**注解**方式实现
 
-   - 在spring配置文件中创建两个类对象。
+### Ⅲ 引入AOP依赖包
 
-   - 在spring配置文件中配置AOP增强，利用<aop:config>:
+```
+com.springsource.net.sf.cglib-2.2.0.jar
+com.springsource.org.aopalliance-1.0.0.jar
+com.springsource.org.aspectj.weaver-1.6.8.RELEASE.jar
+```
 
-   - ```xml
-     <!--配置aop增强-->
-     <aop:config>
-     	<!--切入点-->
-     	<aop:pointcut id="p"expression="execution(*com.atguigu.spring5.aopxml.Book.buy(..))"/>
-     	<!--配置切面-->
-     	<aop:aspect ref="bookProxy">
-     		<!--增强作用在具体的方法上-->
-     		<aop:before method="before" pointcut-ref="p"/>
-     	</aop:aspect>
-     </aop:config>
+### Ⅳ 切入点表达式：
+
+   1. 切入点表达式作用：知道对哪个类里面的哪个方法进行增强。
+
+   2. 语法结构：**execution([权限修饰符] [返回类型] [类全路径] [方法名称] [参数列表])**
+
+      - 案例1：对com.senmu.dao.BookDao**类里的某个方法**add()进行增强：execution(*com.senmu.dao.BookDao.add(..))
+
+      - 案例2：对 com.atguigu.dao.BookDao **类里面的所有的方法**进行增强execution(* com.atguigu.dao.BookDao.* (..))
+
+      - 案例3：对 com.atguigu.dao **包里面所有类，类里面所有方法**进行增强
+
+        execution(* com.atguigu.dao.*.* (..))
+
+## 6、AOP操作（实现）
+
+### Ⅰ **AspectJ** **配置文件**
+
+1. 创建两个类，增强类BookProxy和被增强类Book，创建方法buy()。
+
+2. 在spring配置文件中创建两个类对象。
+
+   ```xml
+   <!--创建对象--> 
+   <bean id="book" class="com.atguigu.spring5.aopxml.Book"></bean>
+   <bean id="bookProxy" class="com.atguigu.spring5.aopxml.BookProxy"></bean>
+   ```
+
+3. 在spring配置文件中配置AOP增强，利用<aop:config>:
+
+   ```xml
+   <!--配置aop增强-->
+   <aop:config>
+   	<!--切入点-->
+   	<aop:pointcut id="p"expression="execution(*com.xxx.spring5.aopxml.Book.buy(..))"/>
+   	<!--配置切面-->
+   	<aop:aspect ref="bookProxy">
+   		<!--增强作用在具体的方法上-->
+   		<aop:before method="before" pointcut-ref="p"/>
+   	</aop:aspect>
+   </aop:config>
+   ```
+
+### Ⅱ **AspectJ** **注解**
+
+1. 创建被增强类类，在类里定义方法。
+
+   ```java
+   public class User {
+       public void add() {
+           System.out.println("add.......");
+       }
+   }
+   ```
+
+2. 创建增强类（编写增强逻辑）在增强类里，创建方法，让不同方法代表不同通知类型，如before()代表前置通知。
+
+   ```java
+   //增强的类
+   public class UserProxy {
+       public void before() {//前置通知
+           System.out.println("before......");
+       }
+   }
+   ```
+
+3. 进行增强的配置
+
+     - 在spring配置文件中，开启注解扫描。
+
+       ```xml
+       <context:component-scan base-package="com.xxx.spring5.aopanno"></context:component-scan>
+       ```
+
+     - 使用**注解(如@Comment)**创建**被增强类**和**增强的类**。
+
+     - 在增强的类上面再加上注解@Aspect，生成代理对象。
+
+     - 在spring配置文件中开启生成代理对象。
+
+       ```xml
+       <!-- 开启 Aspect 生成代理对象-->
+       <aop:aspectj-autoproxy> </aop:aspectj-autoproxy
+       ```
+
+4. 配置**不同类型的通知**
+
+   - 在增强类的里面，在作为通知方法上面添加通知类型注解，使用切入点表达式配置。
+
+   - 如配置前置通知：
+
+     ```java
+     @Component
+     @Aspect //生成代理对象
+     public class UserProxy {
+         //@Before 注解表示作为前置通知
+         @Before(value = "execution(* com.xxx.spring5.aopanno.User.add(..))")
+         public void before() {
+             System.out.println("before.........");
+         }
+     }
      ```
 
-     
+   - **通知注解类型**：
+     - @Before：前置通知；
+     - @Around：环绕；
+     - @AfterThrowing：异常；
+     - @**After**：不管有无异常都执行，可称为**最终通知**；
+     - @**AfterReturning**：返回值之后执行，可称为**后置通知**。
 
-2. 基于**注解方式**实现（使用）：
+5. **相同切入点抽取**：可用@pointcut(value="excution(通用部分)") 注解 切入点抽取方法（如pointCut()），返回注解中相同的切入点表达式。则通知注解就可写成@Before(value="pointCut()")
 
-   - 创建被增强类类，在类里定义方法。
-   - 创建增强类（编写增强逻辑）在增强类里，创建方法，让不同方法代表不同通知类型，如before()代表前置通知。
-   - 进行配置通知
-     - 在spring配置文件中，开启注解扫描。
-     - 使用注解创建被代理类和代理类对象(如@Comment)。
-     - 在增强类上面注解@Aspect。
-     - 在spring配置文件中开启生成代理对象（标签：<aop:aspectj-autoproxy></aop......>）。
-   - 配置**不同类型的通知**
-     - 在增强类的里面，在作为通知方法上面添加通知类型注解，使用切入点表达式配置。
-     - 如配置前置通：@Before(value="execution(*com.senmu.dao.BookDao.add(..))")*
-     - **通知注解类型**：@**After**：不管有无异常都执行，可称为**最终通知**；@Around：环绕；@AfterThrowing：异常；@**AfterReturning**：返回值之后执行，可称为**后置通知，一般在After之后执行**。
-     - **相同切入点抽取**：可用@pointcut(value="excution(通用部分)") 注解 切入点抽取方法（如pointCut()），返回注解中相同的切入点表达式。则通知注解就可写成@Before(value="pointCut()")
-     - 若有多个增强类增强同一个方法，可**设置优先级**。@Order（数字型值），越小优先级越高。
-     - **可实现完全注解开发，可在配置类中配置AspectJ。**
+   ```java
+   //相同切入点抽取
+   @Pointcut(value = "execution(* com.xxx.spring5.aopanno.User.add(..))")
+   public void pointdemo() {}
+   //前置通知
+   //@Before 注解表示作为前置通知
+   @Before(value = "pointdemo()")
+   public void before() {
+       System.out.println("before.........");
+   }
+   ```
 
-3. 在项目工程里引入依赖
+6. 若有多个增强类增强同一个方法，可**设置优先级**。@Order（数字型值），**越小优先级越高**。
 
-4. 切入点表达式：
+7. **可实现完全注解开发，可在配置类中配置AspectJ。**
 
-   - 切入点表达式作用：知道对哪个类里面的哪个方法进行增强。
-   - 语法结构：
-     - execution([权限修饰符] [返回类型] [类全路径] [方法名称] [参数列表])
-     - 案例：对com.senmu.dao.BookDao类里的add()进行增强：execution(*com.senmu.dao.BookDao.add(..))
+     ```java
+     @Configuration
+     @ComponentScan(basePackages = {"com.xxx"})
+     @EnableAspectJAutoProxy(proxyTargetClass = true)
+     public class ConfigAop {
+     }
+     ```
+
 
 # 四、JdbcTemplate
 
 ## 1、什么是JdbcTeamplate
 
-1. Spring框架对JDBC进行封装，使用JdbcTempate方便实现对数据库操作。
-2. [准备工作](https://www.cnblogs.com/caoyc/p/5630622.html)
-   - 引入相关jar包
-   - 在Spring配置文件**配置数据库连接池**
-   - 配置JdbcTemlate对象，注入DataSource。
-   - 创建service类，注入dao，创建dao类，在dao中注入JdbcTeamplate。
+​	Spring框架对JDBC进行封装，使用JdbcTempate方便实现对数据库操作。
 
 ## 2、JdbcTemplate操作数据库
 
-1.  对应数据库创建实体类（entity）:放在entity下的beans。
-2.  编写service和dao:在dao中进行数据库操作。
+### Ⅰ [准备工作](https://www.cnblogs.com/caoyc/p/5630622.html)
+
+1. 引入相关jar包
+
+   <img src="https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202207121620758.png" alt="image-20220712162014073" style="zoom:67%;" />
+2. 在Spring配置文件**配置数据库连接池**
+
+   ```xml
+   <!-- 数据库连接池 --> 
+   <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy method="close">
+       <property name="url" value="jdbc:mysql:///user_db" />
+       <property name="username" value="root" />
+       <property name="password" value="root" />
+       <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+   </bean>
+   ```
+3. 配置JdbcTemlate对象，注入DataSource。
+
+   ```xml
+   <!-- JdbcTemplate 对象 --> 
+   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    <!--注入 dataSource-->
+    <property name="dataSource" ref="dataSource"></property>
+   </bean>
+   ```
+4. 创建service类，注入dao，创建dao类，在dao中注入JdbcTeamplate。
+
+   ```xml
+   <!-- 组件扫描 --> 
+   <context:component-scan base-package="com.atguigu"></context:component-scan>
+   ```
+
+   ```java
+   @Service
+   public class BookService {
+       //注入 dao
+       @Autowired
+       private BookDao bookDao;
+   }
+   
+   
+   @Repository
+   public class BookDaoImpl implements BookDao {
+       //注入 JdbcTemplate
+       @Autowired
+       private JdbcTemplate jdbcTemplate;
+   }
+   ```
+
+### Ⅲ 添加操作
+
+1. 对应数据库创建实体类（entity）:放在entity下的beans。
+2. 编写service和dao：
+
+   1.  在dao中进行数据库操作。
+   2.  调用 JdbcTemplate 对象里面 update 方法实现添加操作。
+
+   ```java
+   update(String sql, Object... args)
+   参数1：sql语句
+   参数2：可变参数，设置sql语句值
+   ```
+
+   ```java
+   @Repository
+   public class BookDaoImpl implements BookDao {
+       //注入 JdbcTemplate
+       @Autowired
+       private JdbcTemplate jdbcTemplate;
+       //添加的方法
+       @Override
+       public void add(Book book) {
+           //1 创建 sql 语句
+           String sql = "insert into t_book values(?,?,?)";
+           //2 调用方法实现
+           Object[] args = {book.getUserId(), book.getUsername(), 
+                            book.getUstatus()};
+           int update = jdbcTemplate.update(sql,args);
+           System.out.println(update);
+       } 
+    }
+   ```
+3. 测试
+
+   ```java
+   @Test
+   public void testJdbcTemplate() {
+       ApplicationContext context =
+           new ClassPathXmlApplicationContext("bean1.xml");
+       BookService bookService = context.getBean("bookService", 
+                                                 BookService.class);
+       Book book = new Book();
+       book.setUserId("1");
+       book.setUsername("java");
+       book.setUstatus("a");
+       bookService.addBook(book)
+   }
+   ```
+
+### Ⅳ 删、改、查操作
+
+ 调用JdbcTemplate 对象中的不同方法。
 
 # 五、事物管理
 
+## 1、概念
 
+### Ⅰ 什么是事物
+
+1. 事务是**数据库操作最基本单元**，逻辑上的一组操作，要么都成功，如果有一个失败所有操作都失败。
+2. 典型场景：银行转账，lucy 转账 100 元 给 mary，lucy 少 100，mary 多 100。
+
+### Ⅱ 事物的四个特性（ACID）
+
+1. **原子性**：**原子性**就是将事物进行的操作捆绑成一个不可分割的单元，事物中进行的数据操作要么全部成功，要么全部失败（回滚）。
+2. **一致性**：**一致性是指事物使数据库从一个一致性状态转换到另一个一致性状态。也就是数据库前后必须处于一致性状态。**拿转账来说，假设用户A和用户B两者的钱加起来一共是5000，那么不管A和B之间如何转账，转几次账，事务结束后两个用户的钱相加起来应该还得是5000，这就是事务的一致性。
+3. **隔离性**：**多个用户并发访问数据库，数据库为每个用户开启一个事物，每个事物相互独立，互不干扰。**事务的隔离性主要规定了各个事务之间相互影响的程度。隔离性概念主要面向对数据资源的并发访问(Concurrency)，并兼顾影响事务的一致性。当两个事务或者更多事务同时访问同一数据资源的时候，不同的隔离级别决定了各个事务对该数据资源访问的不同行为。事务的隔离级别，隔离程度按照从弱到强分别为“Read Uncommitted (未提交读)”，“Read Committed（提交读）”，“Repeatable Read（可重复读）”和“Serializable（序列化）”。
+4. **持久性**：**持久性**是指一个事务一旦被提交了，那么对数据库中的数据的改变就是永久性的，即便是在数据库系统遇到故障的情况下也不会丢失提交事务的操作。
+
+## 2、搭建事物操作环境
+
+![图6](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202207121654473.png)
+
+1. 创建数据库表，添加记录
+
+2. 创建 **service**，搭建**dao**，完成对象创建和注入关系。
+
+   - service 注入 dao
+
+     ```java
+     @Service
+     public class UserService {
+         //注入 dao
+         @Autowired
+         private UserDao userDao;
+     }
+     ```
+
+   - 在 dao 注入 JdbcTemplate
+
+     ```java
+     @Repository
+     public class UserDaoImpl implements UserDao {
+         @Autowired
+         private JdbcTemplate jdbcTemplate;
+     }
+     ```
+
+   - 在 JdbcTemplate 注入 DataSource
+
+3. 方法实现：
+
+   - 在 dao 创建两个方法：多钱和少钱的方法。
+
+     ```java
+     @Repository
+     public class UserDaoImpl implements UserDao {
+         @Autowired
+         private JdbcTemplate jdbcTemplate;
+         //lucy 转账 100 给 mary
+         //少钱
+         @Override
+         public void reduceMoney() {
+             String sql = "update t_account set money=money-? where username=?";
+             jdbcTemplate.update(sql,100,"lucy");
+         }
+         //多钱
+         @Override
+         public void addMoney() {
+             String sql = "update t_account set money=money+? where username=?";
+             jdbcTemplate.update(sql,100,"mary");
+         } 
+     }
+     ```
+
+   - 在 service 创建方法（转账的方法）。
+
+     ```java
+     @Service
+     public class UserService {
+         //注入 dao
+         @Autowired
+         private UserDao userDao;
+         //转账的方法
+         public void accountMoney() {
+             try {
+                 //第一步 开启事物
+                 
+                 //第二部 进行业务操作
+                 //lucy 少 100
+                 userDao.reduceMoney();
+                 
+                 //模拟可能出现的异常
+                 
+                 //mary 多 100
+                 userDao.addMoney();
+                 
+                 //第三步 没有发生异常，提交事物
+             }catch(Exception e){
+                 //第四步 出现异常，事物回滚
+             }
+         } 
+     }
+     ```
+
+## 3、Spring事物管理介绍
+
+1. 事务添加到 JavaEE 三层结构里面 **Service 层（业务逻辑层）**
+
+2. 在 Spring 进行**事务管理操作**(两种): 编程式事务管理和**声明式事务管理**（使用）
+
+3. 声明式事物管理：
+
+   - **基于注解的方式（使用）**
+   - 基于xml配置文件方式
+
+4. **在 Spring 进行声明式事务管理，底层使用 AOP 原理**
+
+5. Spring事物管理API：
+
+   ```java
+   PlatformTransactionManager(org.springframework.transaction)
+   ```
+
+## 4、基于注解的声明式事物管理
+
+1. spring配置文件中配置事物管理器
+
+   ```xml
+   <!--创建事务管理器--> 
+   <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    	<!--注入数据源-->
+       <property name="dataSource" ref="dataSource"></property>
+   </bean>
+   ```
+
+2. 在 spring 配置文件，开启事务注解
+
+   - 引入命名空间tx
+
+   - 开启事物注解
+
+     ```xml
+     <!--开启事务注解--> 
+     <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+     ```
+
+3. 在 service 类上面（或者 service 类里面方法上面）添加事务注解
+
+   - **@Transactional**，这个注解添加到类上面，也可以添加方法上面
+   - 如果把这个注解添加**类**上面，这个类里面**所有的方法**都添加事务
+   - 如果把这个注解添加**方法**上面，为这个方法添加事务
+
+## 5、声明式事物管理参数配置
+
+1. 在 service 类上面添加注解@Transactional，在这个**注解里面可以配置事务相关参数**，可设置的参数如下。
+
+2. 事务传播行为(**propagation**)：指的就是当一个事务方法被另一个事务方法调用时，这个事务方法应该如何进行。
+
+   - @Transactional(propagation = Propagation.**REQUIRED**)
+   - 事物的传播行为由传播属性指定。spring的定义了7种类传播行为。
+
+   | 传播属性                  | 描述                                                         |
+   | ------------------------- | ------------------------------------------------------------ |
+   | PROPAGATION_REQUIRED      | 表示当前方法必须运行在事务中。如果当前事务存在，方法将会在该事务中运行。否则，会启动一个新的事务 |
+   | PROPAGATION_REQUIRED_NEW  | 表示当前方法B必须运行在它自己的事务B中。一个新的事务B将被启动。如果存在当前事务A，在该方法B执行期间，当前事务A会被挂起。相当于A为外层事物，B为内层事物。如果使用JTATransactionManager的话，则需要访问TransactionManager |
+   | PROPAGATION_SUPPORTS      | 表示当前方法不需要事务上下文，但是如果存在当前事务的话，那么该方法会在这个事务中运行 |
+   | PROPAGATION_NOT_SUPPORTED | 当前事务将被挂起。如果使用JTATransactionManager的话，则需要访问TransactionManager |
+   | PROPAGATION_MANDATORY     | 表示该方法必须在事务中运行，如果当前事务不存在，则会抛出—个异常 |
+   | PROPAGATION_NEVER         | 表示当前方法不应该运行在事务上下文中。如果当前正有一个事务在运行，则会抛出异常 |
+   | PROPAGATION_NESTED        | 其行为与PROPAGATION_REQUIRED一样。注意各厂商对这种传播行为的支持是有所差异的。可以参考资源管理器的文档来确认它们是否支持嵌套事务 |
+
+3. **ioslation：事务隔离级别**：
+
+   1. 事务有特性成为隔离性，多事务操作之间不会产生影响。不考虑**隔离性产生很多问题**。
+
+   2. 有三个读问题：脏读、不可重复读、虚（幻）读
+
+      - **脏读：**一个未提交事务读取到另一个未提交事务(操作后回滚前数据)的数据。
+      - **不可重复读：**一个未提交事务读取到另一提交事务修改数据，两个事物同时进行时，事物A读取到事物B提交修改后的数据。
+      - **幻读：**一个未提交事务读取到另一提交事务添加数据。
+
+   3. 通过设置隔离级别来解决问题。
+
+      | 隔离级别                           | 脏读 | 不可重复读 | 幻读 |
+      | ---------------------------------- | ---- | ---------- | ---- |
+      | READ UNCOMMITTED<br />（读未提交） | 有   | 有         | 有   |
+      | READ COMMITTED<br />（读已提交）   | 无   | 有         | 有   |
+      | REPEATABLE READ<br />（可重复读）  | 无   | 无         | 有   |
+      | SERIALIZABLE<br />（串行化）       | 无   | 无         | 无   |
+
+      注意：MySQL默认的隔离级别是REPEATABLE READ。
+
+4. **timeout：超时时间**
+
+   - 事物需要再一定时间内进行提交，如果不提交进行回滚。
+   - 默认值是-1，设置时间以秒单位进行计算。
+
+5. **readOnly：是否只读**，默认false。
+
+6. **rollbackFor：回滚**，设置出现哪些异常进行事物回滚。
+
+7. **noRollbackFor：不回滚**，设置出现哪些异常不进行事物回滚。
+
+## 6、基于XML声明式的事物管理
+
+在spring配置文件中进行配置
+
+```xml
+<!--1 创建事务管理器--> 
+<bean id="transactionManager"            class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <!--注入数据源-->
+    <property name="dataSource" ref="dataSource"></property>
+</bean>
+
+<!--2 配置通知--> 
+<tx:advice id="txadvice">
+    <!--配置事务参数-->
+    <tx:attributes>
+        <!--指定哪种规则的方法上面添加事务-->
+        <tx:method name="accountMoney" propagation="REQUIRED"/>
+        <!--<tx:method name="account*"/>-->
+    </tx:attributes>
+</tx:advice>
+
+<!--3 配置切入点和切面--> 
+<aop:config>
+    <!--配置切入点-->
+    <aop:pointcut id="pt" expression="execution(*com.atguigu.spring5.service.UserService.*(..))"/>
+    <!--配置切面-->
+    <aop:advisor advice-ref="txadvice" pointcut-ref="pt"/>
+</aop:config>
+```
+
+## 7、完全注解声明式事物管理
+
+**创建配置类，使用配置类替代 xml 配置文件**
+
+```java
+@Configuration //配置类
+@ComponentScan(basePackages = "com.xxx") //组件扫描
+@EnableTransactionManagement //开启事务
+public class TxConfig {
+    //创建数据库连接池
+    @Bean
+    public DruidDataSource getDruidDataSource() {
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql:///user_db");
+        dataSource.setUsername("root");
+        dataSource.setPassword("root");
+        return dataSource;
+    }
+    //创建 JdbcTemplate 对象
+    @Bean
+    public JdbcTemplate getJdbcTemplate(DataSource dataSource) {
+        //到 ioc 容器中根据类型找到 dataSource
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
+        //注入 dataSource
+        jdbcTemplate.setDataSource(dataSource);
+        return jdbcTemplate;
+    }
+    //创建事务管理器
+    @Bean
+    public DataSourceTransactionManager 
+        getDataSourceTransactionManager(DataSource dataSource) {
+        DataSourceTransactionManager transactionManager = new 
+            DataSourceTransactionManager();
+        transactionManager.setDataSource(dataSource);
+        return transactionManager;
+    }
+}
+```
 
 # 六、Spring5新特性
 
+## 1、新的支持
+
+1. **整个 Spring5 框架的代码基于 Java8，运行时兼容 JDK9，许多不建议使用的类和方法在代码库中删除**
+2. **Spring 5.0 框架自带了通用的日志封装**
+   - Spring5 已经移除 Log4jConfigListener，官方建议使用 **Log4j2**
+   - Spring5 框架整合 Log4j2
+3. Spring5 框架核心容器支持**@Nullable** 注解
+   - @Nullable 注解可以使用在方法上面，属性上面，参数上面，表示方法返回可以为空，属性值可以为空，参数值可以为空
