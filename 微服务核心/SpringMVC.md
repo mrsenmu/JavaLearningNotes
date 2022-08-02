@@ -1349,7 +1349,7 @@ ResponseEntity用于控制器方法的返回值类型，该控制器方法的返
 
 ### 1、文件下载
 
-使用ResponseEntity实现下载文件的功能
+使用**ResponseEntity**实现下载文件的功能
 
 ```java
 @RequestMapping("/testDown")
@@ -1464,13 +1464,13 @@ afterComplation：处理完视图和模型数据，渲染视图完毕之后执�
 
 ### 3、多个拦截器的执行顺序
 
-a>若每个拦截器的preHandle()都返回true
+**a>**若每个拦截器的preHandle()都返回true
 
 此时多个拦截器的执行顺序和拦截器在SpringMVC的配置文件的配置顺序有关：
 
 preHandle()会按照配置的顺序执行，而postHandle()和afterComplation()会按照配置的反序执行
 
-b>若某个拦截器的preHandle()返回了false
+**b>**若某个拦截器的preHandle()返回了false
 
 preHandle()返回false和它之前的拦截器的preHandle()都会执行，postHandle()都不执行，返回false的拦截器之前的拦截器的afterComplation()会执行
 
@@ -1708,7 +1708,7 @@ public String index(){
 
 DispatcherServlet 本质上是一个 Servlet，所以天然的遵循 Servlet 的生命周期。所以宏观上是 Servlet 生命周期来进行调度。
 
-![images](img/img005.png)
+![img005](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208021651788.png)
 
 ##### a>初始化WebApplicationContext
 
@@ -2092,15 +2092,15 @@ i. 再判断是否配置了mvc:default-servlet-handler
 
 ii. 如果没配置，则控制台报映射查找不到，客户端展示404错误
 
-![image-20210709214911404](img/img006.png)
+![img006](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208021651339.png)
 
-![image-20210709214947432](img/img007.png)
+![img007](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208021651700.png)
 
 iii. 如果有配置，则访问目标资源（一般为静态资源，如：JS,CSS,HTML），找不到客户端也会展示404错误
 
-![image-20210709215255693](img/img008.png)
+![img008](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208021651996.png)
 
-![image-20210709215336097](img/img009.png)
+![img009](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208021652157.png)
 
 b) 存在则执行下面的流程
 
