@@ -1288,67 +1288,528 @@ Maven工程之间，A 工程继承 B 工程
 
 ### Ⅰ 聚合本身的含义
 
-
+部分组成整体
 
 ### Ⅱ Maven中的聚合
 
+使用一个“总工程”将各个“模块工程”汇集起来，作为一个整体对应完整的项目。
 
+- 项目：整体
+- 模块：部分
+
+> TIP
+>
+> 概念的对应关系：
+>
+> 从继承关系角度来看：
+>
+> - 父工程
+> - 子工程
+>
+> 从聚合关系角度来看：
+>
+> - 总工程
+> - 模块工程
 
 ### Ⅲ 好处
 
+- 一键执行 Maven 命令：很多构建命令都可以在“总工程”中一键执行。
 
+  以 mvn install 命令为例：Maven 要求有父工程时先安装父工程；有依赖的工程时，先安装被依赖的工程。我们自己考虑这些规则会很麻烦。但是工程聚合之后，在总工程执行 mvn install 可以一键完成安装，而且会自动按照正确的顺序执行。
+
+- 配置聚合之后，各个模块工程会在总工程中展示一个列表，让项目中的各个模块一目了然。
 
 ### Ⅳ 聚合的配置
 
+在总工程中配置 modules 即可：
 
+```xml
+	<modules>  
+		<module>pro04-maven-module</module>
+		<module>pro05-maven-module</module>
+		<module>pro06-maven-module</module>
+	</modules>
+```
 
 ### Ⅴ 依赖循环问题
 
+如果 A 工程依赖 B 工程，B 工程依赖 C 工程，C 工程又反过来依赖 A 工程，那么在执行构建操作时会报下面的错误：
 
+> DANGER
+>
+> [ERROR] [ERROR] The projects in the reactor contain a cyclic reference:
+
+这个错误的含义是：循环引用。
 
 # 四、使用Maven：IDEA环境
 
 ## 1、创建父工程
 
+### Ⅰ 创建现目
 
+当前IDEA版本2020.3
+
+idea创建新项目，选择Maven项目 ip01-maven-parent
+
+### Ⅱ 开启自动导入
+
+自动导入**一定要开启**，因为 Project、Module 新创建或 pom.xml 每次修改时都应该让 IDEA 重新加载 Maven 信息。这对 Maven 目录结构认定、Java 源程序编译、依赖 jar 包的导入都有非常关键的影响。
+
+方法（适用于IDEA2020.3版本以前）：Settings -> Build, Execution,Deployment -> Maven -> Importing -> Import Maven projects automatically 选项
+
+在2020.3版本中，没有该选项，但更改pom文件后，可通过点击右上角maven刷新图标更新依赖。
 
 ## 2、配置Maven信息
 
+每次创建 Project 后都需要设置 Maven 家目录位置，否则 IDEA 将使用内置的 Maven 核心程序（不稳定）并使用默认的本地仓库位置。这样一来，我们在命令行操作过程中已下载好的 jar 包就白下载了，默认的本地仓库通常在 C 盘，还影响系统运行。
 
+配置之后，IDEA 会根据我们在这里指定的 Maven 家目录自动识别到我们在 settings.xml 配置文件中指定的本地仓库。
+
+![image-20220815104929813](C:\Users\senmu\AppData\Roaming\Typora\typora-user-images\image-20220815104929813.png)
 
 ## 3、创建Java模块工程
 
+在创建的父工程ip01-maven-parent中，通过创建新module选项创建module01-java，选择当前工程的父工程（Parent：ip01-maven-parent）。
 
+![image-20220815112124949](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151121429.png)
 
 ## 4、创建Web模块工程
 
+### Ⅰ 创建模块
 
+按照前面的同样操作创建模块，**此时**这个模块其实还是一个**Java模块**。
+
+### Ⅱ 修改打包方式
+
+Web 模块将来打包当然应该是 **war** 包。
+
+```xml
+<packaging>war</packaging>
+```
+
+### Ⅲ Web设定
+
+首先打开项目结构菜单(Project Structure)，然后到 Facets 下查看 IDEA 是否已经帮我们自动生成了 Web 设定。正常来说只要我们确实设置了打包方式为 war，那么 IDEA 就会自动生成 Web 设定。IDEA2018及之前需要自己新建。
+
+![image-20220815113004092](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151130675.png)
+
+### Ⅳ 借助IDEA生成web.xml
+
+![image-20220815113416594](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151134865.png)
+
+### Ⅴ 设置Web资源的根目录
+
+结合 Maven 的目录结构，Web 资源的根目录需要设置为 src/main/webapp 目录。
+
+![image-20220815113647958](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151136870.png)
 
 ## 5、其他操作
 
+### Ⅰ 在IDEA中执行Maven命令
 
+**a> 直接执行**
+
+<img src="https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151140111.png" alt="image-20220815114017878" style="zoom:80%;" />
+
+**b> 手动执行**
+
+<img src="https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151143457.png" alt="image-20220815114353901" style="zoom:80%;" />
+
+### Ⅱ 在IDEA中查看某个模块的依赖信息
+
+Dependencies下
+
+### Ⅲ 工程导入
+
+Maven工程除了自己创建的，还有很多情况是别人创建的。而为了参与开发或者是参考学习，我们都需要导入到 IDEA 中。下面我们分几种不同情况来说明：
+
+**a> 来自版本控制系统(Version Control)**
+
+目前我们通常使用的都是 Git（本地库） + 码云（远程库）的版本控制系统。
+
+**b> 来自工程目录**
+
+直接使用 IDEA 打开工程目录即可。
+
+- **工程压缩包：**假设别人发给我们一个 Maven 工程的 zip 压缩包：maven-rest-demo.zip。从码云或GitHub上也可以以 ZIP 压缩格式对项目代码打包下载。
+- **解压：**如果你的所有 IDEA 工程有一个专门的目录来存放，而不是散落各处，那么首先我们就把 ZIP 包解压到这个指定目录中。
+- **打开：**只要我们确认在解压目录下可以直接看到 pom.xml，那就能证明这个解压目录就是我们的工程目录。那么接下来让 IDEA 打开这个目录就可以了。
+- **设置 Maven 核心程序位置：**打开一个新的 Maven 工程，和新创建一个 Maven 工程是一样的，此时 IDEA 的 settings 配置中关于 Maven 仍然是默认值。所以我们还是需要像新建 Maven 工程那样，指定一下 Maven 核心程序位置（Maven home directory：..\\..\\apache-maven-3.x.x）。
+
+### Ⅳ 模块导入
+
+1. 复制源工程目录下的源模块到目标工程下
+
+2. IDEA导入复制的文件
+
+   ![image-20220815141017938](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151410750.png)
+
+3. 修改 pom.xml，如坐标等。
+
+4. （web模块）删除多余的、不正确的 web.xml 设置。
 
 # 五、其他核心概念
 
 ## 1、生命周期
 
+### Ⅰ 作用
 
+为了让构建过程自动化完成，Maven 设定了三个生命周期，生命周期中的每一个环节对应构建过程中的一个操作。
+
+### Ⅱ 三个生命周期
+
+| 生命周期名称 | 作用         | 各个环节                                                     |
+| ------------ | ------------ | ------------------------------------------------------------ |
+| Clean        | 清理操作相关 | pre-clean<br />clean<br />post-clean                         |
+| Site         | 生成站点相关 | pre-site <br />site <br />post-site <br />deploy-site        |
+| Default      | 主要构建过程 | validate<br />generate-sources<br />process-sources<br />generate-resources<br />process-resources 复制并处理资源文件，至目标目录，准备打包。 <br />compile 编译项目 main 目录下的源代码。 <br />process-classes <br />generate-test-sources <br />process-test-sources <br />generate-test-resources <br />process-test-resources 复制并处理资源文件，至目标测试目录。 <br />test-compile 编译测试源代码。 <br />process-test-classes <br />test 使用合适的单元测试框架运行测试。这些测试代码不会被打包或部署。 <br />prepare-package <br />package 接受编译好的代码，打包成可发布的格式，如JAR。 <br />pre-integration-test <br />integration-test <br />post-integration-test <br />verify install将包安装至本地仓库，以让其它项目依赖。 deploy将最终的包复制到远程的仓库，以让其它开发人员共享；或者部署到服务器上运行（需借助插件，例如：cargo）。 |
+
+### Ⅲ 特点
+
+- 前面三个生命周期彼此是独立的。
+- 在任何一个生命周期内部，执行任何一个具体环节的操作，都是从本周期最初的位置开始执行，直到指定的地方。
+
+Maven 之所以这么设计其实就是为了提高构建过程的自动化程度：让使用者只关心最终要干的即可，过程中的各个环节是自动执行的。
 
 ## 2、插件和目标
 
+### Ⅰ 插件
 
+Maven 的核心程序仅仅负责宏观调度，不做具体工作。具体工作都是由 Maven 插件完成的。例如：编译就是由 maven-compiler-plugin-x.x.jar 插件来执行的。
+
+### Ⅱ 目标
+
+一个插件可以对应多个目标，而每一个目标都和生命周期中的某一个环节对应。
+
+Default 生命周期中有 compile 和 test-compile 两个和编译相关的环节，这两个环节对应 compile 和 test-compile 两个目标，而这两个目标都是由 maven-compiler-plugin-x.x.jar 插件来执行的。
 
 ## 3、仓库
 
+- 本地仓库：在当前电脑上，为电脑上所有 Maven 工程服务
+- 远程仓库：需要联网
+  - 局域网：我们自己搭建的 Maven 私服，例如使用 Nexus 技术。
+  - Internet
+    - 中央仓库
+    - 镜像仓库：内容和中央仓库保持一致，但是能够分担中央仓库的负载，同时让用户能够就近访问提高下载速度，例如：Nexus aliyun
 
+建议：不要中央仓库和阿里云镜像混用，否则 jar 包来源不纯，彼此冲突。
+
+专门搜索 Maven 依赖信息的网站：https://mvnrepository.com/
 
 # 六、单一架构案例
 
 ## 1、创建工程，引入依赖
 
+### Ⅰ 架构
 
+**a> 架构的概念**
+
+『架构』其实就是『项目的**结构**』，只是因为架构是一个更大的词，通常用来形容比较大规模事物的结构。
+
+**b> 单一架构**
+
+单一架构也叫『all-in-one』结构，就是所有代码、配置文件、各种资源都在同一个工程。
+
+- 一个项目包含一个工程
+- 导出一个 war 包
+- 放在一个 Tomcat 上运行
+
+### Ⅱ 创建工程
+
+### Ⅲ 引入依赖
+
+**a> 搜索依赖信息的网站**
+
+- 网站：https://mvnrepository.com/
+- 如何选择：
+  - 确定技术选型：确定我们项目中要使用哪些技术
+  - 到 mvnrepository 网站搜索具体技术对应的具体依赖信息
+  - 确定这个技术使用哪个版本的依赖，根据所用技术是否要求进行选择，如无硬性要求，则选择较高版本或下载量大的版本
+  - 在实际使用中检验所有依赖信息是否都正常可用
+
+> TIP
+>
+> 确定技术选型、组建依赖列表、项目划分模块……等等这些操作其实都属于**架构设计**的范畴。
+>
+> - 项目本身所属行业的基本特点
+> - 项目具体的功能需求
+> - 项目预计访问压力程度
+> - 项目预计将来需要扩展的功能
+> - 设计项目总体的体系结构
+
+**b> 持久化层所需依赖**
+
+- mysql:mysql-connector-java:8.0.23**(需要与数据库版本配对)**
+- com.alibaba:druid:1.2.8
+- commons-dbutils:commons-dbutils:1.6
+
+**c> 表述层所需依赖**
+
+- javax.servlet:javax.servlet-api:3.1.0
+- org.thymeleaf:thymeleaf:3.0.11.RELEASE
+
+**d> 辅助功能所需依赖**
+
+- junit:junit:4.12
+- ch.qos.logback:logback-classic:1.2.3
+
+**e> 最终完整依赖信息**
+
+```xml
+<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.23</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid</artifactId>
+    <version>1.2.8</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/commons-dbutils/commons-dbutils -->
+<dependency>
+    <groupId>commons-dbutils</groupId>
+    <artifactId>commons-dbutils</artifactId>
+    <version>1.6</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <version>3.1.0</version>
+    <scope>provided</scope>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf -->
+<dependency>
+    <groupId>org.thymeleaf</groupId>
+    <artifactId>thymeleaf</artifactId>
+    <version>3.0.11.RELEASE</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/junit/junit -->
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.12</version>
+    <scope>test</scope>
+</dependency>
+<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.2.3</version>
+    <scope>test</scope>
+</dependency>
+```
+
+### Ⅳ 建包
+
+| package 功能          | package 名称                   |
+| --------------------- | ------------------------------ |
+| 主包                  | com.senmu.maven                |
+| 子包[实体类]          | com.senmu.maven.entity         |
+| 子包[Servlet基类包]   | com.senmu.maven.servlet.base   |
+| 子包[Servlet模块包]   | com.senmu.maven.servlet.module |
+| 子包[Service接口包]   | com.senmu.maven.service.api    |
+| 子包[Service实现类包] | com.senmu.maven.service.impl   |
+| 子包[Dao接口包]       | com.senmu.maven.dao.api        |
+| 子包[Dao实现类包]     | com.senmu.maven.dao.impl       |
+| 子包[Filter]          | com.senmu.maven.filter         |
+| 子包[异常类包]        | com.senmu.maven.exception      |
+| 子包[工具类]          | com.senmu.maven.util           |
+| 子包[测试类]          | com.senmu.maven.test           |
+
+![image-20220815164902815](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151649287.png)
 
 ## 2、搭建环境：持久化层
+
+### Ⅰ 数据建模
+
+**a> 物理建模**
+
+```sql
+create database db_maven_all_in_one;
+
+use db_maven_all_in_one;
+
+-- ----------------------------
+-- 1、部门表
+-- ----------------------------
+drop table if exists sys_dept;
+create table sys_dept (
+  dept_id           bigint(20)      not null auto_increment    comment '部门id',
+  parent_id         bigint(20)      default 0                  comment '父部门id',
+  ancestors         varchar(50)     default ''                 comment '祖级列表',
+  dept_name         varchar(30)     default ''                 comment '部门名称',
+  order_num         int(4)          default 0                  comment '显示顺序',
+  leader            varchar(20)     default null               comment '负责人',
+  phone             varchar(11)     default null               comment '联系电话',
+  email             varchar(50)     default null               comment '邮箱',
+  status            char(1)         default '0'                comment '部门状态（0正常 1停用）',
+  del_flag          char(1)         default '0'                comment '删除标志（0代表存在 2代表删除）',
+  create_by         varchar(64)     default ''                 comment '创建者',
+  create_time       datetime                                   comment '创建时间',
+  primary key (dept_id)
+) engine=innodb auto_increment=200 comment = '部门表';
+
+-- ----------------------------
+-- 初始化-部门表数据
+-- ----------------------------
+insert into sys_dept values(100,  0,   '0',          '森木有限公司',   0, '森木', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
+insert into sys_dept values(101,  100, '0,100',      '研发部门', 1, '森木', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
+insert into sys_dept values(102,  100, '0,100',      '测试部门', 2, '森木', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
+
+
+-- ----------------------------
+-- 2、用户信息表
+-- ----------------------------
+drop table if exists sys_user;
+create table sys_user (
+  user_id           bigint(20)      not null auto_increment    comment '用户ID',
+  dept_id           bigint(20)      default null               comment '部门ID',
+  user_name         varchar(30)     not null                   comment '用户账号',
+  email             varchar(50)     default ''                 comment '用户邮箱',
+  phonenumber       varchar(11)     default ''                 comment '手机号码',
+  sex               char(1)         default '0'                comment '用户性别（0男 1女 2未知）',
+  password          varchar(100)    default ''                 comment '密码',
+  del_flag          char(1)         default '0'                comment '删除标志（0代表存在 2代表删除）',
+  create_by         varchar(64)     default ''                 comment '创建者',
+  create_time       datetime                                   comment '创建时间',
+  remark            varchar(500)    default null               comment '备注',
+  primary key (user_id)
+) engine=innodb auto_increment=100 comment = '用户信息表';
+
+-- ----------------------------
+-- 初始化-用户信息表数据
+-- ----------------------------
+insert into sys_user values(1,  100, 'admin', '超级管理员', 'sys_user', 'admin@163.com', '15888888888', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate(), 'admin', sysdate(), '', null, '管理员');
+insert into sys_user values(2,  101, 'senmu', '森木', 'sys_user', 'senmu@qq.com',  '15666666666', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate(), 'admin', sysdate(), '', null, '研发人员');
+```
+
+### Ⅱ 数据库连接信息
+
+**a> SysDept实体类**
+
+```java
+
+```
+
+**b> SysUser 实体类**
+
+```java
+public class SysUser{
+
+    /**
+     * 用户id
+     */
+    private Long userId;
+
+    /**
+     * 部门id
+     */
+    private Long deptId;
+
+    /**
+     * 用户账号
+     */
+    private String userName;
+
+    /**
+     * 用户昵称
+     */
+    private String nickName;
+
+    /**
+     * 用户类型（sys_user系统用户）
+     */
+    private String userType;
+
+    /**
+     * 用户邮箱
+     */
+    private String email;
+
+    /**
+     * 手机号码
+     */
+    private String phonenumber;
+
+    /**
+     * 用户性别（0男 1女 2未知）
+     */
+    private String sex;
+
+    /**
+     * 头像地址
+     */
+    private String avatar;
+
+    /**
+     * 密码
+     */
+    private String password;
+
+    /**
+     * 帐号状态（0正常 1停用）
+     */
+    private String status;
+
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
+    /**
+     * 最后登录ip
+     */
+    private String loginIp;
+
+    /**
+     * 最后登录时间
+     */
+    private DateTime loginDate;
+
+    /**
+     * 创建者
+     */
+    private String createBy;
+
+    /**
+     * 创建时间
+     */
+    private DateTime createTime;
+
+    /**
+     * 更新者
+     */
+    private String updateBy;
+
+    /**
+     * 更新时间
+     */
+    private DateTime updateTime;
+
+    /**
+     * 备注
+     */
+    private String remark;
+
+    public SysUser() {}
+}
+```
+
+
+
+### Ⅲ 获取数据库连接
+
+
+
+### Ⅳ BaseDao
+
+
+
+### Ⅴ 子类Dao
 
 
 
