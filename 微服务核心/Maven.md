@@ -1629,9 +1629,13 @@ Default 生命周期中有 compile 和 test-compile 两个和编译相关的环�
 **a> 物理建模**
 
 ```sql
-create database db_maven_all_in_one;
+-- ----------------------------
+-- maven学习
+-- ----------------------------
+drop database if exists maven;
+create database maven;
 
-use db_maven_all_in_one;
+use maven;
 
 -- ----------------------------
 -- 1、部门表
@@ -1643,10 +1647,8 @@ create table sys_dept (
   ancestors         varchar(50)     default ''                 comment '祖级列表',
   dept_name         varchar(30)     default ''                 comment '部门名称',
   order_num         int(4)          default 0                  comment '显示顺序',
-  leader            varchar(20)     default null               comment '负责人',
   phone             varchar(11)     default null               comment '联系电话',
   email             varchar(50)     default null               comment '邮箱',
-  status            char(1)         default '0'                comment '部门状态（0正常 1停用）',
   del_flag          char(1)         default '0'                comment '删除标志（0代表存在 2代表删除）',
   create_by         varchar(64)     default ''                 comment '创建者',
   create_time       datetime                                   comment '创建时间',
@@ -1656,9 +1658,9 @@ create table sys_dept (
 -- ----------------------------
 -- 初始化-部门表数据
 -- ----------------------------
-insert into sys_dept values(100,  0,   '0',          '森木有限公司',   0, '森木', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
-insert into sys_dept values(101,  100, '0,100',      '研发部门', 1, '森木', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
-insert into sys_dept values(102,  100, '0,100',      '测试部门', 2, '森木', '15888888888', 'ry@qq.com', '0', '0', 'admin', sysdate(), '', null);
+insert into sys_dept values(100,  0,   '0', '森木有限公司', 0, '15888888888', 'ry@qq.com', '0', 'admin', sysdate());
+insert into sys_dept values(101,  100, '0,100', '研发部门', 1, '15888888888', 'ry@qq.com', '0', 'admin', sysdate());
+insert into sys_dept values(102,  100, '0,100', '测试部门', 2, '15888888888', 'ry@qq.com', '0', 'admin', sysdate());
 
 
 -- ----------------------------
@@ -1676,142 +1678,571 @@ create table sys_user (
   del_flag          char(1)         default '0'                comment '删除标志（0代表存在 2代表删除）',
   create_by         varchar(64)     default ''                 comment '创建者',
   create_time       datetime                                   comment '创建时间',
-  remark            varchar(500)    default null               comment '备注',
   primary key (user_id)
 ) engine=innodb auto_increment=100 comment = '用户信息表';
 
 -- ----------------------------
 -- 初始化-用户信息表数据
 -- ----------------------------
-insert into sys_user values(1,  100, 'admin', '超级管理员', 'sys_user', 'admin@163.com', '15888888888', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate(), 'admin', sysdate(), '', null, '管理员');
-insert into sys_user values(2,  101, 'senmu', '森木', 'sys_user', 'senmu@qq.com',  '15666666666', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate(), 'admin', sysdate(), '', null, '研发人员');
+insert into sys_user values(1,  100, 'admin', 'admin@163.com', '15888888888', '2', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', 'admin',sysdate());
+insert into sys_user values(2,  101, 'senmu', 'senmu@qq.com',  '15666666666', '0', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0','admin', sysdate());
 ```
 
-### Ⅱ 数据库连接信息
+**b> 逻辑建模**
 
-**a> SysDept实体类**
+sql在线转java  [JAVA代码生成平台 (bejson.com)](http://java.bejson.com/generator/)
 
-```java
-
-```
-
-**b> SysUser 实体类**
+1. **SysDept**实体类
 
 ```java
-public class SysUser{
+/**
+ * @description sys_dept
+ * @author senmu
+ * @date 2022-08-16
+ */
+@Data
+public class SysDept implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    
     /**
-     * 用户id
-     */
-    private Long userId;
-
-    /**
-     * 部门id
-     */
+    * 部门id
+    */
     private Long deptId;
 
     /**
-     * 用户账号
-     */
-    private String userName;
+    * 父部门id
+    */
+    private Long parentId;
 
     /**
-     * 用户昵称
-     */
-    private String nickName;
+    * 祖级列表
+    */
+    private String ancestors;
 
     /**
-     * 用户类型（sys_user系统用户）
-     */
-    private String userType;
+    * 部门名称
+    */
+    private String deptName;
 
     /**
-     * 用户邮箱
-     */
+    * 显示顺序
+    */
+    private Integer orderNum;
+
+    /**
+    * 联系电话
+    */
+    private String phone;
+
+    /**
+    * 邮箱
+    */
     private String email;
 
     /**
-     * 手机号码
-     */
-    private String phonenumber;
-
-    /**
-     * 用户性别（0男 1女 2未知）
-     */
-    private String sex;
-
-    /**
-     * 头像地址
-     */
-    private String avatar;
-
-    /**
-     * 密码
-     */
-    private String password;
-
-    /**
-     * 帐号状态（0正常 1停用）
-     */
-    private String status;
-
-    /**
-     * 删除标志（0代表存在 2代表删除）
-     */
+    * 删除标志（0代表存在 2代表删除）
+    */
     private String delFlag;
 
     /**
-     * 最后登录ip
-     */
-    private String loginIp;
-
-    /**
-     * 最后登录时间
-     */
-    private DateTime loginDate;
-
-    /**
-     * 创建者
-     */
+    * 创建者
+    */
     private String createBy;
 
     /**
-     * 创建时间
-     */
-    private DateTime createTime;
+    * 创建时间
+    */
+    private LocalDateTime createTime;
+
+    public SysDept() {}
+}
+```
+
+2. **SysUser** 实体类
+
+```java
+/**
+ * @description sys_user
+ * @author senmu
+ * @date 2022-08-16
+ */
+@Data
+public class SysUser implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
-     * 更新者
-     */
-    private String updateBy;
+    * 用户id
+    */
+    private Long userId;
 
     /**
-     * 更新时间
-     */
-    private DateTime updateTime;
+    * 部门id
+    */
+    private Long deptId;
 
     /**
-     * 备注
-     */
-    private String remark;
+    * 用户账号
+    */
+    private String userName;
+
+    /**
+    * 用户邮箱
+    */
+    private String email;
+
+    /**
+    * 手机号码
+    */
+    private String phonenumber;
+
+    /**
+    * 用户性别（0男 1女 2未知）
+    */
+    private String sex;
+
+    /**
+    * 密码
+    */
+    private String password;
+
+    /**
+    * 删除标志（0代表存在 2代表删除）
+    */
+    private String delFlag;
+
+    /**
+    * 创建者
+    */
+    private String createBy;
+
+    /**
+    * 创建时间
+    */
+    private LocalDateTime createTime;
 
     public SysUser() {}
 }
 ```
 
+### Ⅱ 数据库连接信息
 
+说明：这是我们第一次用到 Maven 约定目录结构中的 resources 目录，这个目录存放各种配置文件。
 
-### Ⅲ 获取数据库连接
+在**resources**目录下创建**jdbc.properties**
 
+```properties
+driverClassName=com.mysql.cj.jdbc.Driver
+url=jdbc:mysql://localhost:3306/maven
+username=root
+password=123456
+initialSize=10
+maxActive=20
+maxWait=10000
+```
 
+### Ⅳ 获取数据库连接
+
+**a> 创建 JDBCUtils工具类**
+
+路径：src/main/java/com/senmu/maven/util/JDBCUtils.java
+
+```java
+/**
+ * 功能1：从数据源获取数据库连接
+ * 功能2：从数据库获取到数据库连接后，绑定到本地线程（借助 ThreadLocal）
+ * 功能3：释放线程时和本地线程解除绑定
+ */
+public class JDBCUtils {
+
+}
+```
+
+**b> 创建javax.sql.DataSource 对象**
+
+```java
+// 将数据源对象设置为静态属性，保证大对象的单一实例
+private static DataSource dataSource;
+
+static {
+
+    // 1.创建一个用于存储外部属性文件信息的Properties对象
+    Properties properties = new Properties();
+
+    // 2.使用当前类的类加载器加载外部属性文件：jdbc.properties
+    InputStream inputStream = JDBCUtils.class.getClassLoader().getResourceAsStream("jdbc.properties");
+
+    try {
+
+        // 3.将外部属性文件jdbc.properties中的数据加载到properties对象中
+        properties.load(inputStream);
+
+        // 4.创建数据源对象
+        dataSource = DruidDataSourceFactory.createDataSource(properties);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        
+        // 为了避免在真正抛出异常后，catch 块捕获到异常从而掩盖问题，
+        // 这里将所捕获到的异常封装为运行时异常继续抛出
+        throw new RuntimeException(e);
+    }
+
+}
+```
+
+**c> 创建 ThreadLocal 对象**
+
+1. **提出需求**
+
+   - **在一个方法内控制事务**
+
+     如果在每一个 Service 方法中都写下面代码，那么代码重复性就太高了：
+
+     ```java
+     try{
+     
+     	// 1、获取数据库连接
+     	// 重要：要保证参与事务的多个数据库操作（SQL 语句）使用的是同一个数据库连接
+     	Connection conn = JDBCUtils.getConnection();
+     	
+     	// 2、核心操作
+     	// ...
+     	
+     	// 3、核心操作成功结束，可以提交事务
+     	conn.commit();
+     
+     }catch(Exception e){
+     
+     	// 4、核心操作抛出异常，必须回滚事务
+     	conn.rollBack();
+     
+     }finally{
+     
+     	// 5、释放数据库连接
+     	JDBCUtils.releaseConnection(conn);
+     	
+     }
+     ```
+
+   - **将重复代码抽取到 Filter**
+
+     所谓『当前请求覆盖的 Servlet 方法、Service 方法、Dao 方法』其实就是 chain.doFilter(request, response) **间接调用**的方法。
+
+     ```java
+     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain){
+     
+     	try{
+     
+     		// 1、获取数据库连接
+     		// 重要：要保证参与事务的多个数据库操作（SQL 语句）使用的是同一个数据库连接
+     		Connection conn = JDBCUtils.getConnection();
+             
+             // 重要操作：关闭自动提交功能
+             connection.setAutoCommit(false);
+     		
+     		// 2、核心操作：通过 chain 对象放行当前请求
+     		// 这样就可以保证当前请求覆盖的 Servlet 方法、Service 方法、Dao 方法都在同一个事务中。
+     		// 同时各个请求都经过这个 Filter，所以当前事务控制的代码在这里只写一遍就行了，
+     		// 避免了代码的冗余。
+     		chain.doFilter(request, response);
+     		
+     		// 3、核心操作成功结束，可以提交事务
+     		conn.commit();
+     
+     	}catch(Exception e){
+     
+     		// 4、核心操作抛出异常，必须回滚事务
+     		conn.rollBack();
+     
+     	}finally{
+     
+     		// 5、释放数据库连接
+     		JDBCUtils.releaseConnection(conn);
+     		
+     	}
+     
+     }
+     ```
+
+     
+
+   - **数据的跨方法传递**
+
+     通过 JDBCUtils 工具类获取到的 Connection 对象需要传递给 Dao 方法，让事务涉及到的所有 Dao 方法用的都是同一个 Connection 对象。
+
+     但是 Connection 对象无法通过 chain.doFilter() 方法以参数的形式传递过去。
+
+     所以从获取到 Connection 对象到使用 Connection 对象中间隔着很多不是我们自己声明的方法——我们无法决定它们的参数。
+
+     ![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208161616886.png)
+
+2. **ThreadLocal 对象的功能**
+
+   - 使上图中的所有方法调用的过程都在同一个线程内
+   - 全类名：java.lang.ThreadLocal<T>
+   - 泛型 T：要绑定到当前线程的数据的类型
+   - 具体三个主要的方法：
+
+   | 方法名       | 功能                       |
+   | ------------ | -------------------------- |
+   | set(T value) | 将数据绑定到当前线程       |
+   | get()        | 从当前线程获取已绑定的数据 |
+   | remove()     | 将数据从当前线程移除       |
+
+3. **Java代码实现**
+
+   ```java
+   // 由于 ThreadLocal 对象需要作为绑定数据时 k-v 对中的 key，所以要保证唯一性
+   // 加 static 声明为静态资源即可保证唯一性
+   private static ThreadLocal<Connection> threadLocal = new ThreadLocal<>();
+   ```
+
+**d> 声明方法：获取数据库连接**
+
+```java
+/**
+ * 工具方法：获取数据库连接并返回
+ * @return
+ */
+public static Connection getConnection() {
+
+    Connection connection = null;
+
+    try {
+        // 1、尝试从当前线程检查是否存在已经绑定的 Connection 对象
+        connection = threadLocal.get();
+
+        // 2、检查 Connection 对象是否为 null
+        if (connection == null) {
+            
+            // 3、如果为 null，则从数据源获取数据库连接
+            connection = dataSource.getConnection();
+
+            // 4、获取到数据库连接后绑定到当前线程
+            threadLocal.set(connection);
+            
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        
+        // 为了调用工具方法方便，编译时异常不往外抛
+        // 为了不掩盖问题，捕获到的编译时异常封装为运行时异常抛出
+        throw new RuntimeException(e);
+    }
+
+    return connection;
+}
+```
+
+**e> 声明方法：释放数据库连接**
+
+```java
+/**
+ * 释放数据库连接
+ */
+public static void releaseConnection(Connection connection) {
+
+    if (connection != null) {
+
+        try {
+            // 在数据库连接池中将当前连接对象标记为空闲
+            connection.close();
+
+            // 将当前数据库连接从当前线程上移除
+            threadLocal.remove();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+    }
+
+}
+```
+
+**f> 初步测试**
+
+创建测试类 src/test/java/com/senmu/maven/test01.java
+
+```java
+public class test01 {
+
+    @Test
+    public void testGetConnection() {
+
+        Connection connection = JDBCUtils.getConnection();
+        System.out.println("connection = " + connection);
+
+        JDBCUtils.releaseConnection(connection);
+
+    }
+
+}
+```
 
 ### Ⅳ BaseDao
 
+**a> 创建数据库基本操作对象**
 
+路径：src/main/java/com/senmu/maven/dao/BaseDao.java
+
+```java
+//需要声明泛型，代表实体类类型
+public class BaseDao<T> {
+
+}
+```
+
+**b> 创建QueryRunner 对象**
+
+```java
+   // org.apache.commons.dbutils 工具包提供的数据库操作对象
+    private QueryRunner runner = new QueryRunner();
+```
+
+**c> 通用增删改方法**
+
+**特别说明**：在 BaseDao 方法中获取数据库连接但是不做释放，因为我们要在控制事务的 Filter 中统一释放。
+
+```java
+/**
+ * 通用的增删改方法，insert、delete、update 操作都可以用这个方法
+ * @param sql 执行操作的 SQL 语句
+ * @param parameters SQL 语句的参数
+ * @return 受影响的行数
+ */
+public int update(String sql, Object ... parameters) {
+
+    try {
+        Connection connection = JDBCUtils.getConnection();
+
+        int affectedRowNumbers = runner.update(connection, sql, parameters);
+        
+        return affectedRowNumbers;
+    } catch (SQLException e) {
+        e.printStackTrace();
+
+        // 如果真的抛出异常，则将编译时异常封装为运行时异常抛出
+        new RuntimeException(e);
+        
+        return 0;
+    }
+
+}
+```
+
+**d> 查询单个对象**
+
+```java
+/**
+ * 查询单个对象
+ * @param sql 执行查询的 SQL 语句
+ * @param entityClass 实体类对应的 Class 对象
+ * @param parameters 传给 SQL 语句的参数
+ * @return 查询到的实体类对象
+ */
+public T getSingleBean(String sql, Class<T> entityClass, Object ... parameters) {
+
+    try {
+        // 获取数据库连接
+        Connection connection = JDBCUtils.getConnection();
+
+        return runner.query(connection, sql, new BeanHandler<>(entityClass), parameters);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+
+        // 如果真的抛出异常，则将编译时异常封装为运行时异常抛出
+        new RuntimeException(e);
+    }
+
+    return null;
+}
+```
+
+**e> 查询多个对象**
+
+```java
+/**
+ * 查询返回多个对象的方法
+ * @param sql 执行查询操作的 SQL 语句
+ * @param entityClass 实体类的 Class 对象
+ * @param parameters SQL 语句的参数
+ * @return 查询结果
+ */
+public List<T> getBeanList(String sql, Class<T> entityClass, Object ... parameters) {
+    try {
+        // 获取数据库连接
+        Connection connection = JDBCUtils.getConnection();
+
+        return runner.query(connection, sql, new BeanListHandler<>(entityClass), parameters);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+
+        // 如果真的抛出异常，则将编译时异常封装为运行时异常抛出
+        new RuntimeException(e);
+    }
+
+    return null;
+}
+```
+
+**f> 测试**
+
+test01.java
+
+```java
+    private BaseDao<SysUser> baseDao = new BaseDao<>();
+
+    @Test
+    public void testGetSingleBean() {
+
+        //需要字段取别名与实体类字段名匹配
+        String sql = "SELECT user_id userId, dept_id deptId, user_name userName, email, phonenumber, sex, password, del_flag delFlag, create_by createBy, create_time createTime" +
+                " FROM sys_user WHERE user_id=?";
+
+        SysUser user = baseDao.getSingleBean(sql, SysUser.class, 1);
+
+        System.out.println("user = " + user);
+
+    }
+
+    @Test
+    public void testGetBeanList() {
+
+        String sql = "SELECT user_id userId, dept_id deptId, user_name userName, email, phonenumber, sex, password, del_flag delFlag, create_by createBy, create_time createTime" +
+                " FROM sys_user";
+
+        List<SysUser> userList = baseDao.getBeanList(sql, SysUser.class);
+
+        for (SysUser user: userList) {
+            System.out.println("user = " + user);
+        }
+
+    }
+
+    @Test
+    public void testUpdate() {
+
+        String sql = "update sys_user set create_time=? where user_id=?";
+
+        Date createTime = new Date();
+        Integer userId = 2;
+
+        int affectedRowNumber = baseDao.update(sql, createTime, userId);
+
+        System.out.println("affectedRowNumber = " + affectedRowNumber);
+
+    }
+```
 
 ### Ⅴ 子类Dao
 
-
+![image-20220816173758854](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208161738844.png)
 
 ## 3、搭建环境：事务控制
 
