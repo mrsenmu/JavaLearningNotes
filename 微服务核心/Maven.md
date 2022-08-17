@@ -2246,17 +2246,530 @@ test01.java
 
 ## 3、搭建环境：事务控制
 
+### Ⅰ 总体思路
 
+![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208170850649.png)
+
+### Ⅱ TransactionFilter
+
+**a> 创建Filter**
+
+src/main/java/com/senmu/maven/filter/TransactionFilter.java
+
+**b> TransactionFilter 完整代码**
+
+```java
+public class TransactionFilter implements Filter {
+
+    // 声明集合保存静态资源扩展名
+    private static Set<String> staticResourceExtNameSet;
+
+    static {
+        staticResourceExtNameSet = new HashSet<>();
+        staticResourceExtNameSet.add(".png");
+        staticResourceExtNameSet.add(".jpg");
+        staticResourceExtNameSet.add(".css");
+        staticResourceExtNameSet.add(".js");
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+
+        // 前置操作：排除静态资源
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String servletPath = request.getServletPath();
+        if (servletPath.contains(".")) {
+            String extName = servletPath.substring(servletPath.lastIndexOf("."));
+
+            if (staticResourceExtNameSet.contains(extName)) {
+
+                // 如果检测到当前请求确实是静态资源，则直接放行，不做事务操作
+                filterChain.doFilter(servletRequest, servletResponse);
+
+                // 当前方法立即返回
+                return ;
+            }
+
+        }
+
+        Connection connection = null;
+
+        try{
+
+            // 1、获取数据库连接
+            connection = JDBCUtils.getConnection();
+
+            // 重要操作：关闭自动提交功能
+            connection.setAutoCommit(false);
+
+            // 2、核心操作
+            filterChain.doFilter(servletRequest, servletResponse);
+
+            // 3、提交事务
+            connection.commit();
+
+        }catch (Exception e) {
+
+            try {
+                // 4、回滚事务
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
+            // 页面显示：将这里捕获到的异常发送到指定页面显示
+            // 获取异常信息
+            String message = e.getMessage();
+
+            // 将异常信息存入请求域
+            request.setAttribute("systemMessage", message);
+
+            // 将请求转发到指定页面
+            request.getRequestDispatcher("/").forward(request, servletResponse);
+
+        }finally {
+
+            // 5、释放数据库连接
+            JDBCUtils.releaseConnection(connection);
+
+        }
+
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {}
+    @Override
+    public void destroy() {}
+}
+```
+
+**c> 配置web.xml**
+
+**注意**：需要首先将当前工程改成 Web 工程。
+
+![image-20220817091253582](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208170912168.png)
+
+```xml
+<filter>
+    <filter-name>txFilter</filter-name>
+    <filter-class>com.senmu.maven.filter.TransactionFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>txFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+**d> 注意点**
+
+1. **确保异常回滚**
+
+   在程序执行的过程中，必须让所有 catch 块都把编译时异常转换为运行时异常抛出；如果不这么做，在 TransactionFilter 中 catch 就无法捕获到底层抛出的异常，那么该回滚的时候就无法回滚。
+
+2. **谨防数据库连接提前释放**
+
+   由于诸多操作都是在使用同一个数据库连接，那么中间任何一个环节释放数据库连接都会导致后续操作无法正常完成。
 
 ## 4、搭建环境：表述层
 
+### Ⅰ 视图模板技术Thymeleaf
 
+**a> 服务器端渲染**
+
+![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208170945417.png)
+
+**b> hymeleaf 简要工作机制**
+
+1. **初始化阶段**
+
+   - 目标：创建 TemplateEngine 对象
+   - 封装：因为对每一个请求来说，TemplateEngine 对象使用的都是同一个，所以在初始化阶段准备好
+
+   ![image-20220817094728322](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208170947100.png)
+
+2.  请求处理阶段
+
+   ![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208170948848.png)
+
+**c> 逻辑视图与物理视图**
+
+假设有下列页面地址：
+
+> /WEB-INF/pages/apple.html
+> /WEB-INF/pages/banana.html
+> /WEB-INF/pages/orange.html
+> /WEB-INF/pages/grape.html
+> /WEB-INF/pages/egg.html
+
+这样的地址可以**直接访问**到页面本身，我们称之为：**物理视图**。而将物理视图中前面、后面的固定内容抽取出来，让每次请求指定中间变化部分即可，那么**中间变化**部分就叫：**逻辑视图**。
+
+![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208171002498.png)
+
+**d> ViewBaseServlet 完整代码**
+
+为了简化视图页面处理过程，我们将 Thymeleaf 模板引擎的初始化和请求处理过程封装到一个 Servlet 基类中：ViewBaseServlet。以后负责具体模块业务功能的 Servlet 继承该基类即可直接使用。
+
+**特别提醒**：这个类**不需要掌握**，因为以后都被框架封装了，我们现在只是暂时用一下。
+
+src/main/java/com/senmu/maven/**servlet/base/ViewBaseServlet.java**
+
+```java
+public class ViewBaseServlet extends HttpServlet {
+
+    private TemplateEngine templateEngine;
+
+    @Override
+    public void init() throws ServletException {
+
+        // 1.获取ServletContext对象
+        ServletContext servletContext = this.getServletContext();
+
+        // 2.创建Thymeleaf解析器对象
+        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+
+        // 3.给解析器对象设置参数
+        // ①HTML是默认模式，明确设置是为了代码更容易理解
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+
+        // ②设置前缀
+        String viewPrefix = servletContext.getInitParameter("view-prefix");
+
+        templateResolver.setPrefix(viewPrefix);
+
+        // ③设置后缀
+        String viewSuffix = servletContext.getInitParameter("view-suffix");
+
+        templateResolver.setSuffix(viewSuffix);
+
+        // ④设置缓存过期时间（毫秒）
+        templateResolver.setCacheTTLMs(60000L);
+
+        // ⑤设置是否缓存
+        templateResolver.setCacheable(true);
+
+        // ⑥设置服务器端编码方式
+        templateResolver.setCharacterEncoding("utf-8");
+
+        // 4.创建模板引擎对象
+        templateEngine = new TemplateEngine();
+
+        // 5.给模板引擎对象设置模板解析器
+        templateEngine.setTemplateResolver(templateResolver);
+
+    }
+
+    protected void processTemplate(String templateName, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        // 1.设置响应体内容类型和字符集
+        resp.setContentType("text/html;charset=UTF-8");
+
+        // 2.创建WebContext对象
+        WebContext webContext = new WebContext(req, resp, getServletContext());
+
+        // 3.处理模板数据
+        templateEngine.process(templateName, webContext, resp.getWriter());
+    }
+}
+```
+
+**e> 声明初始化参数**
+
+配置web.xml
+
+```xml
+<!-- 配置 Web 应用初始化参数指定视图前缀、后缀 -->
+<!-- 
+    物理视图举例：/WEB-INF/pages/index.html
+    对应逻辑视图：index
+-->
+<context-param>
+    <param-name>view-prefix</param-name>
+    <param-value>/WEB-INF/pages/</param-value>
+</context-param>
+<context-param>
+    <param-name>view-suffix</param-name>
+    <param-value>.html</param-value>
+</context-param>
+```
+
+### Ⅱ ModelBaseServlet
+
+**a> 提出问题**
+
+- 需求
+
+  ![image-20220817101217514](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208171012974.png)
+
+- HttpServlet的局限
+
+  - doGet()方法：处理GET请求
+  - doPost()方法：处理POST请求
+
+**b> 解决方案**
+
+- 每个请求附带一个**请求参数**，表明自己要调用的目标方法
+- Servlet 根据目标方法名通过**反射**调用目标方法
+
+**c> ModelBaseServlet完整代码**
+
+src/main/java/com/senmu/maven/**servlet/base/ModelBaseServlet.java**
+
+**特别提醒**：为了配合 TransactionFilter 实现事务控制，捕获的异常必须抛出。
+
+```java
+public class ModelBaseServlet extends ViewBaseServlet {
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        // 在doGet()方法中调用doPost()方法，这样就可以在doPost()方法中集中处理所有请求
+        doPost(request, response);
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        // 1.在所有request.getParameter()前面设置解析请求体的字符集
+        request.setCharacterEncoding("UTF-8");
+
+        // 2.从请求参数中获取method对应的数据
+        String method = request.getParameter("method");
+
+        // 3.通过反射调用method对应的方法
+        // ①获取Class对象
+        Class<? extends ModelBaseServlet> clazz = this.getClass();
+
+        try {
+            // ②获取method对应的Method对象
+            Method methodObject = clazz.getDeclaredMethod(method, HttpServletRequest.class, HttpServletResponse.class);
+
+            // ③打开访问权限
+            methodObject.setAccessible(true);
+
+            // ④通过Method对象调用目标方法
+            methodObject.invoke(this, request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            // 重要提醒：为了配合 TransactionFilter 实现事务控制，捕获的异常必须抛出。
+            throw new RuntimeException(e);
+        }
+    }
+
+}
+```
+
+**d> 继承关系**
+
+![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208171044003.png)
 
 ## 5、搭建环境：辅助功能
 
+### Ⅰ 常量类
 
+src/main/java/com/senmu/maven/**util/CommConstants.java**
+
+```java
+public class CommConstants {
+
+    public static final String LOGIN_FAILED_MESSAGE = "账号或密码错误！";
+
+    public static final String ACCESS_DENIED_MESSAGE = "拒绝访问！";
+}
+```
+
+### Ⅱ MD5加密工具方法
+
+src/main/java/com/senmu/maven/**util/MD5Util.java**
+
+```java
+public class MD5Util {
+
+    /**
+     * 针对明文字符串执行MD5加密
+     * @param source
+     * @return
+     */
+    public static String encode(String source) {
+
+        // 1.判断明文字符串是否有效
+        if (source == null || "".equals(source)) {
+            throw new RuntimeException("用于加密的明文不可为空");
+        }
+
+        // 2.声明算法名称
+        String algorithm = "md5";
+
+        // 3.获取MessageDigest对象
+        MessageDigest messageDigest = null;
+        try {
+            messageDigest = MessageDigest.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        // 4.获取明文字符串对应的字节数组
+        byte[] input = source.getBytes();
+
+        // 5.执行加密
+        byte[] output = messageDigest.digest(input);
+
+        // 6.创建BigInteger对象
+        int signum = 1;
+        BigInteger bigInteger = new BigInteger(signum, output);
+
+        // 7.按照16进制将bigInteger的值转换为字符串
+        int radix = 16;
+        String encoded = bigInteger.toString(radix).toUpperCase();
+
+        return encoded;
+    }
+
+}
+```
+
+### Ⅲ 日志配置文件
+
+src/main/**resources/logback.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true">
+    <!-- 指定日志输出的位置 -->
+    <appender name="STDOUT"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 日志输出的格式 -->
+            <!-- 按照顺序分别是：时间、日志级别、线程名称、打印日志的类、日志主体内容、换行 -->
+            <pattern>[%d{HH:mm:ss.SSS}] [%-5level] [%thread] [%logger] [%msg]%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 设置全局日志级别。日志级别按顺序分别是：DEBUG、INFO、WARN、ERROR -->
+    <!-- 指定任何一个日志级别都只打印当前级别和后面级别的日志。 -->
+    <root level="INFO">
+        <!-- 指定打印日志的appender，这里通过“STDOUT”引用了前面配置的appender -->
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- 专门给某一个包指定日志级别 -->
+    <logger name="com.senmu" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+</configuration>
+```
 
 ## 6、业务功能：登录
+
+### Ⅰ 显示首页
+
+**a> 流程图**
+
+![img028.d8341124](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208171147101.png)
+
+**b> 创建ProtalServlet**
+
+1. 创建Java类
+
+   路径：src/main/java/com/senmu/maven/**servlet/module/PortalServlet.java**
+
+   ```java
+   public class PortalServlet extends ViewBaseServlet {
+   
+       @Override
+       protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+           doPost(req, resp);
+       }
+   
+       @Override
+       protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+           // 声明要访问的首页的逻辑视图
+           String templateName = "index";
+           
+           // 调用父类的方法根据逻辑视图名称渲染视图
+           processTemplate(templateName, req, resp);
+       }
+   }
+   ```
+
+2. 配置web.xml
+
+   ```xml
+   <servlet>
+       <servlet-name>portalServlet</servlet-name>
+       <servlet-class>com.senmu.maven.servlet.module.PortalServlet</servlet-class>
+   </servlet>
+   <servlet-mapping>
+       <servlet-name>portalServlet</servlet-name>
+       <url-pattern>/</url-pattern>
+   </servlet-mapping>
+   ```
+
+**c> 在index.html 中编写登陆表单**
+
+路径：src/main/**webapp/WEB-INF/pages/index.html**
+
+```html
+<!DOCTYPE html>
+<html lang="en" xml:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- @{/auth} 解析后：/demo/auth -->
+<form th:action="@{/auth}" method="post">
+    <!-- 传递 method 请求参数，目的是为了让当前请求调用 AuthServlet 中的 login() 方法 -->
+    <input type="hidden" name="method" value="login" />
+
+    <!-- th:text 解析表达式后会替换标签体 -->
+    <!-- ${attrName} 从请求域获取属性名为 attrName 的属性值 -->
+    <p th:text="${message}"></p>
+    <p th:text="${systemMessage}"></p>
+    
+    账号：<input type="text" name="loginAccount"/><br/>
+    密码：<input type="password" name="loginPassword"><br/>
+    <button type="submit">登录</button>
+</form>
+
+</body>
+</html>
+```
+
+### Ⅱ 登陆操作
+
+**a> 流程图**
+
+
+
+**b> 创建 用户 业务层**
+
+![image-20220817153540510](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208171535107.png)
+
+**c> 创建登录失败异常**
+
+
+
+**d> 增加常量声明**
+
+**e> 创建 AuthServlet**
+
+**f> EmpService 方法**
+
+**g> EmpDao 方法**
+
+**h> 临时页面**
+
+
+
+### Ⅲ 退出登录
+
+**a> 在临时页面编写超链接**
+
+
+
+**b> 在 AuthServlet 编写退出逻辑**
 
 
 
