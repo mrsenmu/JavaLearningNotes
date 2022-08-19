@@ -145,7 +145,7 @@ Java 项目开发过程中，构建指的是使用**『原材料生产产品』*
 
 核心程序压缩包：apache-maven-3.8.4-bin.zip，解压到**非中文、没有空格**的目录。
 
-![image-20220811095323861](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208110953780.png)
+![image-20220811095323861](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208110953780.png)
 
 在解压目录中，我们需要着重关注 Maven 的核心配置文件：**conf/settings.xml**
 
@@ -284,7 +284,7 @@ Maven本地仓库根目录\javax\servlet\servlet-api\2.5\servlet-api-2.5.jar
 
 **c> 使用命令生成Maven工程**
 
-![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111054771.png)
+![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111054771.png)
 
 运行 **mvn archetype:generate** 命令
 
@@ -383,7 +383,7 @@ POM 理念集中体现在 Maven 工程根目录下 **pom.xml** 这个配置文�
 
 **a> 各个目录的作用**
 
-![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111445611.png)
+![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111445611.png)
 
 另外还有一个 **target** 目录专门存放**构建操作输出**的结果。
 
@@ -401,7 +401,7 @@ Maven 对于目录结构这个问题，没有采用配置的方式，而是基�
 
 ### Ⅰ 主体程序
 
-![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111453883.png)
+![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111453883.png)
 
 主体程序指的是被测试的程序，同时也是将来在项目中真正要使用的程序。
 
@@ -419,7 +419,7 @@ public class Calculator {
 
 ### Ⅱ 测试程序
 
-![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111454367.png)
+![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111454367.png)
 
 ```java
 package com.atguigu.maven;
@@ -530,7 +530,7 @@ D:\maven-rep1026\com\atguigu\maven\pro01-maven-java\1.0-SNAPSHOT\pro01-maven-jav
 
 使用 mvn archetype:generate 命令生成 Web 工程时，需要使用一个专门的 archetype。这个专门生成 Web 工程骨架的 archetype 可以参照官网看到它的用法：
 
-![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111520766.png)
+![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111520766.png)
 
 参数 archetypeGroupId、archetypeArtifactId、archetypeVersion 用来指定现在使用的 maven-archetype-webapp 的坐标。
 
@@ -574,7 +574,7 @@ mvn archetype:generate -DarchetypeGroupId=org.apache.maven.archetypes -Darchetyp
 
 ### Ⅳ 生成的Web工程的目录结构
 
-![image-20220811161716750](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111617706.png)
+![image-20220811161716750](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111617706.png)
 
 webapp 目录下有 index.jsp
 
@@ -656,13 +656,13 @@ public class HelloServlet extends HttpServlet{
 
 上面的错误信息说明：我们的 Web 工程用到了 HttpServlet 这个类，而 HttpServlet 这个类属于 servlet-api.jar 这个 jar 包。此时我们说，Web 工程需要依赖 servlet-api.jar 包。
 
-![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111627327.png)
+![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111627327.png)
 
 ### Ⅷ 配置对servlet-api.jar包的依赖
 
 对于不知道详细信息的依赖可以到https://mvnrepository.com/网站查询。使用关键词搜索，然后在搜索结果列表中选择适合的使用。
 
-![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111629910.png)
+![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111629910.png)
 
 比如，我们找到的 servlet-api 的依赖信息：
 
@@ -682,19 +682,19 @@ public class HelloServlet extends HttpServlet{
 
 运行 mvn package 命令，生成 war 包的位置如下图所示：
 
-![image-20220811163444641](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111634905.png)
+![image-20220811163444641](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111634905.png)
 
 ### Ⅹ 将war包部署道Tomcat上运行
 
 c将 war 包复制到 Tomcat/webapps 目录下
 
-![image-20220811163614894](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111636070.png)
+![image-20220811163614894](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111636070.png)
 
 启动 Tomcat：
 
-![image-20220811163656183](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111636576.png)
+![image-20220811163656183](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111636576.png)
 
-![image-20220811163827182](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208111638688.png)
+![image-20220811163827182](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208111638688.png)
 
 通过浏览器尝试访问：http://localhost:8080/pro02-maven-web/index.jsp
 
@@ -751,11 +751,11 @@ mvn test
 
 mvn package
 
-![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208121535348.png)
+![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208121535348.png)
 
 通过查看 war 包内的结构，我们看到被 Web 工程依赖的 Java 工程确实是会变成 Web 工程的 WEB-INF/lib 目录下的 jar 包。
 
-![image-20220812153622389](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208121536560.png)
+![image-20220812153622389](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208121536560.png)
 
 **c> 查看当前 Web 工程所依赖的 jar 包的列表**
 
@@ -999,7 +999,7 @@ A 依赖 B，B 依赖 C，那么在 A 没有配置对 C 的依赖的情况下，
 
 当 A 依赖 B，B 依赖 C 而且 C 可以传递到 A 的时候，A 不想要 C，需要在 A 里面把 C 排除掉。而往往这种情况都是为了避免 jar 包之间的冲突。
 
-![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208121631831.png)
+![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208121631831.png)
 
 所以配置依赖的排除其实就是阻止某些 jar 包的传递。因为这样的 jar 包传递过来会和其他 jar 包冲突。
 
@@ -1130,7 +1130,7 @@ Maven工程之间，A 工程继承 B 工程
 
 假设，我们创建三个模块工程：
 
-![下载 (8)](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208121709875.png)
+![下载 (8)](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208121709875.png)
 
 **c> 查看被添加新内容的父工程 pom.xml**
 
@@ -1278,7 +1278,7 @@ Maven工程之间，A 工程继承 B 工程
 
 ### Ⅴ 实际意义
 
-![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208121722333.jpeg)
+![./images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208121722333.jpeg)
 
 编写一套符合要求、开发各种功能都能正常工作的依赖组合并不容易。如果公司里已经有人总结了成熟的组合方案，那么再开发新项目时，如果不使用原有的积累，而是重新摸索，会浪费大量的时间。为了提高效率，我们可以使用工程继承的机制，让成熟的依赖组合方案能够保留下来。
 
@@ -1371,7 +1371,7 @@ idea创建新项目，选择Maven项目 ip01-maven-parent
 
 在创建的父工程ip01-maven-parent中，通过创建新module选项创建module01-java，选择当前工程的父工程（Parent：ip01-maven-parent）。
 
-![image-20220815112124949](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151121429.png)
+![image-20220815112124949](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208151121429.png)
 
 ## 4、创建Web模块工程
 
@@ -1391,17 +1391,17 @@ Web 模块将来打包当然应该是 **war** 包。
 
 首先打开项目结构菜单(Project Structure)，然后到 Facets 下查看 IDEA 是否已经帮我们自动生成了 Web 设定。正常来说只要我们确实设置了打包方式为 war，那么 IDEA 就会自动生成 Web 设定。IDEA2018及之前需要自己新建。
 
-![image-20220815113004092](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151130675.png)
+![image-20220815113004092](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208151130675.png)
 
 ### Ⅳ 借助IDEA生成web.xml
 
-![image-20220815113416594](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151134865.png)
+![image-20220815113416594](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208151134865.png)
 
 ### Ⅴ 设置Web资源的根目录
 
 结合 Maven 的目录结构，Web 资源的根目录需要设置为 src/main/webapp 目录。
 
-![image-20220815113647958](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151136870.png)
+![image-20220815113647958](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208151136870.png)
 
 ## 5、其他操作
 
@@ -1409,11 +1409,11 @@ Web 模块将来打包当然应该是 **war** 包。
 
 **a> 直接执行**
 
-<img src="https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151140111.png" alt="image-20220815114017878" style="zoom:80%;" />
+<img src="https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208151140111.png" alt="image-20220815114017878" style="zoom:80%;" />
 
 **b> 手动执行**
 
-<img src="https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151143457.png" alt="image-20220815114353901" style="zoom:80%;" />
+<img src="https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208151143457.png" alt="image-20220815114353901" style="zoom:80%;" />
 
 ### Ⅱ 在IDEA中查看某个模块的依赖信息
 
@@ -1442,7 +1442,7 @@ Maven工程除了自己创建的，还有很多情况是别人创建的。而为
 
 2. IDEA导入复制的文件
 
-   ![image-20220815141017938](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151410750.png)
+   ![image-20220815141017938](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208151410750.png)
 
 3. 修改 pom.xml，如坐标等。
 
@@ -1620,7 +1620,7 @@ Default 生命周期中有 compile 和 test-compile 两个和编译相关的环�
 | 子包[工具类]          | com.senmu.maven.util           |
 | 子包[测试类]          | com.senmu.maven.test           |
 
-![image-20220815164902815](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208151649287.png)
+![image-20220815164902815](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208151649287.png)
 
 ## 2、搭建环境：持久化层
 
@@ -1976,7 +1976,7 @@ static {
 
      所以从获取到 Connection 对象到使用 Connection 对象中间隔着很多不是我们自己声明的方法——我们无法决定它们的参数。
 
-     ![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208161616886.png)
+     ![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208161616886.png)
 
 2. **ThreadLocal 对象的功能**
 
@@ -2242,13 +2242,13 @@ test01.java
 
 ### Ⅴ 子类Dao
 
-![image-20220816173758854](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208161738844.png)
+![image-20220816173758854](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208161738844.png)
 
 ## 3、搭建环境：事务控制
 
 ### Ⅰ 总体思路
 
-![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208170850649.png)
+![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208170850649.png)
 
 ### Ⅱ TransactionFilter
 
@@ -2347,7 +2347,7 @@ public class TransactionFilter implements Filter {
 
 **注意**：需要首先将当前工程改成 Web 工程。
 
-![image-20220817091253582](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208170912168.png)
+![image-20220817091253582](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208170912168.png)
 
 ```xml
 <filter>
@@ -2376,7 +2376,7 @@ public class TransactionFilter implements Filter {
 
 **a> 服务器端渲染**
 
-![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208170945417.png)
+![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208170945417.png)
 
 **b> hymeleaf 简要工作机制**
 
@@ -2385,11 +2385,11 @@ public class TransactionFilter implements Filter {
    - 目标：创建 TemplateEngine 对象
    - 封装：因为对每一个请求来说，TemplateEngine 对象使用的都是同一个，所以在初始化阶段准备好
 
-   ![image-20220817094728322](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208170947100.png)
+   ![image-20220817094728322](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208170947100.png)
 
 2.  请求处理阶段
 
-   ![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208170948848.png)
+   ![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208170948848.png)
 
 **c> 逻辑视图与物理视图**
 
@@ -2403,7 +2403,7 @@ public class TransactionFilter implements Filter {
 
 这样的地址可以**直接访问**到页面本身，我们称之为：**物理视图**。而将物理视图中前面、后面的固定内容抽取出来，让每次请求指定中间变化部分即可，那么**中间变化**部分就叫：**逻辑视图**。
 
-![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208171002498.png)
+![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208171002498.png)
 
 **d> ViewBaseServlet 完整代码**
 
@@ -2497,7 +2497,7 @@ public class ViewBaseServlet extends HttpServlet {
 
 - 需求
 
-  ![image-20220817101217514](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208171012974.png)
+  ![image-20220817101217514](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208171012974.png)
 
 - HttpServlet的局限
 
@@ -2560,7 +2560,7 @@ public class ModelBaseServlet extends ViewBaseServlet {
 
 **d> 继承关系**
 
-![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208171044003.png)
+![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208171044003.png)
 
 ## 5、搭建环境：辅助功能
 
@@ -2666,7 +2666,7 @@ src/main/**resources/logback.xml**
 
 **a> 流程图**
 
-![img028.d8341124](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208171147101.png)
+![img028.d8341124](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208171147101.png)
 
 **b> 创建ProtalServlet**
 
@@ -2745,7 +2745,7 @@ src/main/**resources/logback.xml**
 
 **b> 创建 用户 业务层**
 
-![image-20220817153540510](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208171535107.png)
+![image-20220817153540510](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208171535107.png)
 
 **c> 创建登录失败异常**
 
