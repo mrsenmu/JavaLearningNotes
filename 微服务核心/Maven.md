@@ -57,7 +57,7 @@
 
 **b> 脱离 IDE 环境仍需构建**
 
-![图像](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208101409649.png)
+![image-20220819143744846](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208191438620.png)
 
 ### Ⅲ 结论
 
@@ -121,7 +121,7 @@ Java 项目开发过程中，构建指的是使用**『原材料生产产品』*
 
 ### Ⅲ Maven的工作机制
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208101737363.png)
+![image-20220819143851202](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208191438501.png)
 
 # 二、Maven核心程序解压和配置
 
@@ -139,7 +139,7 @@ Java 项目开发过程中，构建指的是使用**『原材料生产产品』*
 
 下载链接：
 
-![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202208110951526.png)
+![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208110951526.png)
 
 ### Ⅱ 解压Maven核心程序
 
