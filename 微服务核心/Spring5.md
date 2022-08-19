@@ -297,7 +297,7 @@
    
    - **没有接口**情况，使用CGLIB动态代理：创建子类的代理对象，增强类的方法。
    
-     ![图4](D:\BaiduNetdiskDownload\Java全套教程_尚硅谷\微服务核心\Spring5\笔记\笔记\分析图\图4.png)
+     ![图4](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/spring5202207121436061.png)
    
    - **CGLIB**（Code Genneration Library）是一个功能强大，高性能的代码生成包。它为没有实现接口的类提供代理，为JDK的动态代理提供了很好的补充。通常可以使用Java的动态代理创建代理，但当要代理的类没有实现接口或者为了更好的性能，CGLIB是一个好的选择。
 
@@ -566,7 +566,7 @@ com.springsource.org.aspectj.weaver-1.6.8.RELEASE.jar
 
 1. 引入相关jar包
 
-   <img src="https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202207121620758.png" alt="image-20220712162014073" style="zoom:67%;" />
+   <img src="https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/spring5202207121620758.png" alt="image-20220712162014073" style="zoom:67%;" />
 2. 在Spring配置文件**配置数据库连接池**
 
    ```xml
@@ -683,7 +683,7 @@ com.springsource.org.aspectj.weaver-1.6.8.RELEASE.jar
 
 ## 2、搭建事物操作环境
 
-![图6](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202207121654473.png)
+![图6](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/spring5202207121654473.png)
 
 1. 创建数据库表，添加记录
 
