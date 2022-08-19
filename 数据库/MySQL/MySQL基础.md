@@ -25,7 +25,7 @@
    
    - 数据库管理系统、数据库和表的关系如图所示：
    
-     ![image-20220211155258862](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202161657350.png)
+     ![image-20220211155258862](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202161657350.png)
    
    - **常见的数据库管理系统排名(DBMS)**
    
@@ -517,7 +517,7 @@ SELECT column,... FROM table2 [WHERE conditions]
 
 ### Ⅴ 7种SQL JOINS的实现
 
-![image-20220224154656023](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241556855.png)
+![image-20220224154656023](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202241556855.png)
 
 - 需要注意的是对于正下方的两种情况，MySQl中是不支持满外连接（FULL OUTER JOIN）的。
 - 在MySQL中可以通过UNION关键字合并左右连接表查询来实现，ALL决定是否去重。
@@ -605,7 +605,7 @@ USING (department_id);
 
 函数在计算机语言的使用中贯穿始终，它可以把我们经常使用的代码封装起来，需要的时候直接调用即可。这样既 **提高了代码效率** ，又 **提高了可维护性** 。在 SQL 中我们也可以使用函数对检索出来的数据进行函数操作。使用这些函数，可以极大地 **提高用户对数据库的管理效率** 。
 
-![image-20220224165713701](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241657773.png)
+![image-20220224165713701](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202241657773.png)
 
 从函数定义的角度出发，将函数分成 **内置函数** 和 **自定义函数** 。在 SQL 语言中，同样也包括了内置函数和自定义函数。内置函数是系统内置的通用函数，而自定义函数是我们根据自己的需要编写的。
 
@@ -771,7 +771,7 @@ MySQL提供的内置函数从 **实现的功能角度** 可以分为**数值函�
 | ------------------------ | ------------------------------------------ |
 | EXTRACT(type FROM  date) | 返回指定日期中特定的部分，type指定返回的值 |
 
-![image-20220225150241284](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202251502178.png)
+![image-20220225150241284](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202251502178.png)
 
 (5) **时间和秒钟转换的函数**
 
@@ -791,7 +791,7 @@ MySQL提供的内置函数从 **实现的功能角度** 可以分为**数值函�
 
 上述函数中type的取值：
 
-![image-20220225155005974](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202251550462.png)
+![image-20220225155005974](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202251550462.png)
 
 **函数名变更类**：
 
@@ -838,7 +838,7 @@ MySQL提供的内置函数从 **实现的功能角度** 可以分为**数值函�
 
 GET_FORMAT函数中date_type和format_type参数取值如下：
 
-![image-20220225160135988](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202251601355.png)
+![image-20220225160135988](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202251601355.png)
 
 ### Ⅴ 流程控制函数
 
@@ -895,7 +895,7 @@ MySQL中有些函数无法对其进行具体的分类，但是这些函数在MyS
 
 聚合函数作用于一组数据，并对一组数据返回一个值。
 
-![image-20220225175323359](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202251753808.png)
+![image-20220225175323359](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202251753808.png)
 
 常用的聚合函数类型有：
 
