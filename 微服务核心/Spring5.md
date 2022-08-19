@@ -1,5 +1,3 @@
-[TOC]
-
 # 一、Spring概念
 
 1. Spring是轻量级的开源的JavaEE框架。
