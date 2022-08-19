@@ -21,7 +21,7 @@
 
 ### **Ⅲ 数据类型**
 
-![202208181615738](https://raw.githubusercontent.com/mrsenmu/JavaLearningNotes/main/images/202208190911294.jpeg)
+![202208181615738](https://raw.githubusercontent.com/mrsenmu/JavaLearningNotes/main/images/202208190942053.jpeg)
 
 | 类型名称     | 关键字  | 占用内存 | 取值范围                                   |
 | ------------ | ------- | -------- | ------------------------------------------ |
