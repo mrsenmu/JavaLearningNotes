@@ -90,7 +90,7 @@ Spring版本：5.3.1
 
 注：由于 Maven 的传递性，我们不必将所有需要的包全部配置依赖，而是配置最顶端的依赖，其他靠传递性导入。
 
-![img001](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc202207151542911.png)
+![img001](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc/202207151542911.png)
 
 ### 3、配置web.xml
 
@@ -681,7 +681,7 @@ public String testHello(){
 }
 ```
 
-![img002](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc202207221105737.png)
+![img002](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc/202207221105737.png)
 
 ### 2、转发视图
 
@@ -700,7 +700,7 @@ public String testForward(){
 }
 ```
 
-![img003](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc202207221130695.png)
+![img003](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc/202207221130695.png)
 
 ### 3、重定向视图
 
@@ -717,7 +717,7 @@ public String testRedirect(){
 }
 ```
 
-![img004](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc202207221401698.png)
+![img004](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc/202207221401698.png)
 
 > 注：
 >
@@ -1706,7 +1706,7 @@ public String index(){
 
 DispatcherServlet 本质上是一个 Servlet，所以天然的遵循 Servlet 的生命周期。所以宏观上是 Servlet 生命周期来进行调度。
 
-![img005](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc202208021651788.png)
+![img005](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc/202208021651788.png)
 
 ##### a>初始化WebApplicationContext
 
@@ -2090,15 +2090,15 @@ i. 再判断是否配置了mvc:default-servlet-handler
 
 ii. 如果没配置，则控制台报映射查找不到，客户端展示404错误
 
-![img006](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc202208021651339.png)
+![img006](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc/202208021651339.png)
 
-![img007](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc202208021651700.png)
+![img007](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc/202208021651700.png)
 
 iii. 如果有配置，则访问目标资源（一般为静态资源，如：JS,CSS,HTML），找不到客户端也会展示404错误
 
-![img008](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc202208021651996.png)
+![img008](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc/202208021651996.png)
 
-![img009](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc202208021652157.png)
+![img009](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springmvc/202208021652157.png)
 
 b) 存在则执行下面的流程
 
