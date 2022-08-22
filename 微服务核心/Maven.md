@@ -2666,7 +2666,7 @@ src/main/**resources/logback.xml**
 
 **a> 流程图**
 
-![img028.d8341124](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208171147101.png)
+
 
 **b> 创建ProtalServlet**
 
@@ -2745,7 +2745,7 @@ src/main/**resources/logback.xml**
 
 **b> 创建 用户 业务层**
 
-![image-20220817153540510](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202208171535107.png)
+
 
 **c> 创建登录失败异常**
 
