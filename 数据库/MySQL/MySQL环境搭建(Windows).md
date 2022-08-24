@@ -6,7 +6,7 @@
 
 在卸载之前，先停止MySQL8.0的服务。按键盘上的“Ctrl + Alt + Delete”组合键，打开“任务管理器”对话框（或直接ctrl+shift+Esc），可以在“服务”列表找到“MySQL8.0”的服务，如果现在“正在运行”状态，可以右键单击服务，选择“停止”选项停止MySQL8.0的服务，如图所示。
 
-![image-20220224113859038](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241139117.png)
+![image-20220224113859038](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202241139117.png)
 
 ## **步骤2：软件的卸载**
 
@@ -14,7 +14,7 @@
 
 卸载MySQL8.0的程序可以和其他桌面应用程序一样直接在“控制面板”选择“卸载程序”，并在程序列表中找到MySQL8.0服务器程序，直接双击卸载即可，如图所示。这种方式删除，数据目录下的数据不会跟着删除。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202161646819.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202161646819.png) 
 
 **方式2：通过360或电脑管家等软件卸载略**
 
@@ -24,25 +24,25 @@
 
 ② 选择要卸载的MySQL服务器程序，单击“Remove”（移除），即可进行卸载。
 
-![image-20220224113918213](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241139560.png)
+![image-20220224113918213](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202241139560.png)
 
 ③ 单击“Next”（下一步）按钮，确认卸载。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps78EA.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps78EA.tmp.png) 
 
 ④ 弹出是否同时移除数据目录选择窗口。如果想要同时删除MySQL服务器中的数据，则勾选“Remove the data directory”，如图所示。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps78EB.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps78EB.tmp.png) 
 
 ⑤ 执行卸载。单击“Execute”（执行）按钮进行卸载。
 
-![image-20220224113945753](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241139882.png)
+![image-20220224113945753](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202241139882.png)
 
 ⑥ 完成卸载。单击“Finish”（完成）按钮即可。如果想要同时卸载MySQL8.0的安装向导程序，勾选“Yes，
 
 Uninstall MySQL Installer”即可，如图所示。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps78FD.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps78FD.tmp.png) 
 
 ## 步骤3：残余文件的清理
 
@@ -105,11 +105,11 @@ HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\MySQL 服务删除
 
 2. 打开官网，点击DOWNLORDS，然后，点击 **MySQL Community(GPL) Downloads**
 
-   ![image-20220215175024125](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/image-20220215175024125.png)
+   ![image-20220215175024125](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/image-20220215175024125.png)
 
 3.  **点击MySQL Community Server**
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7927.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7927.tmp.png) 
 
 4. **在General Availability(GA) Releases中选择适合的版本**
 
@@ -117,7 +117,7 @@ HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\MySQL 服务删除
 
    - 这里在windows系统下推荐下载**MSI安装程序**；点击**Go to Download Page**进行下载即可。
 
-     ![image-20220216093528288](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/image-20220216093528288.png)
+     ![image-20220216093528288](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/image-20220216093528288.png)
 
    - Windows下的MySQL8.0安装有两种安装程序
 
@@ -126,7 +126,7 @@ HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\MySQL 服务删除
 
    - 如果安装MySQL5.7版本的花，选择Archives，接着选择MySQL5.7的相应版本即可。这里下载最近的MySQL5.7.34
 
-     ![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps793A.tmp.png) 
+     ![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps793A.tmp.png) 
 
 ## 3、MySQL8.0 版本的安装
 
@@ -138,15 +138,15 @@ MySQL下载完成后，找到下载文件，双击进行安装，具体操作步
 
 Developer Default（默认安装类型）、Server only（仅作为服务器）、Client only（仅作为客户端）、Full（完全安装）、Custom（自定义安装）。**这里选择“Custom（自定义安装）”类型按钮**，单击“Next(下一步)”按钮。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps793B.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps793B.tmp.png) 
 
 **步骤3**：打开“Select Products” （选择产品）窗口，可以定制需要安装的产品清单。例如，选择“MySQL Server 8.0.26-X64”后，单击“→”添加按钮，即可选择安装MySQL服务器，如图所示。采用通用的方法，可以添加其他你需要安装的产品。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps794C.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps794C.tmp.png) 
 
 此时如果直接“Next”（下一步），则产品的安装路径是默认的。如果想要自定义安装目录，则可以选中对应的产品，然后在下面会出现“Advanced Options”（高级选项）的超链接。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps794D.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps794D.tmp.png) 
 
 单击“Advanced Options”（高级选项）则会弹出安装目录的选择窗口，如图所示，此时你可以分别设置
 
@@ -154,17 +154,17 @@ MySQL的服务程序安装目录和数据存储目录。如果不设置，默认
 
 ProgramData目录（这是一个隐藏目录）。如果自定义安装目录，请避免“中文”目录。另外，建议服务目录和数据目录分开存放。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps794E.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps794E.tmp.png) 
 
 **步骤4**：在上一步选择好要安装的产品之后，单击“Next”（下一步）进入确认窗口，如图所示。单击
 
 “Execute”（执行）按钮开始安装。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps794F.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps794F.tmp.png) 
 
 **步骤5**：安装完成后在“Status”（状态）列表下将显示“Complete”（安装完成），如图所示。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps795F.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps795F.tmp.png) 
 
 ## 4、配置MySQL8.0
 
@@ -172,15 +172,15 @@ MySQL安装之后，需要对服务器进行配置。具体的配置步骤如下
 
 **步骤1**：在上一个小节的最后一步，单击“Next”（下一步）按钮，就可以进入产品配置窗口。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7960.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7960.tmp.png) 
 
 **步骤2**：单击“Next”（下一步）按钮，进入MySQL服务器类型配置窗口，如图所示。端口号一般选择默认端口号3306。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7961.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7961.tmp.png) 
 
 其中，“Config Type”选项用于设置服务器的类型。单击该选项右侧的下三角按钮，即可查看3个选项，如图所示。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7972.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7972.tmp.png) 
 
 - Development Machine（开发机器）：该选项代表典型个人用桌面工作站。此时机器上需要运行多个应用程序，那么MySQL服务器将占用最少的系统资源。
 - Server Machine（服务器)：该选项代表服务器，MySQL服务器可以同其他服务器应用程序一起运行，例如Web服务器等。MySQL服务器配置成适当比例的系统资源。
@@ -188,31 +188,31 @@ MySQL安装之后，需要对服务器进行配置。具体的配置步骤如下
 
 **步骤3**：单击“Next”（下一步）按钮，打开设置授权方式窗口。其中，上面的选项是MySQL8.0提供的新的授权方式，采用SHA256基础的密码加密方法；下面的选项是传统授权方法（保留5.x版本兼容性）。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7974.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7974.tmp.png) 
 
 **步骤4**：单击“Next”（下一步）按钮，打开设置服务器root超级管理员的密码窗口，如图所示，需要输入两次同样的登录密码。也可以通过“Add User”添加其他用户，添加其他用户时，需要指定用户名、允许该用户名在哪台/哪些主机上登录，还可以指定用户角色等。此处暂不添加用户，用户管理在MySQL高级特性篇中讲解。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7975.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7975.tmp.png) 
 
 **步骤5**：单击“Next”（下一步）按钮，打开设置服务器名称窗口，如图所示。该服务名会出现在Windows服务列表中，也可以在命令行窗口中使用该服务名进行启动和停止服务。本书将服务名设置为“MySQL80”。如果希望开机自启动服务，也可以勾选“Start the MySQL Server at System Startup”选项（推荐）。
 
 下面是选择以什么方式运行服务？可以选择“Standard System Account”(标准系统用户)或者“Custom User”(自定义用户)中的一个。这里推荐前者。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7985.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7985.tmp.png) 
 
 **步骤6**：单击“Next”（下一步）按钮，打开确认设置服务器窗口，单击“Execute”（执行）按钮。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7986.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7986.tmp.png) 
 
 **步骤7**：完成配置，如图所示。单击“Finish”（完成）按钮，即可完成服务器的配置。
 
-![image-20220224114105323](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/202202241141615.png)
+![image-20220224114105323](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/202202241141615.png)
 
 **步骤8**：如果还有其他产品需要配置，可以选择其他产品，然后继续配置。如果没有，直接选择“Next”
 
 （下一步），直接完成整个安装和配置过程。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7998.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7998.tmp.png) 
 
 **步骤9**：点击 **Finish** 结束安装和配置。 
 
@@ -247,7 +247,7 @@ MySQL的安装和配置是一件非常简单的事，但是在操作过程中也
 
 在运行MySQL8.0软件安装包之前，用户需要确保系统中已经安装了.Net Framework相关软件，如果缺少此软件，将不能正常地安装MySQL8.0软件。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps79AC.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps79AC.tmp.png) 
 
 解决方案：到这个地址 [**https://www.microsoft.com/en-us/download/details.aspx?id=42642**](https://www.microsoft.com/en-us/download/details.aspx?id=42642) 下载Microsoft .NET Framework 4.5并安装后，再去安装MySQL。
 
@@ -289,7 +289,7 @@ net start MySQL服务名
 net stop MySQL服务名
 ```
 
-![image-20220216141910973](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/image-20220216141910973.png)
+![image-20220216141910973](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/image-20220216141910973.png)
 
 说明：
 
@@ -305,7 +305,7 @@ net stop MySQL服务名
 
 开始菜单 → 所有程序 → MySQL → MySQL 8.0 Command Line Client
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps79C1.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps79C1.tmp.png) 
 
 **说明：仅限于root用户**
 
@@ -318,7 +318,7 @@ mysql -h 主机名 -P 端口号 -u 用户名 -p密码（只针对密码不能有
 mysql -h localhost -P 3306 -u root -p123
 ```
 
-![image-20220216143000055](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/image-20220216143000055.png)
+![image-20220216143000055](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/image-20220216143000055.png)
 
 注意：
 
@@ -434,7 +434,7 @@ insert into student values(2, 'ural');
 show create table 表名;
 ```
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7A13.tmp.png)
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7A13.tmp.png)
 
 上面的结果显示student的表格的默认字符集是“latin1”不支持中文。
 
@@ -491,9 +491,9 @@ collation-server=utf8_general_ci
 
 步骤4：查看编码命令(步骤1)
 
-<img src="https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/image-20220216153307664.png" alt="image-20220216153307664"  />
+<img src="https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/image-20220216153307664.png" alt="image-20220216153307664"  />
 
-![image-20220216153350301](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/image-20220216153350301.png)
+![image-20220216153350301](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/image-20220216153350301.png)
 
 如果是以上配置就说明对了。接着我们就可以新创建数据库、新创建数据表，接着添加包含中文的数据了。
 
@@ -562,11 +562,11 @@ MySQL 是用 C++ 开发而成的，我简单介绍一下源代码的组成。
 
 mysql-8.0.22 目录下的各个子目录，包含了 MySQL 各部分组件的源代码：
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7A98.tmp.png)
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7A98.tmp.png)
 
 源代码可以用记事本打开查看，如果你有 C++ 的开发环境，也可以在开发环境中打开查看。
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7A99.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7A99.tmp.png) 
 
 如上图所示，源代码并不神秘，就是普通的 C++ 代码，跟你熟悉的一样，而且有很多注释，可以帮助你理解。阅读源代码就像在跟 MySQL 的开发人员对话一样，十分有趣。
 
@@ -600,7 +600,7 @@ mysql-8.0.22 目录下的各个子目录，包含了 MySQL 各部分组件的源
 
 如果输入mysql命令报“不是内部或外部命令”，把mysql安装目录的bin目录配置到环境变量path中。如下：
 
-![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/wps7A9B.tmp.png) 
+![img](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/mysql/wps7A9B.tmp.png) 
 
 ## 3、错误 ERROR：没有选择数据库就操作表格和数据
 
