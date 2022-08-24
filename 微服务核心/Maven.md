@@ -2745,19 +2745,175 @@ src/main/**resources/logback.xml**
 
 **b> 创建 用户 业务层**
 
+- **用户业务层：**src/main/java/com/senmu/maven/**service/api/ISysUserService.java**
 
+- **用户业务层处理：**src/main/java/com/senmu/maven/**service/impl/SysUserServiceImpl.java**
 
 **c> 创建登录失败异常**
 
+src/main/java/com/senmu/maven/**exception/LoginFailedException.java**
 
+```java
+public class LoginFailedException extends RuntimeException {
+
+    public LoginFailedException() {
+    }
+
+    public LoginFailedException(String message) {
+        super(message);
+    }
+
+    public LoginFailedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public LoginFailedException(Throwable cause) {
+        super(cause);
+    }
+
+    public LoginFailedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+}
+```
 
 **d> 增加常量声明**
 
+src/main/java/com/senmu/maven/**util/CommConstants.java**
+
+```java
+public class CommConstants {
+
+    public static final String LOGIN_FAILED_MESSAGE = "账号或密码错误！";
+
+    public static final String ACCESS_DENIED_MESSAGE = "拒绝访问！";
+
+    public static final String LOGIN_ATTR_NAME = "loginInfo";
+}
+```
+
 **e> 创建 AuthServlet**
 
-**f> EmpService 方法**
+1. 创建java类
 
-**g> EmpDao 方法**
+```java
+package com.senmu.maven.servlet.module;
+
+public class AuthServlet extends ModelBaseServlet {
+
+    private ISysUserService userService = new SysUserServiceImpl();
+
+    protected void login(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException{
+        try {
+            // 1、获取请求参数
+            String loginAccount = request.getParameter("loginAccount");
+            String loginPassword = request.getParameter("loginPassword");
+
+            // 2、调用  userService 方法执行登录逻辑
+            SysUser user = userService.getUserByLoginAccount(loginAccount, loginPassword);
+
+            // 3、通过 request 获取 HttpSession 对象
+            HttpSession session = request.getSession();
+
+            // 3、通过 request 获取 HttpSession 对象
+            session.setAttribute(CommConstants.LOGIN_ATTR_NAME, user);
+
+            // 5、前往指定页面视图
+            String templateName = "temp";
+
+            processTemplate(templateName, request, response);
+        } catch (Exception e){
+            e.printStackTrace();
+
+            // 6、判断此处捕获到的异常是否是登录失败异常
+            if (e instanceof LoginFailedException){
+
+                // ①将异常信息存入请求域
+                request.setAttribute("message", e.getMessage());
+
+                // ②处理视图：index
+                processTemplate("index", request, response);
+            }else {
+
+                // 8、如果不是登录异常则封装为运行时异常继续抛出
+                throw new RuntimeException(e);
+            }
+        }
+    }
+}
+```
+
+2. 配置web.xml
+
+```xml
+<servlet>
+    <servlet-name>authServlet</servlet-name>
+    <servlet-class>com.senmu.maven.servlet.module.AuthServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>authServlet</servlet-name>
+    <url-pattern>/auth</url-pattern>
+</servlet-mapping>
+```
+
+**f> SysUserServiceImpl 中实现方法**
+
+1. src/main/java/com/senmu/maven/**service/api/ISysUserService.java**
+
+   ```java
+   public interface ISysUserService {
+   
+       /**
+        * 获取登录用户信息
+        * @param loginAccount
+        * @param loginPassword
+        * @return
+        */
+       public SysUser getUserByLoginAccount(String loginAccount, String loginPassword);
+   }
+   ```
+
+2. src/main/java/com/senmu/maven/**service/api/SysUserServiceImpl.java**
+
+   ```java
+   public class SysUserServiceImpl implements ISysUserService {
+   
+       private ISysUserDao userDao = new SysUserDaoImpl();
+   
+       /**
+        * 获取登录用户信息
+        *
+        * @param loginAccount
+        * @param loginPassword
+        * @return
+        */
+       @Override
+       public SysUser getUserByLoginAccount(String loginAccount, String loginPassword) {
+   
+           //1、对密码执行加密
+           String encodeLoginPassword = MD5Util.encode(loginPassword);
+   
+           //2、根据账户和加密密码查询数据库
+           SysUser user = userDao.selectUserByLoginAccount(loginAccount, loginPassword);
+   
+           //3、检查user对象是否为null
+           if (user != null){
+               // ①不为 null：返回 user
+               return user;
+           } else {
+               // ②为 null：抛登录失败异常
+               throw new LoginFailedException(CommConstants.LOGIN_FAILED_MESSAGE);
+           }
+       }
+   }
+   ```
+
+**g> SysUserDaoImpl 中实现方法**
+
+
 
 **h> 临时页面**
 
