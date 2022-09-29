@@ -465,7 +465,7 @@ public class CalculatorTest{
 The goal you specified requires a project to execute but there is no POM in this directory
 ```
 
-> tip
+> TIP
 >
 > mvn -v 命令和构建操作无关，只要正确配置了 PATH，在任何目录下执行都可以。而构建相关的命令要在 pom.xml 所在目录下运行——操作哪个工程，就进入这个工程的 pom.xml 目录。
 
@@ -544,7 +544,7 @@ D:\maven-rep1026\com\atguigu\maven\pro01-maven-java\1.0-SNAPSHOT\pro01-maven-jav
 mvn archetype:generate -DarchetypeGroupId=org.apache.maven.archetypes -DarchetypeArtifactId=maven-archetype-webapp -DarchetypeVersion=1.4
 ```
 
-> tip
+> TIP
 >
 > Define value for property 'groupId': com.atguigu.maven 
 >
@@ -634,7 +634,7 @@ public class HelloServlet extends HttpServlet{
 </html>
 ```
 
-> tip
+> TIP
 >
 > JSP全称是 Java Server Page，和 Thymeleaf 一样，是服务器端页面渲染技术。这里我们不必关心 JSP 语法细节，编写一个超链接标签即可。
 
@@ -825,7 +825,7 @@ provided：在开发过程中需要用到的“服务器上的 jar 包”通常�
 
 **a> 验证 compile 范围对 main 目录有效**
 
-> tip
+> TIP
 >
 > main目录下的类：HelloServlet 使用compile范围导入的依赖：pro01-senmu-maven
 >
@@ -842,7 +842,7 @@ provided：在开发过程中需要用到的“服务器上的 jar 包”通常�
 具体操作：在pro01-maven-java\src\main\java\com\atguigu\maven目录下修改Calculator.java
 
 ```java
-package com.atguigu.maven;
+package com.senmu.maven;
 
 import org.junit.Test;
 
@@ -927,7 +927,7 @@ A 依赖 B，B 依赖 C，那么在 A 没有配置对 C 的依赖的情况下，
 在 A 依赖 B，B 依赖 C 的前提下，C 是否能够传递到 A，取决于 B 依赖 C 时使用的依赖范围。
 
 - B 依赖 C 时使用 compile 范围：可以传递
-- B 依赖 C 时使用 test 或 provided 范围：不能传递，所以需要这样的 jar 包时，就必须在需要的地方明确配置依赖才可以。
+- B 依赖 C 时使用 **test 或 provided** 范围：**不能传递**，所以需要这样的 jar 包时，就必须在需要的地方明确配置依赖才可以。
 
 ### Ⅱ 使用compile范围依赖spring-core
 
@@ -946,7 +946,7 @@ A 依赖 B，B 依赖 C，那么在 A 没有配置对 C 的依赖的情况下，
 
 使用 mvn dependency:tree 命令查看效果：
 
-> tip
+> TIP
 >
 > [INFO] com.senmu.maven:pro01-maven-java:jar:1.0-SNAPSHOT
 > [INFO] +- junit:junit:jar:4.12:test
@@ -956,7 +956,7 @@ A 依赖 B，B 依赖 C，那么在 A 没有配置对 C 的依赖的情况下，
 
 还可以在 Web 工程中，使用 mvn dependency:tree 命令查看效果（需要重新将 pro01-maven-java 安装到仓库）：
 
-> tip
+> TIP
 >
 > [INFO] com.senmu.maven:pro02-maven-web:war:1.0-SNAPSHOT
 > [INFO] +- junit:junit:jar:4.12:test
@@ -983,7 +983,7 @@ A 依赖 B，B 依赖 C，那么在 A 没有配置对 C 的依赖的情况下，
 
 效果还是和之前一样,没有scope为provided的javax.servlet-api：
 
-> tip
+> TIP
 >
 > [INFO] com.senmu.maven:pro02-maven-web:war:1.0-SNAPSHOT
 > [INFO] +- junit:junit:jar:4.12:test
@@ -1047,7 +1047,7 @@ A 依赖 B，B 依赖 C，那么在 A 没有配置对 C 的依赖的情况下，
 
 运行 mvn dependency:tree 命令查看效果：
 
-> tip
+> TIP
 >
 > [INFO] com.atguigu.maven:pro02-maven-web:war:1.0-SNAPSHOT
 > [INFO] +- junit:junit:jar:4.12:test
@@ -1091,7 +1091,7 @@ Maven工程之间，A 工程继承 B 工程
 
 在一个工程中依赖多个 Spring 的 jar 包
 
-> tip
+> TIP
 >
 > [INFO] +- org.springframework:**spring-core**:jar:**4.0.0**.RELEASE:compile
 > [INFO] |\ \- commons-logging:commons-logging:jar:1.1.1:compile
@@ -2664,9 +2664,9 @@ src/main/**resources/logback.xml**
 
 ### Ⅰ 显示首页
 
-**a> 流程图**
+**a> 流程**
 
-
+http://localhost:8080/all_in_one/  → PortalServlet → templateName: index → 物理视图: index.html → 解析 → 浏览器index页面
 
 **b> 创建ProtalServlet**
 
@@ -2739,9 +2739,13 @@ src/main/**resources/logback.xml**
 
 ### Ⅱ 登陆操作
 
-**a> 整体流程**
+**a> 正常情况的基本流程**
 
-
+1. 页面登录按钮，提交请求参数：登录账户、密码
+2. 调用AuthServlet.login()
+3. 调用**userService**.getUserByLoginAccount(loginAccount, loginPassword)
+4. 调用**userDao**.selectUserByLoginAccount(loginAccount, encodeLoginPassword)
+5. 登录用户信息跳转至temp页面
 
 **b> 创建 用户 业务层**
 
@@ -2913,90 +2917,2633 @@ public class AuthServlet extends ModelBaseServlet {
 
 **g> SysUserDaoImpl 中实现方法**
 
+```java
+public class SysUserDaoImpl extends BaseDao<SysUser> implements ISysUserDao {
 
+    @Override
+    public SysUser selectUserByLoginAccount(String loginAccount, String loginPassword) {
+
+        // 编写sql
+        String sql = "SELECT user_id userId," +
+                "user_name userName," +
+                "password password " +
+                "FROM sys_user WHERE user_name=? AND password=?";
+
+
+        // 调用BaseDao查询单个对象方法
+        return super.getSingleBean(sql, SysUser.class, loginAccount, loginPassword);
+    }
+}
+```
 
 **h> 临时页面**
 
+src/main/webapp/WEB-INF/pages/**temp.html**
 
+```html
+<!DOCTYPE html>
+<html lang="en" xml:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>临时</title>
+</head>
+<body>
+
+    <p th:text="${session.loginInfo}"></p>
+
+</body>
+</html>
+```
 
 ### Ⅲ 退出登录
 
 **a> 在临时页面编写超链接**
 
-
+```html
+<a th:href="@{/auth?method=logout}">注销</a>
+```
 
 **b> 在 AuthServlet 编写退出逻辑**
 
+```java
+protected  void logout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 
+    //1、通过 request 对象获取 HttpSession 对象
+    HttpSession session = request.getSession();
 
-## 7、业务功能：显示奏折列表
+    //2、将 HttpSession 对象强制失效
+    session.invalidate();
 
+    // 3、回到首页
+    String templateName = "index";
+    processTemplate(templateName, request, response);
+}
+```
 
+## 7、业务功能：显示部门列表
 
-## 8、业务功能：显示奏折详情
+流程：
 
+1. /dept?method=list
+2. DeptServlet: List<SysDept>结果存入请求域
+3. List<SysDept> ISysDeptService.getAllDepts()
+4. List<SysDept> ISysDeptDao.selectAllDept()
 
+## 8、业务功能：详情、修改、删除
 
-## 9、业务功能：批复奏折
+略
 
+## 9、业务功能：登陆检查
 
+1. 创建LoginFilter类：com/senmu/maven/**filter**/LoginFilter.java
 
-## 10、业务功能：登陆检查
+   ```java
+   public class LoginFilter implements Filter {
+   
+       @Override
+       public void init(FilterConfig filterConfig) throws ServletException {}
+   
+       @Override
+       public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+           // 1、获取HttpSession 对象
+           HttpServletRequest request = (HttpServletRequest) servletRequest;
+   
+           HttpSession session = request.getSession();
+   
+           // 2、尝试从 Session 域获取已登录的对象
+           Object loginUser = session.getAttribute(CommConstants.LOGIN_ATTR_NAME);
+   
+           // 3、判断 loginUser 是否为空
+           if (loginUser != null){
+   
+               // 4、若不为空说明当前请求已登录，直接放行
+               filterChain.doFilter(request, servletResponse);
+               return;
+           }
+   
+           // 5、否则说明尚未登录，回到登录页面
+           request.setAttribute("systemMessage", CommConstants.ACCESS_DENIED_MESSAGE);
+           request.getRequestDispatcher("/").forward(request,servletResponse);
+       }
+   
+       @Override
+       public void destroy() {}
+   }
+   ```
 
+2. 注册：
 
+   ```xml
+       <filter>
+           <filter-name>loginFilter</filter-name>
+           <filter-class>com.senmu.maven.filter.LoginFilter</filter-class>
+       </filter>
+       <filter-mapping>
+           <filter-name>loginFilter</filter-name>
+           <url-pattern>/dept</url-pattern>
+       </filter-mapping>
+   ```
 
-## 11、打包部署
+   注意：把 LoginFilter 放在 TransactionFilter 前面声明，原因是：如果登录检查失败不放行，直接跳转到页面，此时将不必执行 TransactionFilter 中的事务操作，可以节约性能。
 
+## 10、打包部署
 
+### Ⅰ 适配部署环境
+
+MySQL 连接信息中，IP 地址部分需要改成 localhost。
+
+src/main/resources/jdbc.properties
+
+```properties
+url=jdbc:mysql://localhost:3306/maven
+```
+
+### Ⅱ 跳过测试打包
+
+```sh
+mvn clean package -Dmaven.test.skip=true
+```
+
+指定war包名称(可默认)
+
+```xml
+    <!-- 对构建过程进行自己的定制 -->
+    <build>
+        <!-- 当前工程在构建过程中使用的最终名称 -->
+        <finalName>demo-me</finalName>
+    </build>
+```
+
+### Ⅲ 部署执行
+
+1. 上传war包：[见上文第三章第4节](#Ⅹ 将war包部署道Tomcat上运行)
+2. 启动Tomcat: startup.bat(Windows)或startup.sh(Linux)
 
 # 七、SSM整合伪分布式案例
 
 ## 1、创建工程，引入依赖
 
+### Ⅰ 创建工程
+
+**a> 工程清单**
+
+| 工程名               | 地位   | 说明                 |
+| -------------------- | ------ | -------------------- |
+| maven-ssm            | 父工程 | 总体管理各个子工程   |
+| module01-web         | 子工程 | 唯一的 war 包工程    |
+| module02-component   | 子工程 | 管理项目中的各种组件 |
+| module03-entity      | 子工程 | 管理项目中的实体类   |
+| module04-util        | 子工程 | 管理项目中的工具类   |
+| module05-environment | 子工程 | 框架环境所需依赖     |
+| module06-generate    | 子工程 | Mybatis 逆向工程     |
+
+**b> 工程间关系**
+
+依赖关系：module01-web —>依赖—> module02-component —>依赖—> {module03-entity，module04-util，module05-environment}
+
+独立存在：module06-generate
+
+### Ⅱ 各工程 POM 配置
+
+**a> 父工程**
+
+maven-ssm模块下pom.xml
+
+各子工程创建好之后就会有下面配置，不需要手动编辑：
+
+```xml
+    <groupId>com.senmu</groupId>
+    <artifactId>maven-ssm</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>module01-web</module>
+        <module>module02-component</module>
+        <module>module03-entity</module>
+        <module>module04-util</module>
+        <module>module05-environment</module>
+        <module>module06-generate</module>
+    </modules>
+```
+
+**b> Mybatis 逆向工程**
+
+module06-generate/pom.xml
+
+```xml
+    <!-- 依赖MyBatis核心包 -->
+    <dependencies>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.7</version>
+        </dependency>
+    </dependencies>
+
+    <!-- 控制Maven在构建过程中相关配置 -->
+    <build>
+
+        <!-- 构建过程中用到的插件 -->
+        <plugins>
+
+            <!-- 具体插件，逆向工程的操作是以构建过程中插件形式出现的 -->
+            <plugin>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-maven-plugin</artifactId>
+                <version>1.3.0</version>
+
+                <!-- 插件的依赖 -->
+                <dependencies>
+
+                    <!-- 逆向工程的核心依赖 -->
+                    <dependency>
+                        <groupId>org.mybatis.generator</groupId>
+                        <artifactId>mybatis-generator-core</artifactId>
+                        <version>1.3.2</version>
+                    </dependency>
+
+                    <!-- 数据库连接池 -->
+                    <dependency>
+                        <groupId>com.mchange</groupId>
+                        <artifactId>c3p0</artifactId>
+                        <version>0.9.2</version>
+                    </dependency>
+
+                    <!-- MySQL驱动 -->
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>8.0.28</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+```
+
+**c> 环境依赖工程**
+
+module05-environment/pom.xml
+
+```xml
+<dependencies>
+    <!-- SpringMVC -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>5.3.1</version>
+    </dependency>
+
+    <!-- Spring 持久化层所需依赖 -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <version>5.3.1</version>
+    </dependency>
+
+    <!-- 日志 -->
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.2.3</version>
+    </dependency>
+
+    <!-- Spring5和Thymeleaf整合包 -->
+    <dependency>
+        <groupId>org.thymeleaf</groupId>
+        <artifactId>thymeleaf-spring5</artifactId>
+        <version>3.0.12.RELEASE</version>
+    </dependency>
+
+    <!-- Mybatis 和 Spring 的整合包 -->
+    <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis-spring</artifactId>
+        <version>2.0.6</version>
+    </dependency>
+
+    <!-- Mybatis核心 -->
+    <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis</artifactId>
+        <version>3.5.7</version>
+    </dependency>
+
+    <!-- MySQL驱动 -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.28</version>
+    </dependency>
+
+    <!-- 数据源 -->
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>1.0.31</version>
+    </dependency>
+</dependencies>
+```
+
+**d> 工具类工程**
+
+无配置
+
+**e> 实体类工程**
+
+无配置
+
+**f> 组件工程**
+
+module02-component/pom.xml
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.senmu</groupId>
+        <artifactId>module03-entity</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>com.senmu</groupId>
+        <artifactId>module04-util</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>com.senmu</groupId>
+        <artifactId>module05-environment</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- ServletAPI -->
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.1.0</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+```
+
+**g> Web 工程**
+
+module01-web/pom.xml
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.senmu</groupId>
+        <artifactId>module02-component</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- junit5 -->
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>5.7.0</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Spring 的测试功能 -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>5.3.1</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+```
+
 ## 2、 搭建环境：持久化层
+
+### Ⅰ 物理建模
+
+数据库表创建
+
+### Ⅱ MyBatis逆向工程
+
+**a> 配置文件** 
+
+src/main/resources/**generatorConfig.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <!--
+            targetRuntime: 执行生成的逆向工程的版本
+                    MyBatis3Simple: 生成基本的CRUD（清新简洁版）
+                    MyBatis3: 生成带条件的CRUD（奢华尊享版）
+     -->
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+        <!-- 数据库的连接信息 -->
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/maven"
+                        userId="root"
+                        password="123456">
+        </jdbcConnection>
+        <!-- javaBean的生成策略-->
+        <javaModelGenerator targetPackage="com.senmu.maven.entity" targetProject=".\src\main\java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+        <!-- SQL映射文件的生成策略 -->
+        <sqlMapGenerator targetPackage="com.senmu.maven.mapper"  targetProject=".\src\main\java">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+        <!-- Mapper接口的生成策略 -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.senmu.maven.mapper"  targetProject=".\src\main\java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+        <!-- 逆向分析的表 -->
+        <!-- tableName设置为*号，可以对应所有表，此时不写domainObjectName -->
+        <!-- domainObjectName属性指定生成出来的实体类的类名 -->
+        <table tableName="sys_user" domainObjectName="SysUser"/>
+        <table tableName="sys_dept" domainObjectName="SysDept"/>
+    </context>
+</generatorConfiguration>
+```
+
+**b> 执行逆向生成**
+
+idea -> Maven ->  module06-generate -> Plugins -> mybatis-generator -> mybatis-generator:generate
+
+**c> 将生成文件放置对应位置**
+
+- **Mapper.xml 配置文件**：移至**module01-web**/src/main/**resources/mapper**
+- **Mapper接口**：移至**module02-component**/src/main/java/com/senmu/maven/**mapper**
+- **实体类**：移至**module03-entity**src/main/java/com/senmu/maven/**entity**
+
+### Ⅲ 建立数据库连接
+
+**a> 配置 数据库连接信息 module01-web\src\main\resources\jdbc.properties**
+
+```properties
+dev.driverClassName=com.mysql.cj.jdbc.Driver
+dev.url=jdbc:mysql://localhost:3306/maven
+dev.username=root
+dev.password=123456
+dev.initialSize=10
+dev.maxActive=20
+dev.maxWait=10000
+```
+
+**b> 配置数据源 module01-web\src\main\resources\spring-persist.xml**
+
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="username" value="${dev.username}"/>
+        <property name="password" value="${dev.password}"/>
+        <property name="url" value="${dev.url}"/>
+        <property name="driverClassName" value="${dev.driverClassName}"/>
+        <property name="initialSize" value="${dev.initialSize}"/>
+        <property name="maxActive" value="${dev.maxActive}"/>
+        <property name="maxWait" value="${dev.maxWait}"/>
+    </bean>
+</beans>
+```
+
+**c> 测试**
+
+```java
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(value = "classpath:spring-persist.xml")
+public class dbConnectTest {
+
+    @Autowired
+    private DataSource dataSource;
+
+    private final Logger logger = LoggerFactory.getLogger((dbConnectTest.class));
+
+    @Test
+    public void testConnection() throws SQLException{
+        Connection connection = dataSource.getConnection();
+        logger.debug(connection.toString());
+    }
+}
+```
+
+
+
+> TIP
+>
+> 配置文件为什么要放到 Web 工程里面？
+>
+> - Web 工程将来生成 war 包。
+> - war 包直接部署到 Tomcat 运行。
+> - Tomcat 从 war 包（解压目录）查找配置文件最直接。
+> - 如果不是把配置文件放在 Web 工程，而是放在 Java 工程，那就等于将配置文件放在了 war 包内的 jar 包中。
+> - 配置文件在 jar 包中读取相对困难。
+
+### Ⅳ Spring 整合Mybatis
+
+**a> 配置SqlSessionFactoryBean**
+
+目的：
+
+1. 装配数据源
+2. 指定Mapper配置文件的位置
+
+位置：src/main/resources/**spring-persist.xml**
+
+```xml
+<!-- 配置 SqlSessionFactoryBean -->
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+
+    <!-- 装配数据源 -->
+    <property name="dataSource" ref="druidDataSource"/>
+
+    <!-- 指定 Mapper 配置文件的位置 -->
+    <property name="mapperLocations" value="classpath:mapper/*Mapper.xml"/>
+</bean>
+```
+
+**b> 扫描 Mapper 接口**
+
+```xml
+<mybatis:scan base-package="com.senmu.maven.mapper"/>
+```
+
+**c> 测试**
+
+```java
+@Autowired
+private SysUserMapper userMapper;
+
+@Test
+public void testUserMapper(){
+    List<SysUser> userList = userMapper.selectByExample(new SysUserExample());
+    for (SysUser user: userList){
+        System.out.println("user = " + user.getUserName());
+    }
+}
+```
 
 ## 3、 搭建环境：事务控制
 
+### Ⅰ 声明式事务注解
+
+src/main/resources/**spring-persist.xml**
+
+```xml
+<!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 装配数据源 -->
+        <property name="dataSource" ref="druidDataSource"/>
+    </bean>
+
+    <!-- 配置事务的注解驱动，开启基于注解的声明式事务功能 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- 配置对 Service 所在包的自动扫描 -->
+    <context:component-scan base-package="com.senmu.maven.service"/>
+```
+
+### Ⅱ 注解写法
+
+**a> 查询操作**
+
+```java
+@Transactional(readOnly = true)
+```
+
+**b> 增删改操作**
+
+```java
+@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
+```
+
+> TIP
+>
+> 在具体代码开发中可能会将相同设置的 @Transactional 注解提取到 Service 类上。
+
 ## 4、 搭建环境：表述层
+
+### Ⅰ 设定 Web 工程
+
+[步骤如前文所示](#4、创建Web模块工程)
+
+### Ⅱ web.xml 配置
+
+**a> 配置 ContextLoaderListener**
+
+```xml
+<!-- 第一部分：加载 spring-persist.xml 配置文件 -->
+<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:spring-persist.xml</param-value>
+</context-param>
+<listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+```
+
+**b> 配置 DispatcherServlet**
+
+```xml
+<!-- 第二部分：加载 spring-mvc.xml 配置文件 -->
+<servlet>
+    <servlet-name>dispatcherServlet</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:spring-mvc.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+<servlet-mapping>
+    <servlet-name>dispatcherServlet</servlet-name>
+    <url-pattern>/</url-pattern>
+</servlet-mapping>
+```
+
+**c> 配置 CharacterEncodingFilter**
+
+```xml
+<!-- 第三部分：设置字符集的 Filter -->
+<filter>
+    <filter-name>characterEncodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+        <param-name>encoding</param-name>
+        <param-value>UTF-8</param-value>
+    </init-param>
+    <init-param>
+        <param-name>forceRequestEncoding</param-name>
+        <param-value>true</param-value>
+    </init-param>
+    <init-param>
+        <param-name>forceResponseEncoding</param-name>
+        <param-value>true</param-value>
+    </init-param>
+</filter>
+<filter-mapping>
+    <filter-name>characterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+**d> 配置 HiddenHttpMethodFilter**
+
+```xml
+<!-- 第四部分：按照 RESTFul 风格负责转换请求方式的 Filter -->
+<filter>
+    <filter-name>hiddenHttpMethodFilter</filter-name>
+    <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>hiddenHttpMethodFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+### Ⅲ 显示首页
+
+**a> 配置 SpringMVC**
+
+**module01-web**/src/main/resources/**spring-mvc.xml**
+
+1. 基本配置
+
+   ```xml
+   <!-- 开启 SpringMVC 的注解驱动功能 -->
+   <mvn:annotation-driven />
+   
+   <!-- 让 SpringMVC 对没有 @RequestMapping 的请求直接放行 -->
+   <mvc:default-servlet-handler />
+   ```
+
+2. 配置视图解析器
+
+   ```xml
+   <!-- 配置视图解析器 -->
+   <bean id="thymeleafViewResolver" class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+   	<property name="order" value="1"/>
+   	<property name="characterEncoding" value="UTF-8"/>
+   	<property name="templateEngine">
+   		<bean class="org.thymeleaf.spring5.SpringTemplateEngine">
+   			<property name="templateResolver">
+   				<bean class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+   					<property name="prefix" value="/WEB-INF/templates/"/>
+   					<property name="suffix" value=".html"/>
+   					<property name="characterEncoding" value="UTF-8"/>
+   					<property name="templateMode" value="HTML5"/>
+   				</bean>
+   			</property>
+   		</bean>
+   	</property>
+   </bean>
+   ```
+
+3. 配置自动扫描的包
+
+   ```xml
+   <!-- 配置自动扫描的包 -->
+   <context:component-scan base-package="com.senmu.maven.controller"/>
+   ```
+
+**b> 配置 view-controller 访问首页**
+
+```xml
+<!-- 配置 view-controller -->
+<mvc:view-controller path="/" view-name="index" />
+```
+
+**c> 创建首页模板文件**
+
+**module01-web**/webapp/WEB-INF/**templates/index.html**
+
+```html
+<!DOCTYPE html>
+<html lang="en" xml:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+
+<!-- @{/auth} 解析后：/demo/auth -->
+<form th:action="@{/auth/login}" method="post">
+
+    <!-- th:text 解析表达式后会替换标签体 -->
+    <!-- ${attrName} 从请求域获取属性名为 attrName 的属性值 -->
+    <p style="color: red;font-weight: bold;" th:text="${message}"></p>
+    <p style="color: red;font-weight: bold;" th:text="${systemMessage}"></p>
+
+    账号：<input type="text" name="loginAccount"/><br/>
+    密码：<input type="password" name="loginPassword"><br/>
+    <button type="submit">登录</button>
+</form>
+
+</body>
+</html>
+```
 
 ## 5、 搭建环境：辅助功能
 
+### Ⅰ 登录失败异常
+
+**module04-util**/src/main/java/com/senmu/maven/**exception/LoginFailedException.java**
+
+```java
+public class LoginFailedException extends RuntimeException {
+
+    public LoginFailedException() {
+    }
+
+    public LoginFailedException(String message) {
+        super(message);
+    }
+
+    public LoginFailedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public LoginFailedException(Throwable cause) {
+        super(cause);
+    }
+
+    public LoginFailedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+}
+```
+
+### Ⅱ 常量类
+
+**module04-util**/src/main/java/com/senmu/maven/**util/ComConstant.java**
+
+```java
+public class ComConstant {
+
+    public static final String LOGIN_FAILED_MESSAGE = "账号、密码错误!";
+    public static final String ACCESS_DENIED_MESSAGE = "访问失败！";
+    public static final String LOGIN_USER_ATTR_NAME = "loginInfo";
+
+}
+```
+
+### Ⅲ MD5 工具
+
+**module04-util**/src/main/java/com/senmu/maven/**util/MD5Util.java**
+
+```java
+public class MD5Util {
+    /**
+     * 针对明文字符串执行MD5加密
+     * @param source
+     * @return
+     */
+    public static String encode(String source) {
+
+        // 1.判断明文字符串是否有效
+        if (source == null || "".equals(source)) {
+            throw new RuntimeException("用于加密的明文不可为空");
+        }
+
+        // 2.声明算法名称
+        String algorithm = "md5";
+
+        // 3.获取MessageDigest对象
+        MessageDigest messageDigest = null;
+        try {
+            messageDigest = MessageDigest.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        // 4.获取明文字符串对应的字节数组
+        byte[] input = source.getBytes();
+
+        // 5.执行加密
+        byte[] output = messageDigest.digest(input);
+
+        // 6.创建BigInteger对象
+        int signum = 1;
+        BigInteger bigInteger = new BigInteger(signum, output);
+
+        // 7.按照16进制将bigInteger的值转换为字符串
+        int radix = 16;
+        String encoded = bigInteger.toString(radix).toUpperCase();
+
+        return encoded;
+    }
+}
+```
+
+### Ⅳ 日志配置文件
+
+**module01-web**/src/**resources/logback.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true">
+    <!-- 指定日志输出的位置 -->
+    <appender name="STDOUT"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 日志输出的格式 -->
+            <!-- 按照顺序分别是：时间、日志级别、线程名称、打印日志的类、日志主体内容、换行 -->
+            <pattern>[%d{HH:mm:ss.SSS}] [%-5level] [%thread] [%logger] [%msg]%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 设置全局日志级别。日志级别按顺序分别是：DEBUG、INFO、WARN、ERROR -->
+    <!-- 指定任何一个日志级别都只打印当前级别和后面级别的日志。 -->
+    <root level="INFO">
+        <!-- 指定打印日志的appender，这里通过“STDOUT”引用了前面配置的appender -->
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- 专门给某一个包指定日志级别 -->
+    <logger name="com.atguigu" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+</configuration>
+```
+
 ## 6、 业务功能：登录
+
+### Ⅰ AuthController
+
+**module02-component**/src/main/java/com/senmu/maven/**controller/AuthController.java**
+
+```java
+@Controller
+public class AuthController {
+
+    @Autowired
+    private ISysUserService userService;
+
+    @RequestMapping("/auth/login")
+    public String login(
+            @RequestParam("loginAccount") String loginAccount,
+            @RequestParam("loginPassword") String loginPassword,
+            HttpSession session,
+            Model model
+    ){
+        // 1、尝试查询登录信息
+        SysUser user = userService.getLoginUserInfo(loginAccount, loginPassword);
+
+        // 2、判断登录是否成功
+        if (user == null){
+
+            // 3、登陆失败，返回登录失败信息
+            model.addAttribute("message", ComConstant.LOGIN_FAILED_MESSAGE);
+
+            return "index";
+        }else {
+
+            // 4、登录成功，返回登录用户信息
+            session.setAttribute("loginInfo", user);
+
+            return "target";
+        }
+    }
+}
+```
+
+### Ⅱ SysUserServiceImpl
+
+**module02-component**/src/main/java/com/senmu/maven/**service/impl/SysUserServiceImpl.java**
+
+```java
+@Service
+@Transactional(readOnly = true)
+public class SysUserServiceImpl implements ISysUserService {
+
+    @Autowired
+    private SysUserMapper userMapper;
+
+    @Override
+    public SysUser getLoginUserInfo(String loginAccount, String loginPassword) {
+
+        // 1、密码加密
+        String encodedLoginPassword = MD5Util.encode(loginPassword);
+
+        // 2、通过 QBC 查询方式封装查询条件
+        SysUserExample example = new SysUserExample();
+
+        SysUserExample.Criteria criteria = example.createCriteria();
+
+        criteria.andUserNameEqualTo(loginAccount).andPasswordEqualTo(encodedLoginPassword);
+
+        List<SysUser> userList = userMapper.selectByExample(example);
+
+        if (userList != null && userList.size() > 0){
+
+            // 3、返回查询结果
+            return userList.get(0);
+        }
+
+        return null;
+    }
+}
+```
+
+### Ⅲ target.html
+
+**module01-web**/webapp/WEB-INF/**templates/target.html**
+
+```html
+<!DOCTYPE html>
+<html lang="en" xml:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <p th:text="${session.loginInfo}"></p>
+
+</body>
+</html>
+```
 
 # 八、微服务架构案例
 
 ## 1、 创建工程
 
+### Ⅰ 工程模块
+
+| 工程名                           | 地位   | 说明               |
+| -------------------------------- | ------ | ------------------ |
+| **maven-ms**                     | 父工程 | 总体管理各个子工程 |
+| module01-gateway                 | 子工程 | 网关               |
+| **module02-user-auth-center**    | 子工程 | 用户中心           |
+| module03-user-manager-center     | 子工程 | 用户数据维护中心   |
+| module04-dept-manager-center     | 子工程 | 部门数据维护中心   |
+| module05-work-manager-center     | 子工程 | 业务操作中心       |
+| **module06-mysql-data-provider** | 子工程 | MySQL 数据提供者   |
+| module07-redis-data-provider     | 子工程 | Redis 数据提供者   |
+| **module08-base-api**            | 子工程 | 声明 Feign 接口    |
+| **module09-base-entity**         | 子工程 | 实体类             |
+| **module10-base-util**           | 子工程 | 工具类             |
+
+### Ⅱ  工程间依赖关系
+
+- **module02-user-auth-center** —>依赖 —> **module08-base-api**；
+- **module08-base-api** —>依赖 —> **module09-base-entity**、**module10-base-util**；
+- **module06-mysql-data-provider **—>依赖 —> **module09-base-entity**、**module10-base-util**；
+
 ## 2、 父工程管理依赖
+
+maven-ms/pom.xml
+
+```xml
+<dependencyManagement>
+    <dependencies>
+
+        <!-- SpringCloud 依赖导入 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>Hoxton.SR9</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <!-- SpringCloud Alibaba 依赖导入 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+            <version>2.2.6.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <!-- SpringBoot 依赖导入 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>2.3.6.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <!-- 通用 Mapper 依赖 -->
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper-spring-boot-starter</artifactId>
+            <version>2.1.5</version>
+        </dependency>
+
+        <!-- Druid 数据源依赖 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.1.10</version>
+        </dependency>
+
+        <!-- JPA 依赖 -->
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
+> TIP
+>
+> 此处可能出现父工程爆红却无法导入的情况
+>
+> 解决方案：可先将爆红的依赖放入其他工程中进行导入。
 
 ## 3、 打基础
 
+### Ⅰ module10-base-util
+
+**a> 常量类**
+
+```java
+public class ComConstant {
+
+    public static final String LOGIN_FAILED_MESSAGE = "账号、密码错误！";
+    public static final String ACCESS_DENIED_MESSAGE = "拒绝访问！";
+    public static final String LOGIN_USER_ATTR_NAME = "loginInfo";
+
+}
+```
+
+**b> 字符串加密工具类**
+
+```
+public class MD5Util {
+    /**
+     * 针对明文字符串执行MD5加密
+     * @param source
+     * @return
+     */
+    public static String encode(String source) {
+
+        // 1.判断明文字符串是否有效
+        if (source == null || "".equals(source)) {
+            throw new RuntimeException("用于加密的明文不可为空");
+        }
+
+        // 2.声明算法名称
+        String algorithm = "md5";
+
+        // 3.获取MessageDigest对象
+        MessageDigest messageDigest = null;
+        try {
+            messageDigest = MessageDigest.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        // 4.获取明文字符串对应的字节数组
+        byte[] input = source.getBytes();
+
+        // 5.执行加密
+        byte[] output = messageDigest.digest(input);
+
+        // 6.创建BigInteger对象
+        int signum = 1;
+        BigInteger bigInteger = new BigInteger(signum, output);
+
+        // 7.按照16进制将bigInteger的值转换为字符串
+        int radix = 16;
+        String encoded = bigInteger.toString(radix).toUpperCase();
+
+        return encoded;
+    }
+}
+```
+
+**c> 登陆失败异常**
+
+```java
+public class LoginFailedException extends RuntimeException {
+
+    public LoginFailedException() {
+    }
+
+    public LoginFailedException(String message) {
+        super(message);
+    }
+
+    public LoginFailedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public LoginFailedException(Throwable cause) {
+        super(cause);
+    }
+
+    public LoginFailedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+}
+```
+
+**d> 远程方法调用统一返回结果**
+
+```java
+public class ResultEntity<T> {
+
+    public static final String SUCCESS = "SUCCESS";
+    public static final String FAILED = "FAILED";
+
+    // 封装当前请求处理的结果是成功还是失败
+    private String result;
+
+    // 请求处理失败时返回的错误消息
+    private String message;
+
+    // 要返回的数据
+    private T data;
+
+    /**
+     * 请求处理成功且不需要返回数据时使用的工具方法
+     * @param <Type>
+     * @return
+     */
+    public static <Type> ResultEntity<Type> successWithoutData(){
+        return new ResultEntity<Type>(SUCCESS, null, null);
+    }
+
+    /**
+     * 请求处理成功且需要返回数据时使用的工具方法
+     * @param data
+     * @param <Type>
+     * @return
+     */
+    public static <Type> ResultEntity<Type> successWithData(Type data){
+        return new ResultEntity<Type>(SUCCESS, null, data);
+    }
+
+    public static <Type> ResultEntity<Type> faild(String message){
+        return new ResultEntity<Type>(FAILED, message, null);
+    }
+
+    public ResultEntity() {
+
+    }
+
+    public ResultEntity(String result, String message, T data) {
+        super();
+        this.result = result;
+        this.message = message;
+        this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "ResultEntity [result=" + result + ", message=" + message + ", data=" + data + "]";
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+}
+```
+
+### Ⅱ module09-base-entity
+
+**a> 引入依赖**
+
+```xml
+<dependency>
+    <groupId>javax.persistence</groupId>
+    <artifactId>persistence-api</artifactId>
+</dependency>
+```
+
+**b> 创建实体类**
+
+```java
+@Table(name = "sys_user")
+public class SysUser implements Serializable {
+
+    private Long userId;
+
+    private Long deptId;
+
+    private String userName;
+
+    private String email;
+
+    private String phonenumber;
+
+    private String sex;
+
+    private String password;
+
+    private String delFlag;
+
+    private String createBy;
+
+    private Date createTime;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName == null ? null : userName.trim();
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email == null ? null : email.trim();
+    }
+
+    public String getPhonenumber() {
+        return phonenumber;
+    }
+
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber == null ? null : phonenumber.trim();
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex == null ? null : sex.trim();
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password == null ? null : password.trim();
+    }
+
+    public String getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag == null ? null : delFlag.trim();
+    }
+
+    public String getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy == null ? null : createBy.trim();
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+}
+```
+
 ## 4、 用户登录认证服务：提供端
+
+### Ⅰ 总体分析
+
+![总体分析](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202209281509242.png)
+
+### Ⅱ 注册中心
+
+在本地启动nacos注册中心
+
+```sh
+startup.cmd -m standalone
+```
+
+[Nacos官方文档](https://nacos.io/zh-cn/docs/quick-start.html)
+
+### Ⅲ 声明接口，暴露服务
+
+**a> 接口文档**
+
+[参考案例](http://heavy_code_industry.gitee.io/code_heavy_industry/pro002-maven/chapter08/api.html)
+
+**b> Feign 接口代码**
+
+1. **位置**：
+
+   **module08-base-api**/src/main/java/com/senmu/maven/**api/MySQLProvider.java**
+
+2. **引入依赖**
+
+   ```xml
+   <!-- OpenFeign 专用依赖 -->
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-openfeign</artifactId>
+   </dependency>
+   ```
+
+3. **接口代码**
+
+   **注意**：@FeignClient 注解中指定的是提供服务的微服务名称，要和注册中心注册的一致
+
+   ```java
+   // @FeignClient 注解将当前接口标记为服务暴露接口
+   // name 属性：指定被暴露服务的微服务名称
+   @FeignClient(name = "module06-mysql-data-provider")
+   public interface MySQLProvider {
+   
+       @RequestMapping("/remote/get/login/info")
+       ResultEntity<SysUser> getLoginUserInfo(
+   
+               // @RequestParam 无论如何不能省略
+               @RequestParam("loginAccount") String loginAccount,
+               @RequestParam("loginPassword") String loginPassword);
+   }
+   ```
+
+### Ⅳ 实现接口
+
+**a> 所属工程模块**
+
+module06-mysql-data-provider
+
+**b> 引入依赖**
+
+```xml
+<!-- Nacos 服务注册发现启动器 -->
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+</dependency>
+
+<!--通用mapper启动器依赖-->
+<dependency>
+    <groupId>tk.mybatis</groupId>
+    <artifactId>mapper-spring-boot-starter</artifactId>
+</dependency>
+
+<!--mysql驱动-->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+</dependency>
+
+<!--druid启动器依赖-->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid-spring-boot-starter</artifactId>
+</dependency>
+
+<!--web启动器依赖-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+<!--编码工具包-->
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+</dependency>
+
+<!--单元测试启动器-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+
+<!--热部署 -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <scope>runtime</scope>
+    <optional>true</optional>
+</dependency>
+```
+
+**c> 代码实现**
+
+1.  总体内容：实现controller、mapper、service、主启动类、YAML配置文件
+
+2. SysUserMapper
+
+   继承 tk.mybatis.mapper.common.Mapper 后就可以使用通用 Mapper 提供的常规代码实现。除非有非常规需求，否则我们自己什么都不用写。
+
+   ```java
+   public interface SysUserMapper extends Mapper<SysUser> {
+   }
+   ```
+
+3. service接口
+
+   ```java
+   SysUser getLoginUserInfo(String loginAccount, String loginPassword);
+   ```
+
+4. service实现
+
+    @Autowired
+       private SysUserMapper userMapper;
+
+   ```java
+   @Override
+   public SysUser getLoginUserInfo(String loginAccount, String loginPassword) {
+   
+       String encodedLoginPassword = MD5Util.encode(loginPassword);
+   
+       Example example = new Example(SysUser.class);
+   
+       Example.Criteria criteria = example.createCriteria();
+   
+       criteria.andUserNameEqualTo(loginAccount).andPasswordEqualTo(encodedLoginPassword);
+   
+       List<SysUser> userList = userMapper.selectByExample(example);
+   
+       if (userList != null && userList.size() > 0){
+   
+           return userList.get(0);
+       }
+   
+       return null;
+   }
+   ```
+
+5. SysUserController
+
+   ```java
+   @RestController
+   public class SysUserController {
+   
+       @Autowired
+       private ISysUserService userService;
+   
+       @RequestMapping("/remote/get/login/info")
+       ResultEntity<SysUser> getLoginUserInfo(
+   
+               // @RequestParam 无论如何不能省略
+               @RequestParam("loginAccount") String loginAccount,
+               @RequestParam("loginPassword") String loginPassword){
+           try {
+               SysUser userInfo = userService.getLoginUserInfo(loginAccount, loginPassword);
+   
+               return ResultEntity.successWithData(userInfo);
+           } catch (Exception e){
+               e.printStackTrace();
+               String message = e.getMessage();
+               return ResultEntity.faild(message);
+           }
+       }
+   }
+   ```
+
+6. 主启动类
+
+   ```java
+   package com.senmu.maven;
+   
+   // 为了让当前微服务对接（注册或发现服务）注册中心
+   @EnableDiscoveryClient
+   
+   // SpringBoot 标配注解
+   @SpringBootApplication
+   
+   // 扫描通用 Mapper 的 Mapper 接口所在包
+   // 这个注解全类名：tk.mybatis.spring.annotation.MapperScan
+   // basePackage 属性：指定要扫描的 Mapper 接口所在的包
+   @MapperScan(basePackages = "com.senmu.maven.mapper")
+   public class MainType {
+   
+       public static void main(String[] args) {
+           SpringApplication.run(MainType.class, args);
+       }
+   }
+   ```
+
+7. YAML 配置文件：src/main/resources/**application.yml**
+
+   ```yml
+   server:
+     port: 10001
+   spring:
+     datasource:
+       driver-class-name: com.mysql.cj.jdbc.Driver
+       url: jdbc:mysql://127.0.0.1:3306/maven
+       username: root
+       password: 123456
+       type: com.alibaba.druid.pool.DruidDataSource
+     application:
+       name: module06-mysql-data-provider
+     cloud:
+       nacos:
+         discovery:
+           server-addr: localhost:8848
+   ```
 
 ## 5、 用户登录认证服务：消费端
 
+### Ⅰ 所属工程模块
+
+**module02-user-auth-center**
+
+### Ⅱ 引入依赖
+
+```xml
+<!-- Nacos 服务注册发现启动器 -->
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+</dependency>
+
+<!-- web启动器依赖 -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+<!-- 视图模板技术 thymeleaf -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+```
+
+### Ⅲ YAML 配置文件
+
+src/main/resources/application.yml
+
+```yml
+server:
+  port: 10002
+spring:
+  application:
+    name: module02-user-auth-center
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+```
+
+> TIP
+>
+> 就 Thymeleaf 而言，有两个常用属性，但我们全部都使用的是默认值，所以可以省略。
+
+
+
+### Ⅳ 显示首页
+
+**a> 配置 view-controller**
+
+com/senmu/maven/**config/DemoConfig.java**
+
+```java
+@SpringBootConfiguration
+public class DemoConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("index");
+    }
+}
+```
+
+**b> Thymeleaf 视图模板页面**
+
+src/main/resources/**templates/index.html**
+
+```html
+<!DOCTYPE html>
+<html lang="en" xml:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+
+<form th:action="@{/consumer/do/login}" method="post">
+    <p style="color: red;font-weight: bold;" th:if="${not #strings.isEmpty(authMessage)}" th:text="${authMessage}">
+        这里根据条件显示登录失败消息</p>
+    <p style="color: red;font-weight: bold;" th:if="${not #strings.isEmpty(systemMessage)}" th:text="${systemMessage}">
+        这里根据条件显示系统消息</p>
+    账号：<input type="text" name="loginAccount"/><br/>
+    密码：<input type="password" name="loginPassword"><br/>
+    <button type="submit">登录</button>
+</form>
+</body>
+</html>
+```
+
+### Ⅴ 登录验证
+
+**a> 主要流程**
+
+![无标题](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202209290937987.png)
+
+**b> 主启动类**
+
+**注意**：一定要标记 @EnableFeignClients 注解。
+
+```java
+@EnableFeignClients
+@EnableDiscoveryClient
+@SpringBootApplication
+public class MainType {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MainType.class, args);
+    }
+
+}
+```
+
+**c> AuthController**
+
+com/senmu/maven/**controller/AuthController.java**
+
+```java
+@Controller
+public class AuthController {
+
+    // 装配远程接口
+    // 1、本地使用 @Autowired 注解装配远程接口类型即可实现方法的远程调用，
+    // 看起来就像是调用本地方法一样，我们管这种特性叫方法的声明式远程调用。
+    // 2、凭啥通过 @Autowired 注解就能够导入远程接口对应的 bean
+    //      ①当前环境包含 Feign 相关 jar 包。
+    //      ②当前微服务的主启动类上标记 @EnableFeignClients
+    //      ③符合 SpringBoot 自动扫描包的约定规则：默认情况下主启动类所在的包、以及主启动类所在包的子包都会被自动扫描
+    //          主启动类所在包：     com.senmu.maven
+    //          被扫描的接口所在的包：com.senmu.maven.api
+    @Autowired
+    private MySQLProvider mySQLProvider;
+
+    /**
+     * 执行登录方法
+     * @param loginAccount
+     * @param loginPassword
+     * @param session
+     * @param model
+     * @return
+     */
+    @RequestMapping("/consumer/do/login")
+    public String doLogin(@RequestParam("loginAccount") String loginAccount,
+                          @RequestParam("loginPassword") String loginPassword, HttpSession session, Model model) {
+
+        // 1、调用远程接口根据登录账号、密码查询 SysUser 对象
+        ResultEntity<SysUser> resultEntity = mySQLProvider.getLoginUserInfo(loginAccount, loginPassword);
+
+        // 2、验证远程接口调用是否成功
+        String result = resultEntity.getResult();
+
+        if ("SUCCESS".equals(result)) {
+
+            // 3、从 ResultEntity 中获取查询得到的 SysUser 对象
+            SysUser user = resultEntity.getData();
+
+            // 4、将 user 对象存入 Session 域
+            session.setAttribute("loginInfo", user);
+
+            // 5、前往 target 页面
+            return "target";
+        } else {
+
+            // 6、获取失败消息
+            String message = resultEntity.getMessage();
+
+            // 7、将失败消息存入模型
+            model.addAttribute("message", message);
+
+            // 8、回到登录页面
+            return "index";
+
+        }
+    }
+}
+```
+
 ## 6、 部署运行
+
+### Ⅰ 目标
+
+![最终目标](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202209291002310.png)
+
+### Ⅱ 微服务打包
+
+**a> 修改MySQL 连接信息**
+
+module06-mysql-data-provider/src/main/resources/application.yml
+
+当前微服务和 MySQL 位于同一个服务器上，需要把访问地址改成 localhost
+
+**b> 在父工程执行 install 命令**
+
+```sh
+mvn clean install -Dmaven.test.skip=true
+```
+
+### Ⅲ 生成微服务可运行 jar 包
+
+1. **应用微服务打包插件**
+
+   可以以 SpringBoot 微服务形式直接运行的 jar 包包括：
+
+   - 当前微服务本身代码
+   - 当前微服务所依赖的 jar 包
+   - 内置 Tomcat（Servlet 容器）
+   - 与 jar 包可以通过 java -jar 方式直接启动相关的配置
+
+   要加入额外的资源、相关配置等等，仅靠 Maven 自身的构建能力是不够的，所以要通过 build 标签引入下面的插件。包括**user-auth-center和mysql-data-provider**模块.
+
+   ```xml
+   <!-- build 标签：用来配置对构建过程的定制 -->
+   <build>
+       <!-- plugins 标签：定制化构建过程中所使用到的插件 -->
+   	<plugins>
+           <!-- plugin 标签：一个具体插件 -->
+   		<plugin>
+   			<groupId>org.springframework.boot</groupId>
+   			<artifactId>spring-boot-maven-plugin</artifactId>
+   		</plugin>
+   	</plugins>
+   </build>
+   ```
+
+2. **执行插件目标**
+
+   请对 module02-user-auth-center 和 module06-mysql-data-provider 都执行下面的命令：
+
+   - clean 子命令：清理之前构建的结果
+   - package 子命令：我们真正要调用的 spring-boot:repackage 要求必须将当前微服务本身的 jar 包提前准备好，所以必须在它之前执行 package 子命令。
+   - spring-boot:repackage 子命令：调用 spring-boot 插件的 repackage 目标
+   - -Dmaven.test.skip=true 参数：跳过测试
+
+   ```sh
+   mvn clean package spring-boot:repackage -Dmaven.test.skip=true
+   ```
+
+### Ⅲ 执行部署
+
+**a> 启动 Nacos**
+
+```sh
+startup.cmd -m standalone
+```
+
+**b> 上传 jar 包**
+
+**c> 启动微服务**
 
 # 九、POM深入与强化
 
 ## 1、 重新认识 Maven
 
+### Ⅰ Maven 的完整功能
+
+在入门的时候我们介绍说 Maven 是一款『**构建**管理』和『**依赖**管理』的工具。但事实上这只是 Maven 的一部分功能。Maven 本身的产品定位是一款『**项目**管理工具』。
+
+### Ⅱ 项目管理功能的具体体现
+
+下面是 spring-boot-starter 的 POM 文件，可以看到：除了我们熟悉的坐标标签、dependencies 标签，还有 description、url、organization、licenses、developers、scm、issueManagement 等这些描述项目信息的标签。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!-- This module was also published with a richer model, Gradle metadata,  -->
+  <!-- which should be used instead. Do not delete the following line which  -->
+  <!-- is to indicate to Gradle or any Gradle module metadata file consumer  -->
+  <!-- that they should prefer consuming it instead. -->
+  <!-- do_not_remove: published-with-gradle-metadata -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter</artifactId>
+  <version>2.5.6</version>
+  <name>spring-boot-starter</name>
+  <description>Core starter, including auto-configuration support, logging and YAML</description>
+  <url>https://spring.io/projects/spring-boot</url>
+  <organization>
+    <name>Pivotal Software, Inc.</name>
+    <url>https://spring.io</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Pivotal</name>
+      <email>info@pivotal.io</email>
+      <organization>Pivotal Software, Inc.</organization>
+      <organizationUrl>https://www.spring.io</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/spring-projects/spring-boot.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</developerConnection>
+    <url>https://github.com/spring-projects/spring-boot</url>
+  </scm>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/spring-projects/spring-boot/issues</url>
+  </issueManagement>
+
+  <dependencies>
+    <dependency>
+      ……
+    </dependency>
+  </dependencies>
+</project>
+```
+
+所以从『项目管理』的角度来看，Maven 提供了如下这些功能：
+
+- 项目对象模型（POM）：将整个项目本身抽象、封装为应用程序中的一个对象，以便于管理和操作。
+- 全局性构建逻辑重用：Maven 对整个构建过程进行封装之后，程序员只需要指定配置信息即可完成构建。让构建过程从 Ant 的『编程式』升级到了 Maven 的『声明式』。
+- 构件的标准集合：在 Maven 提供的标准框架体系内，所有的构件都可以按照统一的规范生成和使用。
+- 构件关系定义：Maven 定义了构件之间的三种基本关系，让大型应用系统可以使用 Maven 来进行管理
+  - 继承关系：通过从上到下的继承关系，将各个子构件中的重复信息提取到父构件中统一管理
+  - 聚合关系：将多个构件聚合为一个整体，便于统一操作
+  - 依赖关系：Maven 定义了依赖的范围、依赖的传递、依赖的排除、版本仲裁机制等一系列规范和标准，让大型项目可以有序容纳数百甚至更多依赖
+- 插件目标系统：Maven 核心程序定义抽象的生命周期，然后将插件的目标绑定到生命周期中的特定阶段，实现了标准和具体实现解耦合，让 Maven 程序极具扩展性
+- 项目描述信息的维护：我们不仅可以在 POM 中声明项目描述信息，更可以将整个项目相关信息收集起来生成 HTML 页面组成的一个可以直接访问的站点。这些项目描述信息包括：
+  - 公司或组织信息
+  - 项目许可证
+  - 开发成员信息
+  - issue 管理信息
+  - SCM 信息
+
 ## 2、 POM 的四个层次
+
+### Ⅰ 超级 POM
+
+经过我们前面的学习，我们看到 Maven 在构建过程中有很多默认的设定。例如：源文件存放的目录、测试源文件存放的目录、构建输出的目录……等等。但是其实这些要素也都是被 Maven 定义过的。定义的位置就是：**超级 POM**。
+
+关于超级 POM，Maven 官网是这样介绍的：
+
+> The Super POM is Maven's default POM. All POMs extend the Super POM unless explicitly set, meaning the configuration specified in the Super POM is inherited by the POMs you created for your projects.
+>
+> 译文：Super POM 是 Maven 的默认 POM。除非明确设置，否则所有 POM 都扩展 Super POM，这意味着 Super POM 中指定的配置由您为项目创建的 POM 继承。
+
+所以我们自己的 POM 即使没有明确指定一个父工程（父 POM），其实也默认继承了超级 POM。就好比一个 Java 类默认继承了 Object 类。
+
+### Ⅱ 父 POM
+
+和 Java 类一样，POM 之间其实也是**单继承**的。如果我们给一个 POM 指定了父 POM，那么继承关系就是,  超级 POM <—继承— 父 POM <—继承— 当前 POM。
+
+### Ⅲ 有效 POM
+
+**a> 概念**
+
+有效 POM 英文翻译为 effective POM，它的概念是这样的——在 POM 的继承关系中，子 POM 可以覆盖父 POM 中的配置；如果子 POM 没有覆盖，那么父 POM 中的配置将会被继承。按照这个规则，继承关系中的所有 POM 叠加到一起，就得到了一个最终生效的 POM。显然 Maven 实际运行过程中，执行构建操作就是按照这个最终生效的 POM 来运行的。这个最终生效的 POM 就是**有效 POM**，英文叫**effective POM**。
+
+**b> 查看有效 POM**
+
+```
+mvn help:effective-pom
+```
+
+### Ⅳ 小结
+
+综上所述，平时我们使用和配置的 POM 其实大致是由四个层次组成的：
+
+- 超级 POM：所有 POM 默认继承，只是有直接和间接之分。
+- 父 POM：这一层可能没有，可能有一层，也可能有很多层。
+- 当前 pom.xml 配置的 POM：我们最多关注和最多使用的一层。
+- 有效 POM：隐含的一层，但是实际上真正生效的一层。
 
 ## 3、 属性的声明与引用
 
+### Ⅰ help 插件的各个目标
+
+官网说明地址：https://maven.apache.org/plugins/maven-help-plugin
+
+| 目标                    | 说明                                              |
+| ----------------------- | ------------------------------------------------- |
+| help:active-profiles    | 列出当前已激活的 profile                          |
+| help:all-profiles       | 列出当前工程所有可用 profile                      |
+| help:describe           | 描述一个插件和/或 Mojo 的属性                     |
+| help:effective-pom      | 以 XML 格式展示有效 POM                           |
+| help:effective-settings | 为当前工程以 XML 格式展示计算得到的 settings 配置 |
+| **help:evaluate**       | 计算用户在交互模式下给出的 Maven 表达式           |
+| help:system             | 显示平台详细信息列表，如系统属性和环境变量        |
+
+### Ⅱ 用途
+
+- 在当前 pom.xml 文件中引用属性
+- 资源过滤功能：在非 Maven 配置文件中引用属性，由 Maven 在处理资源时将引用属性的表达式替换为属性值
+
 ## 4、 build 标签详解
 
-## 5、 依赖配置补充
+### Ⅰ 概述
 
-## 6、 Maven 自定义插件
+实际适用Maven过程中，build标签可以省略，但通过有效 POM 我们能够看到，build 标签的相关配置其实一直都在，只是在我们需要定制构建过程的时候才会通过配置 build 标签覆盖默认值或补充配置。这一点我们可以通过打印有效 POM 来看到。
 
-## 7、 profile 详解
+所以**本质**上来说：我们配置的 build 标签都是对**超级 POM 配置**的**叠加**。在默认配置无法满足需求的时候**定制构建过程**。
 
-# 十、生产实践
+### Ⅱ build标签的组成
 
-## 1、 搭建 Maven 私服：Nexus
+**a> 定义约定的目录结构**
 
-## 2、 jar 包冲突问题
+```xml
+<sourceDirectory>D:\maven-ssm\src\main\java</sourceDirectory>
+<scriptSourceDirectory>D:\maven-ssm\src\main\scripts</scriptSourceDirectory>
+<testSourceDirectory>D:\maven-ssm\src\test\java</testSourceDirectory>
+<outputDirectory>D:\maven-ssm\target\classes</outputDirectory>
+<testOutputDirectory>D:\maven-ssm\target\test-classes</testOutputDirectory>
+<resources>
+    <resource>
+        <directory>D:\maven-ssm\src\main\resources</directory>
+    </resource>
+</resources>
+<testResources>
+    <testResource>
+        <directory>D:\maven-ssm\src\test\resources</directory>
+    </testResource>
+</testResources>
+<directory>D:\maven-ssm\target</directory>
+```
 
-## 3、 体系外 jar 包引入
+| 目录名                | 作用                       |
+| --------------------- | -------------------------- |
+| sourceDirectory       | 主体源程序存放目录         |
+| scriptSourceDirectory | 脚本源程序存放目录         |
+| testSourceDirectory   | 测试源程序存放目录         |
+| outputDirectory       | 主体源程序编译结果输出目录 |
+| testOutputDirectory   | 测试源程序编译结果输出目录 |
+| resources             | 主体资源文件存放目录       |
+| testResources         | 测试资源文件存放目录       |
+| directory             | 构建结果输出目录           |
+
+**b> 备用插件管理**
+
+pluginManagement 标签存放着几个极少用到的插件：
+
+- maven-antrun-plugin
+- maven-assembly-plugin
+- maven-dependency-plugin
+- maven-release-plugin
+
+通过 pluginManagement 标签管理起来的插件就像 dependencyManagement 一样，子工程使用时可以省略版本号，起到在父工程中统一管理版本的效果。起到在父工程中统一管理版本的效果。
+
+- 被 spring-boot-dependencies 管理的插件信息：
+
+```xml
+<plugin>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-maven-plugin</artifactId>
+	<version>2.6.2</version>
+</plugin>
+```
+
+- 子工程使用的插件信息：
+
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+```
+
+**c> 生命周期插件**
+
+plugins 标签存放的是默认生命周期中实际会用到的插件：
+
+```xml
+<plugin>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.1</version>
+    <executions>
+        <execution>
+            <id>default-compile</id>
+            <phase>compile</phase>
+            <goals>
+                <goal>compile</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>default-testCompile</id>
+            <phase>test-compile</phase>
+            <goals>
+                <goal>testCompile</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+1. 坐标部分
+
+   artifactId 和 version 标签定义了插件的坐标，作为 Maven 的自带插件这里省略了 groupId。
+
+2. 执行部分
+
+   executions 标签内可以配置多个 execution 标签，execution 标签内：
+
+   - id：指定唯一标识
+   - phase：关联的生命周期阶段
+   - goals/goal：关联指定生命周期的目标
+
+   另外，插件目标的执行过程可以进行配置，例如 maven-site-plugin 插件的 site 目标：
+
+   ```xml
+   <execution>
+       <id>default-site</id>
+       <phase>site</phase>
+       <goals>
+           <goal>site</goal>
+       </goals>
+       <configuration>
+           <outputDirectory>D:\maven-test-prepare\target\site</outputDirectory>
+           <reportPlugins>
+               <reportPlugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-project-info-reports-plugin</artifactId>
+               </reportPlugin>
+           </reportPlugins>
+       </configuration>
+   </execution>
+   ```
+
+   configuration 标签内进行配置时使用的标签是插件本身定义的。就以 maven-site-plugin 插件为例，它的核心类是 org.apache.maven.plugins.site.render.SiteMojo，在这个类中可以看到 **outputDirectory** 属性。
+
+   SiteMojo 的父类是：AbstractSiteRenderingMojo，在父类中可以看到 reportPlugins 属性。
+
+   因此：每个插件能够做哪些设置都是各个插件自己规定的。
+
+### Ⅲ 典形应用：指定 JDK 版本
+
+**a> 需求**
+
+在 settings.xml 中配置了 JDK 版本，那么将来把 Maven 工程部署都服务器上，脱离了 settings.xml 配置，如何保证程序正常运行？
+
+可以直接把 JDK 版本信息告诉负责编译操作的 maven-compiler-plugin 插件，让它在构建过程中，按照我们指定的信息工作。
+
+**b> 暂时取消 settings.xml 配置**
+
+为了测试对 maven-compiler-plugin 插件进行配置的效果，我们暂时取消 settings.xml 中的 profile 配置。
+
+```xml
+<!-- 配置Maven工程的默认JDK版本 -->
+<!-- <profile>
+  <id>jdk-1.8</id>
+  <activation>
+	<activeByDefault>true</activeByDefault>
+	<jdk>1.8</jdk>
+  </activation>
+  <properties>
+	<maven.compiler.source>1.8</maven.compiler.source>
+	<maven.compiler.target>1.8</maven.compiler.target>
+	<maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+  </properties>
+</profile> -->
+```
+
+**c> 配置构建过程**
+
+```xml
+<!-- build 标签：意思是告诉 Maven，你的构建行为，我要开始定制了！ -->
+<build>
+    <!-- plugins 标签：Maven 你给我听好了，你给我构建的时候要用到这些插件！ -->
+    <plugins>
+        <!-- plugin 标签：这是我要指定的一个具体的插件 -->
+        <plugin>
+            <!-- 插件的坐标。此处引用的 maven-compiler-plugin 插件不是第三方的，是一个 Maven 自带的插件。 -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.1</version>
+            
+            <!-- configuration 标签：配置 maven-compiler-plugin 插件 -->
+            <configuration>
+                <!-- 具体配置信息会因为插件不同、需求不同而有所差异 -->
+                <source>1.8</source>
+                <target>1.8</target>
+                <encoding>UTF-8</encoding>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
+| source | 提供与指定发行版的源兼容性 |
+| ------ | -------------------------- |
+| target | 生成特点 VM 版本的类文件   |
+
+相较于settings.xml配置的优势是：无论在哪个环境执行编译等构建操作都有效。settings.xml 中配置仅在本地生效。
+
+### Ⅳ 典型应用：SpringBoot 定制化打包
+
+**a> 需求**
+
+spring-boot-maven-plugin 并不是 Maven 自带的插件，而是 SpringBoot 提供的，用来改变 Maven 默认的构建行为。具体来说是改变打包的行为。默认情况下 Maven 调用 maven-jar-plugin 插件的 jar 目标，生成普通的 jar 包。
+
+普通 jar 包没法使用 java -jar xxx.jar 这样的命令来启动、运行，但是 SpringBoot 的设计理念就是每一个『微服务』导出为一个 jar 包，这个 jar 包可以使用 java -jar xxx.jar 这样的命令直接启动运行。
+
+这样一来，打包的方式肯定要进行调整。所以 SpringBoot 提供了 spring-boot-maven-plugin 这个插件来定制打包行为。
+
+**b> 配置**
+
+```xml
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<version>2.5.5</version>
+		</plugin>
+	</plugins>
+</build>
+```
+
+**c> 插件的七个目标**
+
+| 目标名称                  | 作用                                                         |
+| ------------------------- | ------------------------------------------------------------ |
+| spring-boot:build-image   | 使用构建包将应用程序打包到 OCI image 中。                    |
+| spring-boot:build-info    | 根据当前 MavenProject 的内容生成一个内部版本信息属性文件(build-info.properties)。 |
+| spring-boot:help          | 显示有关 spring-boot-maven-plugin 的帮助信息. 调用 mvn spring-boot:help -Ddetail=true -Dgoal=<goal-name> 以显示参数详细信息。 |
+| **spring-boot:repackage** | 重新打包现有的 JAR 和 WAR 归档文件，以便可以使用 java -jar 从命令行执行它们。使用 layout=NONE 也可以简单地用于打包具有嵌套依赖项的 JAR（并且没有主类，因此不可执行）。 |
+| spring-boot:run           | Run an application in place.                                 |
+| spring-boot:start         | 启动 Spring 应用。与运行目标相反，这不会阻塞并允许其他目标在应用程序上运行。此目标通常用于集成测试方案，其中应用程序在测试套件之前启动，在测试套件之后停止。 |
+| spring-boot:stop          | 停止已由“启动”目标启动的应用程序。通常在测试套件完成后调用。 |
+
+
+
+### Ⅴ 典型应用：Mybatis 逆向工程
+
+使用 Mybatis 的逆向工程需要使用如下配置，MBG 插件的特点是需要提供插件所需的依赖：
+
+```xml
+<!-- 控制 Maven 在构建过程中相关配置 -->
+<build>
+		
+	<!-- 构建过程中用到的插件 -->
+	<plugins>
+		
+		<!-- 具体插件，逆向工程的操作是以构建过程中插件形式出现的 -->
+		<plugin>
+			<groupId>org.mybatis.generator</groupId>
+			<artifactId>mybatis-generator-maven-plugin</artifactId>
+			<version>1.3.0</version>
+	
+			<!-- 插件的依赖 -->
+			<dependencies>
+				
+				<!-- 逆向工程的核心依赖 -->
+				<dependency>
+					<groupId>org.mybatis.generator</groupId>
+					<artifactId>mybatis-generator-core</artifactId>
+					<version>1.3.2</version>
+				</dependency>
+					
+				<!-- 数据库连接池 -->
+				<dependency>
+					<groupId>com.mchange</groupId>
+					<artifactId>c3p0</artifactId>
+					<version>0.9.2</version>
+				</dependency>
+					
+				<!-- MySQL驱动 -->
+				<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+					<version>5.1.8</version>
+				</dependency>
+			</dependencies>
+		</plugin>
+	</plugins>
+</build>
+```
+
+## **5、 依赖配置补充**
+
+### Ⅰ 依赖范围
+
+**a> import**
+
+管理依赖最基本的办法是继承父工程，但是和 Java 类一样，Maven 也是单继承的。如果不同体系的依赖信息封装在不同 POM 中了，没办法继承多个父工程怎么办？这时就可以使用 import 依赖范围。
+
+典型案例就是在项目中引入 SpringBoot、SpringCloud 依赖：
+
+```xml
+<dependencyManagement>
+    <dependencies>
+
+        <!-- SpringCloud 依赖导入 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>Hoxton.SR9</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <!-- SpringCloud Alibaba 依赖导入 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+            <version>2.2.6.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <!-- SpringBoot 依赖导入 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>2.3.6.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
+import 依赖范围使用要求：
+
+- 打包类型必须是 pom
+- 必须放在 dependencyManagement 中
+
+**b> system**
+
+以 Windows 系统环境下开发为例，假设现在 D:\maven-test-aaa-1.0-SNAPSHOT.jar 想要引入到我们的项目中，此时就可以将依赖配置为 system 范围：
+
+```xml
+<dependency>
+    <groupId>com.atguigu.maven</groupId>
+    <artifactId>atguigu-maven-test-aaa</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <systemPath>D:\maven-test-aaa-1.0-SNAPSHOT.jar</systemPath>
+    <scope>system</scope>
+</dependency>
+```
+
+这样引入依赖完全不具有可移植性，所以**不建议使用**。
+
+**c> runtime**
+
+专门用于编译时不需要，但是运行时需要的 jar 包。比如：编译时我们根据接口调用方法，但是实际运行时需要的是接口的实现类。典型案例是：
+
+```xml
+<!--热部署 -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <scope>runtime</scope>
+    <optional>true</optional>
+</dependency>
+```
+
+### Ⅱ 可选依赖
+
+可选其实就是『可有可无』。如上述 热部署。用标签 <optional>true</optional> 控制
+
+其核心含义是：Project X 依赖 Project A，A 中一部分 X 用不到的代码依赖了 B，那么对 X 来说 B 就是『可有可无』的。
+
+### Ⅲ 版本仲裁
+
+**a> 最短路径优先**
+
+在下图的例子中，对模块 pro25-module-a 来说，Maven 会采纳 1.2.12 版本。
+
+![image-20220929153925098](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202209291539994.png)
+
+**b> 路径相同时先声明者优先**
+
+![image-20220929154022460](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202209291540803.png)
+
+此时 Maven 采纳哪个版本，取决于在 pro29-module-x 中，对 pro30-module-y 和 pro31-module-z 两个模块的依赖哪一个先声明。
+
+**c> 总结**
+
+其实 Maven 的版本仲裁机制只是在没有人为干预的情况下，自主决定 jar 包版本的一个办法。而实际上我们要使用具体的哪一个版本，还要取决于项目中的实际情况。所以在项目正常运行的情况下，jar 包版本可以由 Maven 仲裁，不必我们操心；而发生冲突时 Maven 仲裁决定的版本无法满足要求，此时就应该由程序员明确指定 jar 包版本。
+
+## **6、 Maven 自定义插件**
+
+只做了解，略
+
+[Maven 自定义插件](http://heavy_code_industry.gitee.io/code_heavy_industry/pro002-maven/chapter09/verse06.html#_1、本节定位)
+
+## **7、 profile 详解**
+
+### Ⅰ profile概述
+
+**a> 项目的不同运行环境**
+
+![images](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/maven/202209291635873.png)
+
+通常情况下，我们至少有三种运行环境：
+
+- 开发环境：供不同开发工程师开发的各个模块之间互相调用、访问；内部使用
+
+- 测试环境：供测试工程师对项目的各个模块进行功能测试；内部使用
+
+- 生产环境：供最终用户访问——所以这是正式的运行环境，对外提供服务
+
+- 而我们这里的『环境』仍然只是一个笼统的说法，实际工作中一整套运行环境会包含很多种不同服务器：
+
+  - MySQL
+
+  - Redis
+
+  - ElasticSearch
+
+  - RabbitMQ
+
+  - FastDFS
+
+  - Nginx
+
+  - Tomcat
+
+  - ……
+
+就拿其中的 MySQL 来说，不同环境下的访问参数肯定完全不同：
+
+| 开发环境                                                     | 测试环境                                                     | 生产环境                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+  | dev.driver=com.mysql.jdbc.Driver dev.url=jdbc:mysql://124.71.36.17:3306/db-sys dev.username=root dev.password=123456 | test.driver=com.mysql.jdbc.Driver test.url=jdbc:mysql://124.71.36.89:3306/db-sys test.username=dev-team test.password=123456 | product.driver=com.mysql.jdbc.Driver product.url=jdbc:mysql://39.107.88.164:3306/prod-db-sys product.username=root product.password=123456 |
+
+可是代码只有一套。如果在 jdbc.properties 里面来回改，那就太麻烦了，而且很容易遗漏或写错，增加调试的难度和工作量。所以最好的办法就是把适用于各种不同环境的配置信息分别准备好，部署哪个环境就激活哪个配置。
+
+在 Maven 中，使用 profile 机制来管理不同环境下的配置信息。但是解决同类问题的类似机制在其他框架中也有，而且从模块划分的角度来说，持久化层的信息放在构建工具中配置也违反了『高内聚，低耦合』的原则。
+
+所以 Maven 的 profile 我们了解一下即可，不必深究。
+
+**b> profile 声明和使用的基本逻辑**
+
+- 首先为每一个环境声明一个 profile
+  - 环境 A：profile A
+  - 环境 B：profile B
+  - 环境 C：profile C
+  - ……
+- 然后激活某一个 profile
+
+**c> 默认 profile**
+
+其实即使在 pom.xml 中不配置 profile 标签，也已经用到 profile。因为根标签 project 下所有标签相当于都是在设定默认的 profile。这样一来我们也就很容易理解下面这句话：project 标签下除了 modelVersion 和坐标标签之外，其它标签都可以配置到 profile 中。
+
+### Ⅱ profile配置
+
+**a> 外部视角：配置文件**
+
+从外部视角来看，profile 可以在下面两种配置文件中配置：
+
+- settings.xml：全局生效。其中我们最熟悉的就是配置 JDK 1.8。
+- pom.xml：当前 POM 生效
+
+
+
+**b> 内部实现：具体标签**
+
+从内部视角来看，配置 profile 有如下语法要求：
+
+1.  **profiles/profile 标签**
+
+   - 由于 profile 天然代表众多可选配置中的一个所以由复数形式的 profiles 标签统一管理。
+   - 由于 profile 标签覆盖了 pom.xml 中的默认配置，所以 profiles 标签通常是 pom.xml 中的最后一个标签。
+
+2. **id 标签**
+
+   每个 profile 都必须有一个 id 标签，指定该 profile 的唯一标识。这个 id 标签的值会在命令行调用 profile 时被用到。这个命令格式是：-D<profile id>。
+
+3. **其它允许出现的标签**
+
+   一个 profile 可以覆盖项目的最终名称、项目依赖、插件配置等各个方面以影响构建行为。
+
+   - build
+     - defaultGoal
+     - finalName
+     - resources
+     - testResources
+     - plugins
+   - reporting
+   - modules
+   - dependencies
+   - dependencyManagement
+   - repositories
+   - pluginRepositories
+   - properties
+
+### Ⅲ 激活
+
+**a> 默认配置默认被激活**
+
+POM 中没有在 profile 标签里的就是默认的 profile，当然默认被激活。
+
+**b> 基于环境信息激活**
+
+环境信息包含：JDK 版本、操作系统参数、文件、属性等各个方面。一个 profile 一旦被激活，那么它定义的所有配置都会覆盖原来 POM 中对应层次的元素。可以参考如下的标签结构：
+
+```xml
+<profile>
+	<id>dev</id>
+    <activation>
+        <!-- 配置是否默认激活 -->
+    	<activeByDefault>false</activeByDefault>
+        <jdk>1.8</jdk>
+        <os>
+        	<name>Windows XP</name>
+            <family>Windows</family>
+            <arch>x86</arch>
+            <version>5.1.2600</version>
+        </os>
+        <property>
+        	<name>mavenVersion</name>
+            <value>2.0.5</value>
+        </property>
+        <file>
+        	<exists>file2.properties</exists>
+            <missing>file1.properties</missing>
+        </file>
+    </activation>
+</profile>
+```
+
+> TIP
+>
+> 若配置jdk版本为1.8，则以1.8开头的版本都符合条件
+
+
+
+**c> 命令行激活**
+
+1. **列出活动的 profile**
+
+   ```sh
+   # 列出所有激活的 profile，以及它们在哪里定义
+   mvn help:active-profiles
+   ```
+
+2. **指定某个具体 profile**
+
+   ```xml
+   mvn compile -P<profile id>
+   ```
+
+### Ⅳ 资源属性过滤
+
+**a> 简介**
+
+Maven 为了能够通过 profile 实现各不同运行环境切换，提供了一种『资源属性过滤』的机制。通过属性替换实现不同环境使用不同的参数。
+
+**b> 操作演示**
+
+1. **配置 profile**
+
+   ```xml
+   <profiles>
+       <profile>
+           <id>devJDBCProfile</id>
+           <properties>
+               <dev.jdbc.user>root</dev.jdbc.user>
+               <dev.jdbc.password>123456</dev.jdbc.password>
+               <dev.jdbc.url>http://localhost:3306/maven</dev.jdbc.url>
+               <dev.jdbc.driver>com.mysql.cj.jdbc.Driver</dev.jdbc.driver>
+           </properties>
+           <build>
+               <resources>
+                   <resource>
+                       <!-- 表示为这里指定的目录开启资源过滤功能 -->
+                       <directory>src/main/resources</directory>
+   
+                       <!-- 将资源过滤功能打开 -->
+                       <filtering>true</filtering>
+                   </resource>
+               </resources>
+           </build>
+       </profile>
+   </profiles>
+   ```
+
+2. **待处理的文件 jdbc.properties** 
+
+   ```properties
+   dev.user=${dev.jdbc.user}
+   dev.password=${dev.jdbc.password}
+   dev.url=${dev.jdbc.url}
+   dev.driver=${dev.jdbc.driver}
+   ```
+
+3. **执行处理资源命令**
+
+   ```sh
+   mvn clean resources:resources -PdevJDBCProfile
+   ```
+
+4. **处理结果**
+
+   target中生成的 **jdbc.properties** 将填入profile中配置内容
+
+   ```properties
+   dev.user=root
+   dev.password=123456
+   dev.url=http://localhost:3306/maven
+   dev.driver=com.mysql.cj.jdbc.Driver
+   ```
+
+5. **延伸**
+
+   使用includes和excludes锁定目标文件
+
+   - includes：指定执行 resource 阶段时要包含到目标位置的资源
+   - excludes：指定执行 resource 阶段时要排除的资源
+
+# **十、生产实践**
+
+## **1、 搭建 Maven 私服：Nexus**
+
+## **2、 jar 包冲突问题**
+
+## **3、 体系外 jar 包引入**
