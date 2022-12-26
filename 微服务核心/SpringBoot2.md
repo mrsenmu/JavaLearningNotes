@@ -870,49 +870,546 @@ public CharacterEncodingFilter characterEncodingFilter() {
      | TimeZone                       |      |      |
      | ZoneId                         |      |      |
 
-     
-
    - 复杂参数
 
-     ```
      Map、Model（map、model里面的数据会被放在request的请求域  request.setAttribute）、Errors/BindingResult、RedirectAttributes（ 重定向携带数据）、ServletResponse（response）、SessionStatus、UriComponentsBuilder、ServletUriComponentsBuilder
-     ```
-
      
+     **Map、Model类型的参数**，会返回 mavContainer.getModel（）；---> BindingAwareModelMap 是Model 也是Map。**mavContainer**.getModel(); 获取到值的
 
    - 自定义对象参数
 
+     可以自动类型转换与格式化，可以级联封装。
+
 3. **POJO封装过程**
 
-   - 
+   **ServletModelAttributeMethodProcessor**
 
 4. **参数处理原理**
 
-   - 
+   HandlerMapping中找到能处理请求的Handler（Controller.method()）
+   
+   为当前Handler 找一个适配器 HandlerAdapter； **RequestMappingHandlerAdapter**
+   
+   适配器执行目标方法并确定方法参数的每一个值
 
 **d> 数据响应与内容协商**
 
+![yuque_diagram](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springboot/202210171654412.jpg)
 
+1. 响应JSON
+
+   - jackson.jar + @ResponseBody，给前端自动返回json数据
+
+     ```xml
+     <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-web</artifactId>
+     </dependency>
+     web场景自动引入了json场景
+     <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-json</artifactId>
+         <version>2.3.4.RELEASE</version>
+         <scope>compile</scope>
+     </dependency>
+     ```
+
+   - SpringMVC支持的返回值类型
+
+     ```java
+     ModelAndView
+     Model
+     View
+     ResponseEntity 
+     ResponseBodyEmitter
+     StreamingResponseBody
+     HttpEntity
+     HttpHeaders
+     Callable
+     DeferredResult
+     ListenableFuture
+     CompletionStage
+     WebAsyncTask
+     有 @ModelAttribute 且为对象类型的
+     @ResponseBody 注解 ---> RequestResponseBodyMethodProcessor；
+     ```
+
+2. 内容协商
+
+   根据客户端接收能力不同，返回不同媒体类型的数据。
+   
+   1. 引入xml依赖
+   
+      ```xml
+      <dependency>
+          <groupId>com.fasterxml.jackson.dataformat</groupId>
+          <artifactId>jackson-dataformat-xml</artifactId>
+      </dependency>
+      ```
+   
+   2. postman分别测试返回json和xml
+   
+      只需要改变**请求头中Accept字段**。Http协议中规定的，告诉服务器本客户端可以接收的数据类型。
+   
+   3. 开启浏览器参数方式内容协商功能
+   
+      **为了方便内容协商，开启基于请求参数的内容协商功能**。
+   
+      ```yml
+      spring:
+          contentnegotiation:
+            favor-parameter: true  #开启请求参数内容协商模式
+      ```
+   
+      请求参数中加入 **format** 字段， 如 http://localhost:8080/test/person?format=json
+   
+      确定客户端接收什么样的内容类型；
+   
+      1、Parameter策略优先确定是要返回json数据（获取请求头中的format的值）
+   
+      2、最终进行内容协商返回给客户端json即可。
+   
+   4. **内容协商原理**
+   
+      - 判断当前响应头中是否已经有确定的媒体类型。MediaType
+      - **获取客户端（PostMan、浏览器）支持接收的内容类型。（获取客户端Accept请求头字段）【application/xml】默认**
+      - 遍历循环所有当前系统的 **MessageConverter**，看谁支持操作这个对象
+      - 找到支持操作这个对象的converter，把converter支持的媒体类型统计出来。
+      - 客户端需要【application/xml】。服务端能力【10种: json、xml......】
+      - 进行内容协商的最佳匹配媒体类型
+      - 用 支持 将对象转为 最佳匹配媒体类型 的converter。调用它进行转化 。
 
 **e> 视图解析与模板引擎**
 
+视图解析：**SpringBoot默认不支持 JSP，需要引入第三方模板引擎技术实现页面渲染。**
 
+1. 视图解析
+   - 视图处理方式：
+     - 转发
+     - 重定向
+     - 自定义视图
+   - 原理流程
+     1. 目标方法处理的过程中，所有数据都会被放在 **ModelAndViewContainer 里面。包括数据和视图地址**
+     2. **方法的参数是一个自定义类型对象（从请求参数中确定的），把他重新放在** **ModelAndViewContainer** 
+     3. **任何目标方法执行完成以后都会返回 ModelAndView（数据和视图地址）。**
+     4. **processDispatchResult  处理派发结果（页面该如何响应）**
+   
+2. 模板引擎-Thymeleaf
+   - 简介
+   
+     **现代化、服务端Java模板引擎**
+   
+   - Spring Boot 使用 thymeleaf
+   
+     - 引入Starter
+   
+       ```xml
+       <dependency>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-thymeleaf</artifactId>
+       </dependency>
+       ```
+   
+     - 自动配置好了thymeleaf
+   
+       ```java
+       @Configuration(proxyBeanMethods = false)
+       @EnableConfigurationProperties(ThymeleafProperties.class)
+       @ConditionalOnClass({ TemplateMode.class, SpringTemplateEngine.class })
+       @AutoConfigureAfter({ WebMvcAutoConfiguration.class, WebFluxAutoConfiguration.class })
+       public class ThymeleafAutoConfiguration { }
+       ```
 
 **f> 拦截器**
 
+1. HandlerInterceptor 接口
 
+   ```java
+   /**
+    * 登录检查
+    * 1、配置好拦截器要拦截哪些请求
+    * 2、把这些配置放在容器中
+    */
+   @Slf4j
+   public class LoginInterceptor implements HandlerInterceptor {
+   
+       /**
+        * 目标方法执行之前
+        * @param request
+        * @param response
+        * @param handler
+        * @return
+        * @throws Exception
+        */
+       @Override
+       public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+   
+           String requestURI = request.getRequestURI();
+           log.info("preHandle拦截的请求路径是{}",requestURI);
+   
+           //登录检查逻辑
+           HttpSession session = request.getSession();
+   
+           Object loginUser = session.getAttribute("loginUser");
+   
+           if(loginUser != null){
+               //放行
+               return true;
+           }
+   
+           //拦截住。未登录。跳转到登录页
+           request.setAttribute("msg","请先登录");
+   //        re.sendRedirect("/");
+           request.getRequestDispatcher("/").forward(request,response);
+           return false;
+       }
+   
+       /**
+        * 目标方法执行完成以后
+        * @param request
+        * @param response
+        * @param handler
+        * @param modelAndView
+        * @throws Exception
+        */
+       @Override
+       public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+           log.info("postHandle执行{}",modelAndView);
+       }
+   
+       /**
+        * 页面渲染以后
+        * @param request
+        * @param response
+        * @param handler
+        * @param ex
+        * @throws Exception
+        */
+       @Override
+       public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+           log.info("afterCompletion执行异常{}",ex);
+       }
+   }
+   ```
 
-**g> 异常处理**
+2. 配置拦截器
 
+   ```java
+   /**
+    * 1、编写一个拦截器实现HandlerInterceptor接口
+    * 2、拦截器注册到容器中（实现WebMvcConfigurer的addInterceptors）
+    * 3、指定拦截规则【如果是拦截所有，静态资源也会被拦截】
+    */
+   @Configuration
+   public class AdminWebConfig implements WebMvcConfigurer {
+   
+       @Override
+       public void addInterceptors(InterceptorRegistry registry) {
+           registry.addInterceptor(new LoginInterceptor())
+                   .addPathPatterns("/**")  //所有请求都被拦截包括静态资源
+                   .excludePathPatterns("/","/login","/css/**","/fonts/**","/images/**","/js/**"); //放行的请求
+       }
+   }
+   ```
 
+3. 拦截器原理
 
-**h> 原生Servlet组件**
+   1. 根据当前请求，找到**HandlerExecutionChain【**可以处理请求的handler以及handler的所有 拦截器】
+   2. 先来**顺序执行** 所有拦截器的 preHandle方法
+      1. 如果当前拦截器prehandler返回为true。则执行下一个拦截器的preHandle
+      2. 如果当前拦截器返回为false。直接 倒序执行所有已经执行了的拦截器的  afterCompletion；
+   3. **如果任何一个拦截器返回false。直接跳出不执行目标方法**
+   4. **所有拦截器都返回True。执行目标方法**
+   5. **倒序执行所有拦截器的postHandle方法。**
+   6. **前面的步骤有任何异常都会直接倒序触发** afterCompletion
+   7. 页面成功渲染完成以后，也会倒序触发 afterCompletion
+   
+   ![image-20221020111151682](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springboot/202210201112838.png)
 
+**g> 文件上传**
 
+1. 页面表单
+
+   ```html
+   <form method="post" action="/upload" enctype="multipart/form-data">
+       <input type="file" name="file"><br>
+       <input type="submit" value="提交">
+   </form>
+   ```
+
+2. 文件上传方法
+
+   ```java
+       /**
+        * MultipartFile 自动封装上传过来的文件
+        * @param email
+        * @param username
+        * @param headerImg
+        * @param photos
+        * @return
+        */
+       @PostMapping("/upload")
+       public String upload(@RequestParam("email") String email,
+                            @RequestParam("username") String username,
+                            @RequestPart("headerImg") MultipartFile headerImg,
+                            @RequestPart("photos") MultipartFile[] photos) throws IOException {
+   
+           log.info("上传的信息：email={}，username={}，headerImg={}，photos={}",
+                   email,username,headerImg.getSize(),photos.length);
+   
+           if(!headerImg.isEmpty()){
+               //保存到文件服务器，OSS服务器
+               String originalFilename = headerImg.getOriginalFilename();
+               headerImg.transferTo(new File("D:\\cache\\"+originalFilename));
+           }
+   
+           if(photos.length > 0){
+               for (MultipartFile photo : photos) {
+                   if(!photo.isEmpty()){
+                       String originalFilename = photo.getOriginalFilename();
+                       photo.transferTo(new File("D:\\cache\\"+originalFilename));
+                   }
+               }
+           }
+   
+   
+           return "main";
+       }
+   
+   ```
+
+3. 自动配置原理
+
+   ```java
+   文件上传自动配置类-MultipartAutoConfiguration-MultipartProperties
+   ● 自动配置好了 StandardServletMultipartResolver   【文件上传解析器】
+   ● 原理步骤
+     ○ 1、请求进来使用文件上传解析器判断（isMultipart）并封装（resolveMultipart，返回MultipartHttpServletRequest）文件上传请求
+     ○ 2、参数解析器来解析请求中的文件内容封装成MultipartFile
+     ○ 3、将request中文件信息封装为一个Map；MultiValueMap<String, MultipartFile>
+   FileCopyUtils。实现文件流的拷贝
+   ```
+
+   
+
+**h> 异常处理**
+
+1. **默认规则**
+
+   - 默认情况下，Spring Boot提供`/error`处理所有错误的映射
+   - 对于机器客户端，它将生成JSON响应，其中包含错误，HTTP状态和异常消息的详细信息。对于浏览器客户端，响应一个“ whitelabel”错误视图，以HTML格式呈现相同的数据
+
+2. **定制错误处理逻辑**
+
+   - 自定义错误页
+
+     error/404.html   error/5xx.html；有精确的错误状态码页面就匹配精确，没有就找 4xx.html；如果都没有就触发白页
+
+   - @ControllerAdvice + @ExceptionHandler处理全局异常:
+
+     底层是ExceptionHandlerExceptionResolver 支持的
+
+   - ResponseStatus+自定义异常:
+
+     底层是 **ResponseStatusExceptionResolver ，把responsestatus注解的信息底层调用** **response.sendError(statusCode, resolvedReason)；tomcat发送的/error**
+
+   - Spring底层的异常，如参数类型转换异常：DefaulthandlerExceptionResolver处理框架底层的异常。
+
+3. **异常处理自动配置原理**
+
+   ErrorMvcAutoConfiguration 自动配置异常处理规则
+
+   - 定义错误页面包含数据：组件 **DefaultErrorAttributes**
+   - 定义错误页路径：组件 **BasicErrorController**
+   - 定义错误页规则：组件 **DefaultErrorViewResolver**
+
+4. **异常处理自动配置处理流程**
+
+   1. 执行目标方法，目标方法运行期间有任何异常都会被catch、而且标志当前请求结束；并且用**dispatchException**
+   2. 进入视图解析流程：processDispatchResult(processedRequest, response, mappedHandler, **mv**, **dispatchException**);
+   3. **mv** = **processHandlerException**；处理handler发生的异常，处理完成返回ModelAndView；
+   
+
+**i> Web原生组件注入（Servlet、Filter、Listener）**
+
+1. 使用**Servlet API**：注解对应servlet(@WebServlet)、filter(@WebFilter)、listener(Web)类
+2. 使用**RegistrationBean**：配置类配置对应servlet、filter、listener类@Bean的方法。返回ServletRegistrationBean，FilterRegistrationBean，ServletListenerRegistrationBean类。
+
+**j> 嵌入式Servlet容器**
+
+1. 切换嵌入式Servlet容器
+
+   - 默认支持webServer
+
+     - Tomcat, Jetty, or Undertow
+     - ServletWebServerApplicationContext 容器启动寻找ServletWebServerFactory 并引导创建服务器
+
+   - 切换服务器(spring-boot-starter-web默认配置了tomcat)
+
+     ```xml
+     <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-web</artifactId>
+         <exclusions>
+             <exclusion>
+                 <groupId>org.springframework.boot</groupId>
+                 <artifactId>spring-boot-starter-tomcat</artifactId>
+             </exclusion>
+         </exclusions>
+     </dependency>
+     <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-Jetty(or Undertow)</artifactId>
+     </dependency>
+     ```
+
+   - 原理
+
+   - - SpringBoot应用启动发现当前是Web应用。web场景包-导入tomcat
+     - web应用会创建一个web版的ioc容器 `ServletWebServerApplicationContext` 
+     - `ServletWebServerApplicationContext` 启动的时候寻找 `ServletWebServerFactory`（Servlet 的web服务器工厂---> Servlet 的web服务器）
+     - SpringBoot底层默认有很多的WebServer工厂；`TomcatServletWebServerFactory`, `JettyServletWebServerFactory`, or `UndertowServletWebServerFactory`
+     - `底层直接会有一个自动配置类。ServletWebServerFactoryAutoConfiguration`
+     - `ServletWebServerFactoryAutoConfiguration导入了ServletWebServerFactoryConfiguration（配置类）`
+     - `ServletWebServerFactoryConfiguration 配置类 根据动态判断系统中到底导入了那个Web服务器的包。（默认是web-starter导入tomcat包），容器中就有 TomcatServletWebServerFactory`
+     - `TomcatServletWebServerFactory 创建出Tomcat服务器并启动；TomcatWebServer 的构造器拥有初始化方法initialize---this.tomcat.start();`
+     - `内嵌服务器，就是手动把启动服务器的代码调用（tomcat核心jar包存在）`
+
+2. 定制Servlet容器
+
+   - 实现 WebServerFactoryCustomize\<ConfigurableServletWebServerFactory>，将配置文件的值和ServletWebServerFactory进行绑定。
+   - 修改配置文件
+   - 直接自定义 **ConfigurableServletWebServerFactory** 
+   
+   xxxxxCustomizer：定制化器，可以改变xxxx的默认规则
+   
+   ```java
+   import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+   import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+   import org.springframework.stereotype.Component;
+   
+   @Component
+   public class CustomizationBean implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
+   
+       @Override
+       public void customize(ConfigurableServletWebServerFactory server) {
+           server.setPort(9000);
+       }
+   
+   }
+   ```
+
+**k> 定制化原理**
+
+1. 定制化的常见方式
+
+   - 修改配置文件
+   - **xxxxCustomizer**
+   - **编写自定义的配置类: xxxConfiguration；+** **@Bean替换、增加容器中默认组件；视图解析器**
+   - **Web应用: 编写一个配置类实现** **WebMvcConfigurer接口 即可定制化web功能；+ @Bean给容器中再扩展一些组件**
+   - **@EnableWebMvc** + WebMvcConfigurer —— @Bean  可以**全面接管**SpringMVC，所有规则**全部自己重新配置**； 实现定制和扩展功能
+
+2. **原理分析套路**
+
+   **场景starter** **- xxxxAutoConfiguration - 导入xxx组件 - 绑定xxxProperties --** **绑定配置文件项** 
 
 ### Ⅲ 数据访问
 
+**a> SQL**
 
+1. 数据源的自动配置-HikariDataSource
+
+   1. 导入JDBC场景
+
+      ```xml
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-data-jdbc</artifactId>
+      </dependency>
+      ```
+
+      引入驱动：
+
+      ```xml
+      <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+      </dependency>
+      ```
+
+      注意：导入数据库版本需与驱动版本对应，若与springboot默认驱动版本不一致需配置。
+
+   2. 分析自动配置
+
+      - DataSourceAutoConfiguration ： 数据源的自动配置
+      - DataSourceTransactionManagerAutoConfiguration： 事务管理器的自动配置
+      - JdbcTemplateAutoConfiguration： **JdbcTemplate的自动配置，可以来对数据库进行crud**
+      - JndiDataSourceAutoConfiguration： jndi的自动配置
+      - XADataSourceAutoConfiguration： 分布式事务相关的
+
+   3. 修改配置项
+
+      ```xml
+      spring:
+        datasource:
+          url: jdbc:mysql://localhost:3306/db_account
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.jdbc.Driver
+      ```
+
+   4. 测试
+
+      ```java
+      @Slf4j
+      @SpringBootTest
+      class BootWebAdminApplicationTests {
+      
+          @Autowired
+          JdbcTemplate jdbcTemplate;
+      
+      
+          @Test
+          void contextLoads() {
+      
+      //        jdbcTemplate.queryForObject("select * from account_tbl")
+      //        jdbcTemplate.queryForList("select * from account_tbl",)
+              Long aLong = jdbcTemplate.queryForObject("select count(*) from account_tbl", Long.class);
+              log.info("记录总数：{}",aLong);
+          }
+      
+      }
+      ```
+
+      
+
+2. 使用Druid数据源
+
+   1. [druid官方github地址](https://github.com/alibaba/druid)
+
+      整合第三方技术的两种方式
+
+      - 自定义
+      - 找starter
+   2. 自定义方式
+   3. 使用官方starter方式
+
+3. 整合MyBatis操作
+
+   1. 配置模式
+   2. 注解模式
+   3. 混合模式
+
+4. 整合MyBatis-Plus完成CRUD
+
+   1. 整合MyBatis-Plus
+   2. CRUD功能
+
+**b> NoSQL**
+
+1. Redis自动配置
+2. RedisTemplate与Lettuce
+3. 切换至jedis
 
 ### Ⅳ JUnit5单元测试
 
