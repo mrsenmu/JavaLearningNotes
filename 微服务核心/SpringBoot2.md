@@ -1383,7 +1383,7 @@ public CharacterEncodingFilter characterEncodingFilter() {
 
       
 
-2. 使用Druid数据源
+2. 使用**Druid**数据源
 
    1. [druid官方github地址](https://github.com/alibaba/druid)
 
@@ -1392,28 +1392,241 @@ public CharacterEncodingFilter characterEncodingFilter() {
       - 自定义
       - 找starter
    2. 自定义方式
+
+      - **创建数据源**
+
+        ```xml
+                <dependency>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>druid</artifactId>
+                    <version>1.1.17</version>
+                </dependency>
+        
+        <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+        		destroy-method="close">
+        		<property name="url" value="${jdbc.url}" />
+        		<property name="username" value="${jdbc.username}" />
+        		<property name="password" value="${jdbc.password}" />
+        		<property name="maxActive" value="20" />
+        		<property name="initialSize" value="1" />
+        		<property name="maxWait" value="60000" />
+        		<property name="minIdle" value="1" />
+        		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+        		<property name="minEvictableIdleTimeMillis" value="300000" />
+        		<property name="testWhileIdle" value="true" />
+        		<property name="testOnBorrow" value="false" />
+        		<property name="testOnReturn" value="false" />
+        		<property name="poolPreparedStatements" value="true" />
+        		<property name="maxOpenPreparedStatements" value="20" />
+        
+        ```
+      - **StatViewServlet**
+
+        > StatViewServlet的用途包括：
+        >
+        > - 提供监控信息展示的html页面
+        > - 提供监控信息的JSON API
+
+        ```xml
+        <servlet>
+            <servlet-name>DruidStatView</servlet-name>
+            <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+        </servlet>
+        <servlet-mapping>
+            <servlet-name>DruidStatView</servlet-name>
+            <url-pattern>/druid/*</url-pattern>
+        </servlet-mapping>
+        ```
+      - StatFilter
+
+        > 用于统计监控信息；如SQL监控、URI监控
+
+        ```xml
+        需要给数据源中配置如下属性；可以允许多个filter，多个用，分割；如：
+        <property name="filters" value="stat,slf4j" />
+        ```
+
+        系统中所有filter：
+
+        | 别名          | Filter类名                                              |
+        | ------------- | ------------------------------------------------------- |
+        | default       | com.alibaba.druid.filter.stat.StatFilter                |
+        | stat          | com.alibaba.druid.filter.stat.StatFilter                |
+        | mergeStat     | com.alibaba.druid.filter.stat.MergeStatFilter           |
+        | encoding      | com.alibaba.druid.filter.encoding.EncodingConvertFilter |
+        | log4j         | com.alibaba.druid.filter.logging.Log4jFilter            |
+        | log4j2        | com.alibaba.druid.filter.logging.Log4j2Filter           |
+        | slf4j         | com.alibaba.druid.filter.logging.Slf4jLogFilter         |
+        | commonlogging | com.alibaba.druid.filter.logging.CommonsLogFilter       |
+
+        **慢SQL记录配置**
+
+        ```xml
+        <bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
+            <property name="slowSqlMillis" value="10000" />
+            <property name="logSlowSql" value="true" />
+        </bean>
+        
+        使用 slowSqlMillis 定义慢SQL的时长
+        ```
    3. 使用官方starter方式
+
+      - 引入druid-starter
+
+        ```xml
+                <dependency>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>druid-spring-boot-starter</artifactId>
+                    <version>1.1.17</version>
+                </dependency>
+        ```
+
+      - 分析自动配置
+
+        - 扩展配置项 **spring.datesource.druid**
+
+        - DruidSpringAopConfiguration.**class**,   监控SpringBean的；配置项：**spring.datasource.druid.aop-patterns**
+
+        - DruidStatViewServletConfiguration.**class**, 监控页的配置：**spring.datasource.druid.stat-view-servlet；默认开启**
+
+        -  DruidWebStatFilterConfiguration.**class**, web监控配置；**spring.datasource.druid.web-stat-filter；默认开启**
+
+        - DruidFilterConfiguration.**class**}) 所有Druid自己filter的配置
+
+          ```java
+              private static final String FILTER_STAT_PREFIX = "spring.datasource.druid.filter.stat";
+              private static final String FILTER_CONFIG_PREFIX = "spring.datasource.druid.filter.config";
+              private static final String FILTER_ENCODING_PREFIX = "spring.datasource.druid.filter.encoding";
+              private static final String FILTER_SLF4J_PREFIX = "spring.datasource.druid.filter.slf4j";
+              private static final String FILTER_LOG4J_PREFIX = "spring.datasource.druid.filter.log4j";
+              private static final String FILTER_LOG4J2_PREFIX = "spring.datasource.druid.filter.log4j2";
+              private static final String FILTER_COMMONS_LOG_PREFIX = "spring.datasource.druid.filter.commons-log";
+              private static final String FILTER_WALL_PREFIX = "spring.datasource.druid.filter.wall";
+          ```
+
+      - 配置示例
+
+        ```yaml
+        spring:
+          datasource:
+            url: jdbc:mysql://localhost:3306/db_account
+            username: root
+            password: 123456
+            driver-class-name: com.mysql.jdbc.Driver
+        
+            druid:
+              aop-patterns: com.atguigu.admin.*  #监控SpringBean
+              filters: stat,wall     # 底层开启功能，stat（sql监控），wall（防火墙）
+        
+              stat-view-servlet:   # 配置监控页功能
+                enabled: true
+                login-username: admin
+                login-password: admin
+                resetEnable: false
+        
+              web-stat-filter:  # 监控web
+                enabled: true
+                urlPattern: /*
+                exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+        
+        
+              filter:
+                stat:    # 对上面filters里面的stat的详细配置
+                  slow-sql-millis: 1000
+                  logSlowSql: true
+                  enabled: true
+                wall:
+                  enabled: true
+                  config:
+                    drop-table-allow: false
+        
+        ```
+
+        SpringBoot配置示例
+
+        https://github.com/alibaba/druid/tree/master/druid-spring-boot-starter
+
+        
+
+        配置项列表[https://github.com/alibaba/druid/wiki/DruidDataSource%E9%85%8D%E7%BD%AE%E5%B1%9E%E6%80%A7%E5%88%97%E8%A1%A8](https://github.com/alibaba/druid/wiki/DruidDataSource配置属性列表)
 
 3. 整合MyBatis操作
 
+   ```xml
+           <dependency>
+               <groupId>org.mybatis.spring.boot</groupId>
+               <artifactId>mybatis-spring-boot-starter</artifactId>
+               <version>2.1.4</version>
+           </dependency>
+   ```
+
    1. 配置模式
+
+      - 导入mybatis官方starter
+      - 编写mapper接口。标注@Mapper注解
+      - 编写sql映射文件并绑定mapper接口
+      - 在application.yaml中指定Mapper**配置文件**(mybatis-config.xml)的位置，以及指定全局配置文件的信息 （建议；**配置在yaml文件中mybatis.configuration**，与配置文件互斥）
+
    2. 注解模式
-   3. 混合模式
+
+      ```java
+      @Mapper
+      public interface CityMapper {
+      
+          @Select("select * from city where id=#{id}")
+          public City getById(Long id);
+      }
+      ```
 
 4. 整合MyBatis-Plus完成CRUD
 
    1. 整合MyBatis-Plus
-   2. CRUD功能
+
+      ```xml
+              <dependency>
+                  <groupId>com.baomidou</groupId>
+                  <artifactId>mybatis-plus-boot-starter</artifactId>
+                  <version>3.4.1</version>
+              </dependency>
+      ```
+   2. mapper接口继承 **BaseMapper**<T> 类
+   3. service实现类继承 **ServiceImpl**<M, T> 类
 
 **b> NoSQL**
 
 1. Redis自动配置
-2. RedisTemplate与Lettuce
-3. 切换至jedis
+
+   - starter
+
+     ```xml
+     <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-data-redis</artifactId>
+     </dependency>
+     ```
+
+   - RedisAutoConfiguration 自动配置类。RedisProperties 属性类 --> **spring.redis.xxx是对redis的配置**
+
+   - 连接工厂是准备好的。**Lettuce**ConnectionConfiguration、**Jedis**ConnectionConfiguration
+
+   - **自动注入了RedisTemplate**<**Object**, **Object**> ： xxxTemplate；
+
+   - **自动注入了StringRedisTemplate；k：v都是String**
+
+   - **底层只要我们使用** **StringRedisTemplate、RedisTemplate就可以操作redis**
+
+2. Jedis、Lettuce、Redisson
+
+   - Jedis是Redis官方推出的用于通过Java连接Redis客户端的一个工具包，提供了Redis的各种命令支持
+   - Lettuce是一种可扩展的线程安全的 Redis 客户端，通讯框架基于Netty，支持高级的 Redis 特性，比如哨兵，集群，管道，自动重新连接和Redis数据模型。Spring Boot 2.x 开始 Lettuce 已取代 Jedis 成为首选 Redis 的客户端。
+   - Redisson是架设在Redis基础上，通讯基于Netty的综合的、新型的中间件，企业级开发中使用Redis的最佳范本。
+   - Jedis把Redis命令封装好，Lettuce则进一步有了更丰富的Api，也支持集群等模式。Redisson则是基于Redis、Lua和Netty建立起了成熟的分布式解决方案，甚至redis官方都推荐的一种工具集。
+
+   
 
 ### Ⅳ JUnit5单元测试
 
-
+​	
 
 ### Ⅴ生产指标监控
 
