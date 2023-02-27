@@ -70,6 +70,8 @@ https://start.spring.io/actuator/info
 
 # 三、微服务架构编码构建(IDEA)
 
+约定 > 配置 > 编码
+
 ## 1、微服务cloud整体聚合父工程Project
 
 ### Ⅰ 新建Maven工程项目
@@ -95,6 +97,29 @@ Settings -> Build,Execution,Deployment -> Complier -> **Java Complier**
 过滤项目中不常用文件显示(个人习惯)
 
 Settings -> Editor -> File Types
+
+## 2、父工程pom文件
+
+1. 整合：利用<dependencyManagement>标签，约定子项目 中依赖版本号(父项目只声明，不实现引入)
+2. 发布：mvn install，父工程创建完成执行mvn:install将父工程发布到仓库方便子工程继承
+
+
+
+## 3、构建Rest微服务工程模块
+
+### Ⅰ 步骤
+
+1. 建module
+2. 改pom
+3. 写yml
+4. 主启动类
+5. 业务类
+
+### Ⅱ 热部署Devtools
+
+
+
+### Ⅲ 工程重构
 
 # 四、Eureka服务注册与发现
 
