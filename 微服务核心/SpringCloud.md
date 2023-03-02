@@ -82,7 +82,7 @@ Maven不同archetype介绍：[Maven 的41种骨架功能介绍 ](https://www.cnb
 
 ### Ⅱ 字符编码
 
-Settings -> **File Encodings** -> Global Encoding、Project Encoding、Properties Files设置为UTF-8；勾选 "Transparent native-to-ascii conversion".
+Settings -> Editor ->**File Encodings** -> Global Encoding、Project Encoding、Properties Files设置为UTF-8；勾选 "Transparent native-to-ascii conversion".
 
 ### Ⅲ 注解生效激活
 
@@ -103,21 +103,146 @@ Settings -> Editor -> File Types
 1. 整合：利用<dependencyManagement>标签，约定子项目 中依赖版本号(父项目只声明，不实现引入)
 2. 发布：mvn install，父工程创建完成执行mvn:install将父工程发布到仓库方便子工程继承
 
+```xml
+	<properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mysql.version>8.0.28</mysql.version>
+        <druid.version>1.1.22</druid.version>
+        <mybatis.spring.boot.version>2.1.3</mybatis.spring.boot.version>
+        <junit.version>4.12</junit.version>
+        <log4j.version>1.2.17</log4j.version>
+        <lombok.version>1.16.20</lombok.version>
+    </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.2.2.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Hoxton.SR1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>2.1.0.RELEASE</version>
+            </dependency>
+
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis.spring.boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+```
 
 ## 3、构建Rest微服务工程模块
 
 ### Ⅰ 步骤
 
 1. 建module
-2. 改pom
-3. 写yml
+
+2. 改子工程pom
+
+   ```xml
+   	<dependencies>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-web</artifactId>
+           </dependency>
+   
+           <!--用于检测系统的健康情况、当前的Beans、系统的缓存等-->
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-actuator</artifactId>
+           </dependency>
+   
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-jdbc</artifactId>
+           </dependency>
+   
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-test</artifactId>
+               <scope>test</scope>
+           </dependency>
+   
+           <!--DevTools通过提供自动重启和LiveReload功能-->
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-devtools</artifactId>
+           </dependency>
+   
+           <dependency>
+               <groupId>org.mybatis.spring.boot</groupId>
+               <artifactId>mybatis-spring-boot-starter</artifactId>
+           </dependency>
+   
+           <dependency>
+               <groupId>org.projectlombok</groupId>
+               <artifactId>lombok</artifactId>
+               <optional>true</optional>
+           </dependency>
+       </dependencies>
+   ```
+
+3. 写yml配置文件
+
 4. 主启动类
+
 5. 业务类
 
 ### Ⅱ 热部署Devtools
 
+spring-boot-devtools是一个为开发者服务的一个模块，其中最重要的功能就是自动应用代码更改到最新的App上面去。原理是在发现代码有更改之后，重新启动应用，但是速度比手动停止后再启动还要更快，更快指的不是节省出来的手工操作的时间。
 
+深层原理是使用了两个ClassLoader，一个Classloader加载那些不会改变的类（第三方Jar包），另一个ClassLoader加载会更改的类，称为restart ClassLoader，这样在有代码更改的时候，原来的restart ClassLoader 被丢弃，重新创建一个restart ClassLoader，由于需要加载的类相比较少，所以实现了较快的重启时间。
 
 ### Ⅲ 工程重构
 
