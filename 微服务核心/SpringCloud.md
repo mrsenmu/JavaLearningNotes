@@ -22,7 +22,7 @@ https://start.spring.io/actuator/info
 
 ## 1、服务注册中心
 
-### Ⅰ Eureka
+### Ⅰ Eureka(停更)
 
 ### Ⅱ Zookeeper
 
@@ -36,13 +36,13 @@ https://start.spring.io/actuator/info
 
 ### Ⅱ LoadBalancer
 
-### Ⅲ Feign
+### Ⅲ Feign(停更)
 
 ### Ⅳ OpenFeign
 
 ## 3、服务降级
 
-### Ⅰ HyStrix
+### Ⅰ HyStrix(停更)
 
 ### Ⅱ resilience4j
 
@@ -50,7 +50,7 @@ https://start.spring.io/actuator/info
 
 ## 4、服务网关
 
-### Ⅰ Zuul
+### Ⅰ Zuul(停更)
 
 ### Ⅱ Zuul2
 
@@ -58,13 +58,13 @@ https://start.spring.io/actuator/info
 
 ## 5、服务配置
 
-### Ⅰ Config
+### Ⅰ Config(停更)
 
 ### Ⅱ Nacos
 
 ## 6、服务总线
 
-### Ⅰ Bus
+### Ⅰ Bus(停更)
 
 ### Ⅱ Nacos
 
@@ -185,9 +185,9 @@ Settings -> Editor -> File Types
 
 ### Ⅰ 步骤
 
-1. 建module
+1. 新建module
 
-2. 改子工程pom
+2. 配置子工程pom
 
    ```xml
    	<dependencies>
@@ -213,12 +213,6 @@ Settings -> Editor -> File Types
                <scope>test</scope>
            </dependency>
    
-           <!--DevTools通过提供自动重启和LiveReload功能-->
-           <dependency>
-               <groupId>org.springframework.boot</groupId>
-               <artifactId>spring-boot-devtools</artifactId>
-           </dependency>
-   
            <dependency>
                <groupId>org.mybatis.spring.boot</groupId>
                <artifactId>mybatis-spring-boot-starter</artifactId>
@@ -234,9 +228,44 @@ Settings -> Editor -> File Types
 
 3. 写yml配置文件
 
+   ```yml
+   server:
+     port: 80
+   
+   spring:
+     application:
+       name: cloud-payment-service
+     datasource:
+       type: com.alibaba.druid.pool.DruidDataSource
+       driver-class-name: com.mysql.cj.jdbc.Driver         # mysql驱动包
+       url: jdbc:mysql://localhost:3306/spring_cloud?useUnicode=true&characterEncoding-utf-8&useSSL=false
+       username: root
+       password: 123456
+   
+   mybatis:
+     mapper-locations: classpath:mapper/*.xml
+     type-aliases-package: com.senmu.springcloud.entities  # 所有Entity别名类所在包
+   ```
+
 4. 主启动类
 
+   ```java
+   @SpringBootApplication
+   public class xxxxMain80 {
+       public static void main(String[] args) {
+           SpringApplication.run(xxxxMain80.class, args);
+       }
+   
+   }
+   ```
+
 5. 业务类
+
+   1. mapper接口
+   2. mapper.xml
+   3. service接口和service实现类
+   4. controller
+
 
 ### Ⅱ 热部署Devtools
 
@@ -246,7 +275,116 @@ spring-boot-devtools是一个为开发者服务的一个模块，其中最重要
 
 ### Ⅲ 工程重构
 
-# 四、Eureka服务注册与发现
+创建通用模块，集合工具类、配置类、常量等
+
+# 四、Eureka服务注册与发现(停更)
+
+## 1、基础知识
+
+### Ⅰ 什么是服务治理
+
+在传统的rpc远程调用框架中，管理每个服务与服务之间依赖关系比较复杂，因此需要服务治理来实现服务调用、负载均衡、容错等，实现服务发现与注册。
+
+### Ⅱ 什么是服务注册
+
+Eureka采用了CS的设计架构，Eureka Server走位服务注册功能的服务器，它是服务注册中心。而系统中的其他微服务，是由 Eureka 的客户端连接到 Eureka Server 并维持心跳连接。这样系统的维护人员就可以通过 Eureka Server 来监控系统中各个微服务是否正常运行。
+
+在服务注册与发现中，有一个注册中心。当服务启动时，会把自身服务器信息，如通讯地址等以别名方式注册到注册中心上。另一方，以此别名去注册中心获取实际通讯地址，然后再实现本地PRC调用RPC远程调用框架核心设计思想：在于注册中心，因为是由注册中心管理每个服务与服务之间的一个依赖关系（服务治理概念）。任何RPC远程框架中，都会有一个注册中心(存分服务地址相关信息(接口地址))
+
+![f0cd27f292888a46dbbb1ae54462fec](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springcloud/202303031542010.png)
+
+### Ⅲ Eureka两组件
+
+- **Eureka Server** 提供服务注册服务
+
+  各个微服务节点通过配置启动后，会在 Eureka Server 中进行注册，这样EurekaServer中的服务注册表中会存储所有可用服务节点的信息。
+
+- **Eureka Client **通过注册中心进行访问
+
+  是一个Java客户端，用于简化Eureka Server的交互，客户端同时也具备一个内置的、使用轮询(roud-robin)负载均衡器。在应用启动后，将会向 Eureka Server 发送心跳(默认周期为30s)。如果Eureka Server在多个心跳周期内没有接收到某个节点的心跳，Eureka Server将会从服务注册表中把这个服务节点移除(默认90s)。
+
+## 2、单机Eureka构建步骤
+
+### Ⅰ IDEA生成Eureka Server端服务注册中心
+
+1. 建立Eureka Server模块
+
+2. pom文件
+
+   ```xml
+   <!--Eureka Server-->
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+   </dependency>
+   ```
+
+3. yml配置
+
+   ```yml
+   server:
+     port: 7001
+   
+   eureka:
+     instance:
+       hostname: localhost # eureka服务端的实例名称
+     client:
+       # false 表示不向注册中心注册自己
+       register-with-eureka: false
+       # false 表示自己就是注册中心，不需要检索服务
+       fetch-registry: false
+       service-url:
+         # 设置与Eureka Server交互的地址用于查询服务和注册服务
+         defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+   ```
+
+4. 主启动类
+
+   ```java
+   @EnableEurekaServer
+   ```
+
+### Ⅱ  Eureka Client端注册provider和consumer
+
+1. pom引入eureka
+
+   ```xml
+   <!--Eureka Client-->
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+   </dependency>
+   ```
+
+2. yml配置
+
+   ```yml
+   eureka:
+     client:
+       # true 表示向注册中心注册自己
+       register-with-eureka: true
+       # true 是否向Eureka Server检索已有注册信息， 默认true。单节点不影响，集群模式下必须设置true才能配合ribbon使用负载均衡
+       fetch-registry: true
+       service-url:
+         # 设置与Eureka Server交互的地址用于查询服务和注册服务
+         defaultZone: http://localhost:7001/eureka
+   ```
+
+3. 修改主启动类，加入注解 @EnableEurekaClient
+
+## 3、集群Eureka构建步骤
+
+
+
+## 4、actuator微服务信息完善
+
+
+
+## 5、服务发现Discovery
+
+
+
+## 6、Eureka自我保护
 
 
 
