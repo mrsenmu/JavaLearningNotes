@@ -370,19 +370,113 @@ Eureka采用了CS的设计架构，Eureka Server走位服务注册功能的服�
          defaultZone: http://localhost:7001/eureka
    ```
 
-3. 修改主启动类，加入注解 @EnableEurekaClient
+3. 修改主启动类，加入注解 **@EnableEurekaClient**
 
 ## 3、集群Eureka构建步骤
 
+### Ⅰ Eureka 集群原理说明
 
+多台Eureka Server互相注册，实现负载均衡和故障容错
+
+### Ⅱ Eureka Server 集群环境构建步骤
+
+1. 新建Eureka Server模块，POM同上，若在同一台设备上测试，可修改hosts域名映射配置，以标识不同的Server如下
+
+   ```
+   # C:\Windows\System32\drivers\etc\hosts
+   
+   127.0.0.1 eureka7001.com
+   127.0.0.1 eureka7002.com
+   ```
+
+2. 修改YML，同一集群下的Server需相互注册，如下
+
+   ```yml
+   server:
+     port: 7001
+   
+   eureka:
+     instance:
+       hostname: eureka7001.com
+       # hostname: localhost # eureka服务端的实例名称
+     client:
+       # false 表示不向注册中心注册自己
+       register-with-eureka: false
+       # false 表示自己就是注册中心，不需要检索服务
+       fetch-registry: false
+       service-url:
+         # 设置与Eureka Server交互的地址用于查询服务和注册服务
+         # defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+         defaultZone: http://eureka7002.com:7002/eureka/
+   ```
+
+3. 主启动类，同上
+
+### Ⅲ 服务发布到集群
+
+服务模块修改yml
+
+```yml
+    service-url:
+      # 设置与Eureka Server交互的地址用于查询服务和注册服务
+      # defaultZone: http://localhost:7001/eureka
+      defaultZone: http://eureka7001:com:7001/eureka/,http://eureka7002:com:7002/eureka/
+```
+
+### Ⅳ 构建provider服务的集群
+
+1. 创建别名相同的provider服务模块，并注册
+
+   ![a112ee975fadd9bdf70f2a0a14bed78](https://cdn.jsdelivr.net/gh/mrsenmu/JavaLearningNotes/images/springcloud/202303061612720.png)
+
+2. consumer服务端使用 @LoadBalanced 注解服务RestTemplate负载均衡的能力。
+
+   ```java
+   package com.senmu.springcloud.config;
+   
+   import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+   import org.springframework.context.annotation.Bean;
+   import org.springframework.context.annotation.Configuration;
+   import org.springframework.web.client.RestTemplate;
+   
+   @Configuration
+   public class ApplicationContextConfig {
+   
+       @Bean
+       @LoadBalanced // 使用 @LoadBalanced 注解服务RestTemplate负载均衡的能力。
+       public RestTemplate getRestTemplate() {
+           return new RestTemplate();
+       }
+   }
+   ```
+
+3. consumer服务端controller调用URL前缀
+
+   ```
+   public static final String PAYMENT_URL = "http://CLOUD-PAYMENT-SERVICE";
+   ```
+
+4. 实现负载均衡：默认算法，轮询
+
+   consumer服务controller每次交替调用同别名集群中的provider服务
 
 ## 4、actuator微服务信息完善
 
-
+```yml
+instance:
+  # 重置Eureka注册服务实例列表status列中，ip:服务名称:端口的默认命名
+  instance-id: payment8001
+  # 访问路径显示ip地址
+  prefer-ip-address: true
+```
 
 ## 5、服务发现Discovery
 
+1. 通过Eureka中注册的微服务，获取服务信息
 
+2. 修改controller
+
+   
 
 ## 6、Eureka自我保护
 
