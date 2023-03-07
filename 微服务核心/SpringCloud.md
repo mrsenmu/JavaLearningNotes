@@ -472,13 +472,32 @@ instance:
 
 ## 5、服务发现Discovery
 
-1. 通过Eureka中注册的微服务，获取服务信息
+通过Eureka中注册的微服务，获取注册中心中的服务信息
 
-2. 修改controller
-
-   
+1. 需要使用服务发现的主启动类，配置**@EnableDiscoveryClient**注解
+2. 调用org.springframework.cloud.client.discovery.**DiscoveryClient**类中的方法
 
 ## 6、Eureka自我保护
+
+### Ⅰ 故障现象
+
+保护模式主要用于一组客户端和Eureka Server之间存在网络分区场景下的保护，一旦进入保护模式，**Eureka Server 将会尝试保护其服务注册表中的信息，不再删除其服务注册表中的数据，也就是不会注销任何微服务。**
+
+当安全模式启动时，System Status中的**Lease expiration enabled**为**false**。且主页出现如下警告：
+
+> **EMERGENCY! EUREKA MAY BE INCORRECTLY CLAIMING INSTANCES ARE UP WHEN THEY'RE NOT. RENEWALS ARE LESSER THAN THRESHOLD AND HENCE THE INSTANCES ARE NOT BEING EXPIRED JUST TO BE SAFE.**
+>
+> 紧急！EUREKA 可能错误地声称实例已启动，而实际上它们没有启动。 续订小于阈值，因此实例不会为了安全而过期。
+
+### Ⅱ 导致原因
+
+某时刻某一微服务不可用了，Eureka不会立刻清理，依旧会对该微服务的信息进行保护。为了防止因网络等原因导致无法维持心跳连接，通信超时(默认90秒)，可能健康的实例被注销。
+
+属于分布式系统中**CAP**(Consistency（一致性）、Availability（可用性）、Partition tolerance（分区容忍性）)中的**AP**。
+
+
+
+### Ⅲ 如何禁用
 
 
 
