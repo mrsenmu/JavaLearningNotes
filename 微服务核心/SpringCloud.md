@@ -523,7 +523,43 @@ instance:
 
 # 五、Zookeeper服务注册与发现
 
+## 1、注册中心
 
+zookeeper是一个分布式协调工具，可以实现注册中心功能
+
+## 2、服务提供者
+
+### Ⅰ POM
+
+服务器安装的zookeeper注册中心版本低于springcloud自带的**org:apache:zookeeper:zookeeper:x.x.x**版本时需要解决版本冲突。
+
+```xml
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-zookeeper-discovery</artifactId>
+    </dependency>
+```
+
+### Ⅱ YML
+
+```yml
+spring:
+  cloud:
+    zookeeper:
+      connect-string: 192.168.75.131:2181
+```
+
+### Ⅲ 主启动类
+
+配置**@EnableDiscoveryClient**注解，用于向使用consul或zookeeper走位服务注册中心时注册服务
+
+### Ⅳ 服务节点类型
+
+主要分为**临时节点**和**持久节点**。默认服务为临时节点，注册中心心跳超时直接注销服务。
+
+## 3、服务消费者
+
+基本配置同上，编写配置类Application
 
 # 六、Consul服务注册与发现
 
