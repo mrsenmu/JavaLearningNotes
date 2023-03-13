@@ -495,11 +495,31 @@ instance:
 
 属于分布式系统中**CAP**(Consistency（一致性）、Availability（可用性）、Partition tolerance（分区容忍性）)中的**AP**。
 
-
-
 ### Ⅲ 如何禁用
 
+1. 注册中心：
 
+   ```yml
+   eureka:
+     server:
+       # 表示注册中心是否开启服务的自我保护能力。默认true
+       enable-self-preservation: false
+       # 表示 Eureka Server 清理无效节点的频率，默认 60000 毫秒（60 秒）。
+       eviction-interval-timer-in-ms: 2000
+   ```
+
+2. 客户端：
+
+   ```yml
+   eureka:
+     server:
+     	# 表示 Eureka Client 向 Eureka Server 发送心跳的频率（默认 30 秒），如果在 lease-expiration-duration-in-seconds 指定的时间内未收到心跳，则移除该实例。
+       lease-renewal-interval-in-seconds: 30
+       # 表示 Eureka Server 在接收到上一个心跳之后等待下一个心跳的秒数（默认 90 秒），若不能在指定时间内收到心跳，则移除此实例，并禁止此实例的流量。
+       lease-expiration-duration-in-seconds: 90
+   ```
+
+   
 
 # 五、Zookeeper服务注册与发现
 
