@@ -539,7 +539,7 @@ spring:
 
 ## 3、服务消费者
 
-
+基本配置同上，编写配置类Application
 
 # 六、Consul服务注册与发现
 
