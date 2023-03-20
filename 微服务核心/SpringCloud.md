@@ -503,51 +503,174 @@ instance:
 
 # 五、Zookeeper服务注册与发现
 
-## 1、注册中心
+## 1、简介
 
 zookeeper是一个分布式协调工具，可以实现注册中心功能
 
-## 2、服务提供者
+下载：[Apache ZooKeeper](https://zookeeper.apache.org/releases.html#download)
 
-### Ⅰ POM
+## 2、服务注册
 
-服务器安装的zookeeper注册中心版本低于springcloud自带的**org:apache:zookeeper:zookeeper:x.x.x**版本时需要解决版本冲突。
+### Ⅰ Provider
 
-```xml
-    <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-starter-zookeeper-discovery</artifactId>
-    </dependency>
-```
+1. pom：
 
-### Ⅱ YML
+   服务器安装的zookeeper注册中心版本低于springcloud自带的**org:apache:zookeeper:zookeeper:x.x.x**版本时需要解决版本冲突。
 
-```yml
-spring:
-  cloud:
-    zookeeper:
-      connect-string: 192.168.75.131:2181
-```
+   ```xml
+       <dependency>
+           <groupId>org.springframework.cloud</groupId>
+           <artifactId>spring-cloud-starter-zookeeper-discovery</artifactId>
+       </dependency>
+   ```
 
-### Ⅲ 主启动类
+2. yml：
 
-配置**@EnableDiscoveryClient**注解，用于向使用consul或zookeeper走位服务注册中心时注册服务
+   ```yml
+   spring:
+     cloud:
+       zookeeper:
+         connect-string: 192.168.75.131:2181
+   ```
 
-### Ⅳ 服务节点类型
+3. 主启动类：
+
+   配置**@EnableDiscoveryClient**注解，用于向使用consul或zookeeper走位服务注册中心时注册服务
+
+### Ⅱ Consumer
+
+基本配置同服务提供端上，需额外编写配置类**ApplicationContextConfig**配置**RestTemplate**
+
+### Ⅲ 服务节点类型
 
 主要分为**临时节点**和**持久节点**。默认服务为临时节点，注册中心心跳超时直接注销服务。
 
-## 3、服务消费者
-
-基本配置同上，编写配置类Application
-
 # 六、Consul服务注册与发现
 
+## 1、简介
 
+### Ⅰ 官网
+
+1. 介绍：https://www.consul.io/intro/index.html
+2. 下载：https://www.consul.io/downloads.html
+3. 关于springcloud：https://www.springcloud.cc/spring-cloud-consul.html
+
+### Ⅱ 功能
+
+1. 服务发现：提供HTTP和DNS两种发现方式
+2. 健康检查：支持多张方式，HTTP、TCP、Docker、Shell脚本定制化监控
+3. KV存储：键值对方式存储
+4. 支持多数据中心
+5. 可视化Web界面
+
+## 2、安装运行
+
+安装压缩包只有一个consul.exe文件。
+
+cmd，开发者模式启动服务
+
+```powershell
+consul agent -dev
+```
+
+## 3、服务注册
+
+### Ⅰ Provider
+
+1. pom：
+
+   ```xml
+       <dependency>
+           <groupId>org.springframework.cloud</groupId>
+           <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+       </dependency>
+   ```
+
+2. yml：
+
+   ```yml
+   spring:
+     cloud:
+       consul:
+         host: localhost
+         port: 8500
+         discovery:
+         	service-name: ${spring.application.name}
+   ```
+
+3. 主启动类：
+
+   配置**@EnableDiscoveryClient**注解，用于向使用consul或zookeeper走位服务注册中心时注册服务
+
+### Ⅱ Consumer
+
+基本配置同服务提供端上，需额外编写配置类**ApplicationContextConfig**配置**RestTemplate**
+
+## 4、与Eureka和Zookeeper区别
+
+| 组件名    | 语言 | CAP  | 服务健康检查 | 对外暴露接口 | Spring Cloud集成 |
+| --------- | ---- | ---- | ------------ | ------------ | ---------------- |
+| Eureka    | Java | AP   | 可配支持     | HTTP         | 已集成           |
+| Zookeeper | Java | CP   | 支持         | 客户端       | 已集成           |
+| Consul    | Go   | CP   | 支持         | HTTP/DNS     | 已集成           |
+
+> **CAP**：Consistency（一致性）、Availability（可用性）、Partition tolerance（分区容忍性）
+>
+> CAP理论关注粒度是数据，而不是整体系统设计的策略。最多同时满足两个。
+>
+> CA：单点集群，满足一致性，可用性的系统，通常可扩展性不强
+>
+> CP：满足一致性，分区容忍性的系统，通常性能不高
+>
+> AP：满足可用性，分区容忍性的系统，通常对于一致性要求低
 
 # 七、Ribbon负载均衡服务调用
 
+## 1、概述
 
+### Ⅰ 简介
+
+**Spring Cloud Ribbon**是基于Netflix Ribbon开源项目实现的一套**客户端 负载均衡的工具**。主要功能是提供**客户端的软件负载均衡算法和服务调用**。Ribbon客户端组件提供一系列完善的配置项如连接超时，重试等。即再配置文件中列出Load Balancer后面所有的机器，Riboon会自动的基于某种规则(如简单轮询，随机连接等)去连接这些机器。可以很容易的通过Ribbon实现自定义的负载均衡算法。
+
+### Ⅱ 官网
+
+https://github.com/Netflix/ribbon/wiki/Getting-Started
+
+### Ⅲ 功能
+
+1. LB(负载均衡)：
+   - **集中式(服务端)**：即在服务的消费方和提供方之间使用独立的LB设施（可以是硬件，如F5，也可以是软件，如**Nginx**）。
+   - **进程内(本地)**：将LB逻辑集成到消费方，消费方从服务注册中心获知有哪些地址可用，然后再从这些地址基于规则选一个。如**Ribbon**。
+2. 基于某种规则(如简单轮询，随机连接等)去调用服务。
+
+> LB负载均衡：将用户的请求平摊的分配到多个服务上，从而达到系统的高可用。常见的负载均衡软件有Nginx，LVS，硬件F5等。
+>
+> Ribbon本地负载均衡客户端 与 Nginx服务端负载均衡的区别：
+>
+> Nginx是服务器负载均衡，客户端所有请求都会交给nginx，然后由nginx实现转发请求。即负载均衡由服务端实现的。
+>
+> Ribbon本地负载均衡，再调用微服务接口时，会在注册中心上获取注册信息服务列表后缓存到JVM本地，从而在本地实现RPC远程服务调用技术。
+
+## 2、使用
+
+### Ⅰ  POM
+
+```xml
+<!-- Eureka 已在 spring-cloud-starter-netflix-eureka-client 中引入 -->
+<dependency>
+  <groupId>org.springframework.cloud</groupId>
+  <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+</dependency>
+```
+
+### Ⅱ RestTemplate
+
+1. getForObject/getForEntity
+2. postForObject/postForEntity
+
+## 3、核心组件IRule
+
+## 4、负载均衡算法
 
 # 八、OpenFeign服务接口调用
 
