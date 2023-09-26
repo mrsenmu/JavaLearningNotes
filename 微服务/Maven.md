@@ -5539,11 +5539,3 @@ Maven 为了能够通过 profile 实现各不同运行环境切换，提供了�
 
    - includes：指定执行 resource 阶段时要包含到目标位置的资源
    - excludes：指定执行 resource 阶段时要排除的资源
-
-# **十、生产实践**
-
-## **1、 搭建 Maven 私服：Nexus**
-
-## **2、 jar 包冲突问题**
-
-## **3、 体系外 jar 包引入**
