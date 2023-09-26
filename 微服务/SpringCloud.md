@@ -694,12 +694,95 @@ https://github.com/Netflix/ribbon/wiki/Getting-Started
 
 可替换默认的负载均衡算法。需要对应模块下新建包和配置类去设置。
 
+### Ⅱ 替换Ribbon规则
+
+1. 指定Consumer模块新建Package：
+
+   自定义配置不能放在@ComponetSacn所扫描的当前包以及子包下，否则自定的配置类会被所有的Ribbon客户端所共享，达不到特殊化定制的目的。
+
+2. 在新Package中创建自定义规则**配置类**：
+
+   ```java
+   @Configuration
+   public class MyRibbonRule {
+   
+       @Bean
+       public IRule myRule(){
+           return new RandomRule();
+       }
+   }
+   ```
+
+3. 该模块主启动类添加**@RibbonClient**注解：
+
+   ```java
+   @RibbonClient(name = "需调用的Provider服务的${server.application.name}", configuration = MyRibbonRule.class)
+   ```
+
+## 4、负载均衡算法
+
+### Ⅰ 静态负载均衡算法
+
+1. 轮询（Round Robin）：服务器按照顺序循环接受请求。
+2. 随机（Random）：随机选择一台服务器接受请求。
+3. 权重（Weight）：给每个服务器分配一个权重值，根据权重来分发请求到不同的机器中。
+4. IP哈希（IP Hash）：根据客户端IP计算Hash值取模访问对应服务器。
+5. URL哈希（URL Hash）：根据请求的URL地址计算Hash值取模访问对应服务器。
+6. 一致性哈希（Consistent Hash ）：采用一致性Hash算法，相同IP或URL请求总是发送到同一服务器。
+
+### Ⅱ 动态负载均衡算法
+
+1. 最少连接数（Least Connection）：将请求分配给最少连接处理的服务器。
+2. 最快响应（Fastest Response）：将请求分配给响应时间最快的服务器。
+3. 观察（Observed）：以连接数和响应时间的平衡为依据请求服务器。
+4. 预测（Predictive）：收集分析当前服务器性能指标，预测下个时间段内性能最佳服务器。
+5. 动态性能分配（Dynamic Ratio-APM）：收集服务器各项性能参数，动态调整流量分配。
+6. 服务质量（QoS）：根据服务质量选择服务器。
+7. 服务类型（ToS）: 根据服务类型选择服务器。
+
+### Ⅲ 自定义负载均衡算法
+
+1. 灰度发布：平滑过渡的发布方式，可以降低发布失败风险，减少影响范围，发布出现故障时可以快速回滚，不影响用户。
+
+2. 版本隔离：为了兼容或者过度，某些应用会有多个版本，保证1.0版本不会调到1.1版本服务。
+
+3. 故障隔离：生产出故障后将出问题的实例隔离，不影响其他用户，同时也保留故障信息便于分析。
+
+4. 定制策略：根据业务情况定制跟业务场景最匹配的策略。
+
+   
+
+> 权重算法可与其他算法配合，如加权轮询、加权随机等。
+
+
+
+### Ⅳ 中间件使用的算法
+
+- Nginx
+  1. RoundRobin：轮询。
+  2. WeightedRoundRobin：加权轮询。
+  3. IPHash：按访问IP的Hash选择服务器。
+  4. URLHash：按请求URL的Hash选择服务器。
+  5. Fair：根据后端服务器的响应时间判断负载情况，从中选出负载最轻的机器进行分流。
+- Dubbo
+  1. RandomLoadBalance：加权随机。
+  2. RoundRobinLoadBalance：加权轮询。
+  3. LeastActionLoadBalance：最少链接数。
+  4. ShortestResponseLoadBalance：最短响应时间。
+  5. ConsistentHashLoadBalance：一致性Hash。
+- Ribbon
+  1. RoundRobinRule：轮询。
+  2. RandomRule：随机。
+  3. WeightedResponseTimeRule：根据响应时间来分配权重的方式，响应的越快，分配的值越大。
+  4. BestAvailableRule：会先过滤掉由于多次访问故障而处于断路器跳闸状态的服务，然后选择一个并发量最小的服务。
+  5. RetryRule：先按照轮询策略获取服务，如果获取服务失败则在指定时间内进行重试，获取可用的服务。
+  6. ZoneAvoidanceRule：根据性能和可用性选择服务。
+  7. AvailabilityFilteringRule：会先过滤掉由于多次访问故障而处于断路器状态的服务，还有并发的连接数量超过阈值的服务，然后对剩余的服务列表按照轮询策略进行访问。
 ## 4、负载均衡算法(自定义)
 
 1. 配置类去掉@LoadBalanced
 2. 编写LoadBalancer接口和实现类，编写方法对输入的服务实例列表，根据负载均衡算法返回计算所得的最终服务实例。
 3. 接口根据LoadBanlancer的方法确定当前可调用的实例去调用。
-
 # 八、OpenFeign服务接口调用
 
 ## 1、概述
