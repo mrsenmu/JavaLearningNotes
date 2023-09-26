@@ -702,13 +702,24 @@ https://github.com/Netflix/ribbon/wiki/Getting-Started
 | AvailabilityFilteringRule               | 先过滤掉故障实例，再选择并发较小的实例                       |
 | ZoneAvoidanceRule                       | **默认规则**,复合判断server所在区域的性能和server的可用性选择服务器 |
 
-### Ⅱ 自定义算法
+### Ⅱ 替换Ribbon规则
 
 1. 指定Consumer模块新建Package：
 
    自定义配置不能放在@ComponetSacn所扫描的当前包以及子包下，否则自定的配置类会被所有的Ribbon客户端所共享，达不到特殊化定制的目的。
 
-2. 在新Package中创建自定义规则**配置类**
+2. 在新Package中创建自定义规则**配置类**：
+
+   ```java
+   @Configuration
+   public class MyRibbonRule {
+   
+       @Bean
+       public IRule myRule(){
+           return new RandomRule();
+       }
+   }
+   ```
 
 3. 该模块主启动类添加**@RibbonClient**注解：
 
