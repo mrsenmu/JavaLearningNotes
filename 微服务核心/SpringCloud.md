@@ -694,7 +694,6 @@ https://github.com/Netflix/ribbon/wiki/Getting-Started
 
 可替换默认的负载均衡算法。需要对应模块下新建包和配置类去设置。
 
-<<<<<<< HEAD
 ### Ⅱ 替换Ribbon规则
 
 1. 指定Consumer模块新建Package：
@@ -779,14 +778,11 @@ https://github.com/Netflix/ribbon/wiki/Getting-Started
   5. RetryRule：先按照轮询策略获取服务，如果获取服务失败则在指定时间内进行重试，获取可用的服务。
   6. ZoneAvoidanceRule：根据性能和可用性选择服务。
   7. AvailabilityFilteringRule：会先过滤掉由于多次访问故障而处于断路器状态的服务，还有并发的连接数量超过阈值的服务，然后对剩余的服务列表按照轮询策略进行访问。
-=======
 ## 4、负载均衡算法(自定义)
 
 1. 配置类去掉@LoadBalanced
 2. 编写LoadBalancer接口和实现类，编写方法对输入的服务实例列表，根据负载均衡算法返回计算所得的最终服务实例。
 3. 接口根据LoadBanlancer的方法确定当前可调用的实例去调用。
->>>>>>> e08e8fc6612672eb130558e848f355c48e42fb5b
-
 # 八、OpenFeign服务接口调用
 
 
