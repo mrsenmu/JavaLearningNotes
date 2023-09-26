@@ -702,9 +702,168 @@ https://github.com/Netflix/ribbon/wiki/Getting-Started
 
 # 八、OpenFeign服务接口调用
 
+## 1、概述
 
+### Ⅰ 简介
+
+Feign是一个声明式的Web服务客户端，让编写Web服务客户端变得非常容易，只需创建一个接口，并在接口上添加注解即可。
+
+Feign也支持可插拔式的编码器和解码器。Spring Cloud对Feign进行了封装，使其支持了Spring MVC标准注解和HttpMessageConverters。Feign可以与Eureka和Ribbon组合使用以支持负载均衡。
+
+> Github:https://github.com/spring-cloud/spring-cloud-openfeign
+
+### Ⅱ 作用
+
+Feign的目的是使边界Java Http客户端更容易。
+
+使用Ribbon+RestTemplate对Http请求是一套模板化的调用方法，但是在应对服务被多处调用时，通常会针对每个微服务进行包装。Feign在此基础上进一步封装，帮助开发者定义和实现依赖服务接口。只需要注解配置，即可完成对服务提供方的接口绑定。简化开发，节省客户端调用服务的工作量。
+
+Feign继承了Ribbon，利用Ribbon维护服务器列表信息，实现客户端的均衡算法。Feign**只需要定义服务绑定接口，以声明式的方法实现了服务调用**。
+
+### Ⅲ Feign和OpenFeign的区别
+
+1. Feign是Spring Cloud组件中的一个轻量级RESTful的HTTP服务客户端。Feign内置了Ribbon，用来做客户端负载均衡，去调用注册中心的服务。
+2. OpenFeign 是Spring Cloud在Feign的基础上支持了SpringMVC的注解，如@RequessMapping等。OpenFeign的@FeignClient可以解析SpringMVC的@RequestMapping注解下的接口，并通过动态代理的方式产生实现类，实现类中做负载均衡并调用其他服务。
+
+## 2、使用步骤
+
+接口+注解：微服务调用接口+**@FeignClient**
+
+### Ⅰ POM
+
+```xml
+<!-- openfeign -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+</dependency>
+```
+
+### Ⅱ YML
+
+```yml
+server:
+  port: 80
+
+spring:
+  application:
+    name: cloud-order-service
+
+eureka:
+  client:
+    # true 表示向注册中心注册自己
+    register-with-eureka: false
+    service-url:
+      # 设置与Eureka Server交互的地址用于查询服务和注册服务
+      defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/
+
+```
+
+### Ⅲ 主启动类
+
+```java
+@EnableFeignClients
+```
+
+### Ⅳ 业务类
+
+1. service层接口：加入**@FeignClient**注解，并且接口地址与调用的服务接口**地址和参数**一致。
+
+   ```java
+   @Component
+   @FeignClient(value = "CLOUD-PAYMENT-SERVICE")
+   public interface PaymentFeignService {
+   
+   	@GetMapping("/payment/{id}")
+   	public CommonResult<Payment> detail(@PathVariable("id") Long id);
+   }
+   ```
+
+2. controller层：直接调用service层接口方法。集成Ribbon，自带负载均衡。
+
+## 3、超时控制
+
+openFeign调用服务默认等待**1秒**，超时报错。YML文件里需要开启OpenFeign客户端超时控制。
+
+```yml
+#设置feign客户端超时时间
+ribbon:
+  ReadTimeout: 5000
+  ConnectTimeout: 5000
+```
+
+## 4、日志打印
+
+Feign提供了日志打印功能，可以对Feign接口的调用情况进行监控和输出。
+
+### Ⅰ 日志级别
+
+1. NONE：默认的，不显示任何日志
+2. BASIC：仅记录请求方法、URL、响应状态码及执行时间。
+3. HEADERS：BASIC包含信息、请求和响应的头信息。
+4. FULL：HEADERS包含信息、请求和响应的正文及元数据。
+
+### Ⅱ 配置日志bean
+
+```java
+@Configuration
+public class FeignConfig {
+
+	@Bean
+	Logger.Level fegnLoggerLevel() {
+		return Logger.Level.FULL;
+	}
+
+}
+```
+
+### Ⅲ YML配置
+
+```yml
+logging:
+  level:
+    com.senmu.springcloud.service.PaymentFeignService: debug
+```
 
 # 九、Hystrix断路由
+
+## 1、概述
+
+### Ⅰ 简介
+
+Hystrix是一个用于处理分布式系统的**延迟和容错**的开源库，分布式系统里，许多依赖不可避免的会调用失败，比如超时、异常等。Hystrix能够保证在一个依赖出问题的情况下，**不会导致整体服务失败，避免级联故障，以提高分布式系统的弹性。**
+
+“断路器”本身是一种开关装置，当某个服务单元发生故障之后，通过断路器的故障监控(类似熔断保险丝)，**向调用方返回一个符合预期的、可处理的备选响应(FallBack)，而不是长时间等待或是抛出调用方无法处理的异常**，这就保证了服务调用方的线程不**会被长时间、不必要的占用**，从而避免了故障在分布式系统中蔓延，乃至雪崩。
+
+### Ⅱ 作用
+
+1. 服务降级
+2. 服务熔断
+3. 接近实时的监控
+4. ......
+
+## 2、重要概念
+
+### Ⅰ 服务降级
+
+服务器忙，请稍后再试，不让客户端等待并立刻返回一个友好提示，fallback
+
+触发情况：
+
+1. 程序运行异常
+2. 超时
+3. 服务熔断触发服务降级
+4. 线程池/信号量打满也会导致服务降级
+
+### Ⅱ 服务熔断
+
+类比保险丝达到最大服务访问后，直接拒绝访问，拉闸限电，然后调用服务降级的方法并返回友好提示
+
+### Ⅲ 服务限流
+
+秒杀高并发等操作，严禁一窝蜂的过来拥挤，大家排队，一秒钟N个，有序进行
+
+## 3、案例
 
 
 
